@@ -18,11 +18,10 @@ ThisBuild / developers := List(
   tlGitHubDev("softinio", "Salar Rahmanian")
 )
 
-// publish to s01.oss.sonatype.org (set to true to publish to oss.sonatype.org instead)
-ThisBuild / tlSonatypeUseLegacyHost := false
-
 // publish website from this branch
 ThisBuild / tlSitePublishBranch := Some("main")
+
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17"))
 
 val Scala213 = "2.13.8"
 ThisBuild / crossScalaVersions := Seq(Scala213)

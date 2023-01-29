@@ -70,7 +70,7 @@ lazy val docs = project
         .topNavigationBar(
           homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
           navLinks = Seq(
-            IconLink.external("https://github.com/softinio/", HeliumIcon.github)
+            IconLink.external("https://github.com/softinio/scalanews", HeliumIcon.github)
           )
         )
         .site

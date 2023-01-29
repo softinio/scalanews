@@ -18,6 +18,8 @@ ThisBuild / developers := List(
   tlGitHubDev("softinio", "Salar Rahmanian")
 )
 
+ThisBuild / githubWorkflowPublishTargetBranches := Seq()
+
 // publish website from this branch
 ThisBuild / tlSitePublishBranch := Some("main")
 

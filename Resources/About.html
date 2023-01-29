@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Laika 0.18.1 + Helium Theme" />
+    <title>About Scala News</title>
+    
+      <meta name="author" content="Salar Rahmanian"/>
+    
+    
+      <meta name="description" content="docs"/>
+    
+    
+      <link rel="icon" sizes="32x32" type="image/png" href="/img/favicon-32x32.png"/>
+    
+    
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+    
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+    
+    <link rel="stylesheet" type="text/css" href="../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../site/styles.css" />
+    <script src="../helium/laika-helium.js"></script>
+    
+    
+    <script> /* for avoiding page load transitions */ </script>
+  </head>
+
+  <body>
+
+    <header id="top-bar">
+
+      <div class="row">
+        <a id="nav-icon">
+          <i class="icofont-laika" title="Navigation">&#xefa2;</i>
+        </a>
+        
+      </div>
+
+      <a class="icon-link" href="../index.html"><i class="icofont-laika" title="Home">&#xef47;</i></a>
+
+      <span class="row links"><a class="icon-link" href="https://github.com/softinio/"><span title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a></span>
+
+    </header>
+
+    <nav id="sidebar">
+
+      <div class="row">
+        <a class="icon-link" href="https://github.com/softinio/"><span title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+      </div>
+
+      <ul class="nav-list">
+        <li class="level1"><a href="../index.html">Scala News</a></li>
+        <li class="level1 nav-header">Resources</li>
+        <li class="level2 active"><a href="#">About Scala News</a></li>
+        <li class="level2"><a href="CODE_OF_CONDUCT.html">Code of Conduct</a></li>
+        <li class="level2"><a href="Learn_Scala.html">Learn Scala</a></li>
+      </ul>
+
+      <ul class="nav-list">
+        <li class="level1 nav-header">Made with ❤️  Using</li>
+        
+          <li class="level2"><a href="https://typelevel.org/cats-effect/">cats-effect</a></li>
+        
+          <li class="level2"><a href="https://github.com/typelevel/typelevel.g8">typelevel.g8</a></li>
+        
+          <li class="level2"><a href="https://github.com/typelevel/sbt-typelevel">sbt-typelevel</a></li>
+        
+          <li class="level2"><a href="https://www.scala-sbt.org/">sbt</a></li>
+        
+          <li class="level2"><a href="https://planet42.github.io/Laika/">Laika</a></li>
+        
+      </ul>
+
+    </nav>
+
+    <div id="container">
+
+      <nav id="page-nav">
+        <p class="header"><a href="#">About Scala News</a></p>
+
+        <ul class="nav-list">
+          <li class="level1"><a href="#why-did-i-create-this">Why Did I create this</a></li>
+          <li class="level1"><a href="#will-this-site-be-successful">Will this site be successful?</a></li>
+          <li class="level1"><a href="#what-kind-of-links-will-be-published">What kind of links will be published?</a></li>
+          <li class="level1"><a href="#code-of-conduct">Code of Conduct</a></li>
+          <li class="level1"><a href="#contact-me">Contact Me</a></li>
+        </ul>
+
+        <p class="footer"></p>
+      </nav>
+
+      <main class="content">
+
+        <h1 id="about-scala-news" class="title">About Scala News</h1>
+        <p>Hi Everyone and Welcome to Scala&#39;s latest resource to keep up with the news of what&#39;s happening around the Scala community.</p>
+        <p>What makes this resource unique is that every edition of it will be crowd sourced. Yes that means I need everyones help to contribute links to include in the next edition of the newsletter by submitting a PR.</p>
+        
+        <h2 id="why-did-i-create-this" class="section">Why Did I create this<a class="anchor-link right" href="#why-did-i-create-this"><i class="icofont-laika">&#xef71;</i></a></h2>
+        <p>There where multiple reasons, some of which where as follows:</p>
+        <ul>
+          <li>I want to see more people write more long form blogs and articles, so this is my bit to help your writings to be discovered.</li>
+          <li>I wanted an excuse to use <a href="https://planet42.github.io/Laika/">Laika</a> via <a href="https://typelevel.org/sbt-typelevel/">sbt-typelevel</a> to see what it&#39;s like.</li>
+          <li>I wanted a resource to get a list of links to latest information that is not on medium or behind a pay wall.</li>
+        </ul>
+        
+        <h2 id="will-this-site-be-successful" class="section">Will this site be successful?<a class="anchor-link right" href="#will-this-site-be-successful"><i class="icofont-laika">&#xef71;</i></a></h2>
+        <ul>
+          <li>I need everyone in the community to contribute links as I don&#39;t have time to do it alone, So please contribute.</li>
+          <li>Hopefully with time everyone will be using their preferred rss reader to follow the bloggers they like and there won&#39;t be any need for this site so that its success is measured by it being archived as not needed.</li>
+        </ul>
+        
+        <h2 id="what-kind-of-links-will-be-published" class="section">What kind of links will be published?<a class="anchor-link right" href="#what-kind-of-links-will-be-published"><i class="icofont-laika">&#xef71;</i></a></h2>
+        <p>Any link related to Scala programming that helps you learn and stay in touch, link to release notes for new version of packages and links to upcoming Scala related events.</p>
+        <p>Its hard work writing a book, so I am happy to include links to Scala related books by their authors and any discount they want offer our readers.</p>
+        <p>I won&#39;t be including any links that are directly or indirectly promoting a company and/or a service. This includes but is not limited to paid training and workshops.</p>
+        <p>I won&#39;t be including links to posts that criticizes other peoples hard work even if its constructive.</p>
+        <p>I have the final say on what links are included without giving a reason or having a debate. Certainly harrassing me about it won&#39;t help you.</p>
+        
+        <h2 id="code-of-conduct" class="section">Code of Conduct<a class="anchor-link right" href="#code-of-conduct"><i class="icofont-laika">&#xef71;</i></a></h2>
+        <p>Please follow the <a href="https://www.scala-lang.org/conduct/">Scala Code of Conduct</a></p>
+        
+        <h2 id="contact-me" class="section">Contact Me<a class="anchor-link right" href="#contact-me"><i class="icofont-laika">&#xef71;</i></a></h2>
+        <p>Please use <a href="https://github.com/softinio/scalanews/discussions">GitHub Discussions</a> or if reporting a bug or suggesting a feature use <a href="https://github.com/softinio/scalanews/issues">GitHub issues</a></p>
+
+        <hr style="margin-top: 30px"/>
+        <footer style="font-size: 90%; text-align: center">
+          <br/>
+          Created by <a href="https://www.softinio.com">Salar Rahmanian</a>
+          <br/>
+          <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br />This work by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Salar Rahmanian</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
+

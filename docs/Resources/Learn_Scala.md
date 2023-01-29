@@ -18,7 +18,6 @@
 ## Videos
 
 - [Scaladays Conference](https://www.youtube.com/@ScalaDaysConferences)
--
 - [Rock the JVM](https://www.youtube.com/c/RocktheJVM)
 - [DevInsideYou](https://www.youtube.com/@DevInsideYou)
 - [Jakub Kozłowski](https://www.youtube.com/@kubukoz_)

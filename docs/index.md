@@ -5,9 +5,10 @@
 
 [//]: # (Add to this list any link to news you want included in markdown format with description in square brackets followed by URL in normal brackets)
 
-- [The Magic of Lazy Lists](http://justinhj.github.io/2022/11/05/magic-of-lazy-lists.html)
-- [Alerting and how 50 lines of code changed how we do it.](https://medium.com/swissborg-engineering/alerting-and-how-50-lines-of-code-changed-how-we-do-it-4c2bb5bb67b4)
-- [How to use a Rust lib inside the Scala app](https://moiadev.medium.com/how-to-use-a-rust-lib-inside-the-scala-app-932637c47784)
+- [The Magic of Lazy Lists By Justin Heyes-Jones](http://justinhj.github.io/2022/11/05/magic-of-lazy-lists.html)
+- [Lately By Chris Kipp](https://www.chris-kipp.io/blog/lately)
+- [Alerting and how 50 lines of code changed how we do it By Wojciech Pituła](https://medium.com/swissborg-engineering/alerting-and-how-50-lines-of-code-changed-how-we-do-it-4c2bb5bb67b4)
+- [How to use a Rust lib inside the Scala app By Bogdan Kolbik](https://moiadev.medium.com/how-to-use-a-rust-lib-inside-the-scala-app-932637c47784)
 - [Storch is a Scala library for fast tensor computations and deep learning, based on PyTorch](https://storch.dev/)
 - [Typelevel Good First Issues](https://github.com/orgs/typelevel/projects/1)
 - [Scaladays 2023 CFP](https://www.papercall.io/scala-days-2023)

@@ -8,14 +8,14 @@ What makes this resource unique is that every edition of it will be crowd source
 
 There where multiple reasons, some of which where as follows:
 
-- I want to see more people write more long form blogs and articles, so this is my bit to help your writings to be discovered.
+- I want to see more people write more long form blogs and articles, so this is my bit to help your writings to be discovered. I have even added a page to serve as a blog directory with a link to a bloggers website and rss feed. Let's bring back the google reader days all and write more blogs and spend less time on social media :-)
 - I wanted an excuse to use [Laika](https://planet42.github.io/Laika/) via [sbt-typelevel](https://typelevel.org/sbt-typelevel/) to see what it's like.
-- I wanted a resource to get a list of links to latest information that is not on medium or behind a pay wall.
+- As a bonus, I wanted a resource to get a list of links to latest information that is not on medium or behind a pay wall and we can all contribute to it via a PR on GitHub.
 
 ## Will this site be successful?
 
 - I need everyone in the community to contribute links as I don't have time to do it alone, So please contribute.
-- Hopefully with time everyone will be using their preferred rss reader to follow the bloggers they like and there won't be any need for this site so that its success is measured by it being archived as not needed.
+- Hopefully with time everyone will be using their preferred rss reader to follow the bloggers they like and there won't be any need for this site so that its success is measured by it being archived as not needed or just being there to serve as a directory of Scala bloggers to follow using rss.
 
 ## How Do I add a link to be included in the next edition?
 

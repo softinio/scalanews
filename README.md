@@ -1,4 +1,4 @@
-![GitHub Pages](https://github.com/softinio/scalanews/workflows/Generate%20Site/badge.svg)
+![GitHub Pages](https://github.com/softinio/scalanews/workflows/generate%20site/badge.svg)
 
 # Scala News 
 

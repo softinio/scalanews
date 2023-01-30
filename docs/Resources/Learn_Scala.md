@@ -18,15 +18,15 @@
 ## Videos
 
 - [Scaladays Conference](https://www.youtube.com/@ScalaDaysConferences)
+- [ScalaCon](https://www.youtube.com/@scalacon3966)
+- [Typelevel](https://www.youtube.com/@TypelevelOrgScala)
+- [Xebia Functional (formerly 47 Degrees)](https://www.youtube.com/@xebiafunctional)
 - [Rock the JVM](https://www.youtube.com/c/RocktheJVM)
 - [DevInsideYou](https://www.youtube.com/@DevInsideYou)
 - [Jakub Kozłowski](https://www.youtube.com/@kubukoz_)
-- [Typelevel](https://www.youtube.com/@TypelevelOrgScala)
 - [Functional Justin](https://www.youtube.com/@FunctionalJustin)
 - [Konfy](https://www.youtube.com/@Konfy/featured)
 - [ScalaIO](https://www.youtube.com/@scalaiofr95)
-- [Xebia Functional (formerly 47 Degrees)](https://www.youtube.com/@xebiafunctional)
-- [ScalaCon](https://www.youtube.com/@scalacon3966)
 - [Scale By The Bay & SF Scala](http://functional.tv)
 - [Softinio](https://watch.softinio.com/c/softinio/videos)
 

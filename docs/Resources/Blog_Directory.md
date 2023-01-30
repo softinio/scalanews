@@ -4,7 +4,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 
 | Blog        | URL           | RSS Feed  |
 | ------------- |:-------------:| -----:|
-| Salar Rahmanian | <http://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |
+| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |
 | Scala Lang | <https://www.scala-lang.org/blog/> | [rss feed](https://www.scala-lang.org/feed/blog.xml) |
 | Typelevel | <https://typelevel.org/blog/> | [rss feed](https://typelevel.org/blog/feed.rss) |
 | Justin Heyes-Jones | <http://justinhj.github.io/> | [rss feed](http://justinhj.github.io/feed.xml) |

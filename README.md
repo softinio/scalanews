@@ -1,3 +1,5 @@
+![GitHub Pages](https://github.com/softinio/scalanews/workflows/Generate%20Site/badge.svg)
+
 # Scala News 
 
 For more information have a look at our [about us](docs/Resources/About.md)

@@ -17,6 +17,14 @@ There where multiple reasons, some of which where as follows:
 - I need everyone in the community to contribute links as I don't have time to do it alone, So please contribute.
 - Hopefully with time everyone will be using their preferred rss reader to follow the bloggers they like and there won't be any need for this site so that its success is measured by it being archived as not needed.
 
+## How Do I add a link to be included in the next edition?
+
+See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details.
+
+## How do I add my Blog to the Blog Directory?
+
+See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details.
+
 ## What kind of links will be published?
 
 Any link related to Scala programming that helps you learn and stay in touch, link to release notes for new version of packages and links to upcoming Scala related events.

@@ -15,4 +15,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Alexandru Nedelcu | <https://alexn.org/blog/> | [rss feed](https://alexn.org/feeds/all.xml) |
 
 
+###### Got a Scala related blog? Add it to this Blog Directory!
+
+See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details.
 

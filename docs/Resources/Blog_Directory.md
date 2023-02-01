@@ -7,7 +7,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |
 | Scala Lang | <https://www.scala-lang.org/blog/> | [rss feed](https://www.scala-lang.org/feed/blog.xml) |
 | Typelevel | <https://typelevel.org/blog/> | [rss feed](https://typelevel.org/blog/feed.rss) |
-| Michael Pilquist | <https://mpilquist.github.io/about/> | [rss feed](https://mpilquist.github.io/index.xml) |
+| Michael Pilquist | <https://mpilquist.github.io/> | [rss feed](https://mpilquist.github.io/index.xml) |
 | Justin Heyes-Jones | <http://justinhj.github.io/> | [rss feed](http://justinhj.github.io/feed.xml) |
 | Chris Kipp | <https://www.chris-kipp.io/> | [rss feed](https://www.chris-kipp.io/rss.xml) |
 | Anton Sviridov | <https://blog.indoorvivants.com/> | [rss feed](https://blog.indoorvivants.com/rss.xml) |

@@ -17,6 +17,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Yadu Krishnan | <https://yadukrishnan.live/> | [rss feed](https://yadukrishnan.live/rss.xml) |
 | Michał Pawlik | <https://blog.michalp.net/> | [rss feed](https://blog.michalp.net/index.xml) |
 | Jakub Kozłowski | <https://blog.kubukoz.com/> | [rss feed](https://blog.kubukoz.com/atom.xml) |
+| Haoyi Li | <https://www.lihaoyi.com/> | [rss feed](https://www.lihaoyi.com/feed.xml) |
 
 ###### Got a Scala related blog? Add it to this Blog Directory!
 

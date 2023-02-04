@@ -33,10 +33,6 @@ Its hard work writing a book, so I am happy to include links to Scala related bo
 
 I won't be including any links that are directly or indirectly promoting a company and/or a service. This includes but is not limited to paid training and workshops.
 
-I won't be including links to posts that criticizes other peoples hard work even if its constructive.
-
-I have the final say on what links are included without giving a reason or having a debate. Certainly harrassing me about it won't help you.
-
 ## Code of Conduct
 
 Please follow the [Scala Code of Conduct](https://www.scala-lang.org/conduct/)

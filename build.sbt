@@ -55,7 +55,6 @@ lazy val docs = project
   .settings(
     tlSiteRelatedProjects := Seq(
       TypelevelProject.CatsEffect,
-      "typelevel.g8" -> url("https://github.com/typelevel/typelevel.g8"),
       "sbt-typelevel" -> url("https://github.com/typelevel/sbt-typelevel"),
       "decline" -> url("https://ben.kirw.in/decline/"),
       "Laika" -> url("https://planet42.github.io/Laika/")

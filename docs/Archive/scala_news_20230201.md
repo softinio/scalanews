@@ -1,4 +1,4 @@
-# Scala News February 8, 2023
+# Scala News - February 1, 2023
 
 
 ## News

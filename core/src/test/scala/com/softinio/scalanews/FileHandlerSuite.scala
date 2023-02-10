@@ -80,10 +80,4 @@ class FileHandlerSuite extends CatsEffectSuite {
     val date = FileHandler.getDate(None)
     assertIO(date, Right(LocalDate.now()))
   }
-
-  // test("Main should exit succesfully") {
-  //   val main = Main.main.withDefault()
-  //   assertIO(main, ExitCode.Success)
-  // }
-
 }

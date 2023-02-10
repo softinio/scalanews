@@ -72,7 +72,7 @@ object FileHandler {
   def publish(archiveDate: Option[String]): IO[ExitCode] =
     for {
       aDate <- getDate(archiveDate)
-      newFilePath <- IO(Paths.get(s"docs/scala_news_{aDate}.md"))
+      newFilePath <- IO(Paths.get(s"docs/Archive/scala_news_${aDate}.md"))
       indexExists <- Files[IO].exists(indexFilePath)
       _ <-
         if (indexExists) Files[IO].move(indexFilePath, newFilePath) else IO.unit

@@ -49,7 +49,7 @@ class FileHandlerSuite extends CatsEffectSuite {
     val expectedDate = LocalDate
       .now()
       .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
-    val expectedHeader = s"# Scala News $expectedDate"
+    val expectedHeader = s"# Scala News - $expectedDate"
     val result = for {
       got <- updated
       extracted <- got match {

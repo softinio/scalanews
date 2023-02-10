@@ -43,7 +43,7 @@ object FileHandler {
         headerDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
       val content = JFiles.readString(sourceFile)
       val updatedContent =
-        content.replace(HEADER_TEXT, s"$HEADER_TEXT $headerDateString")
+        content.replace(HEADER_TEXT, s"$HEADER_TEXT - $headerDateString")
       JFiles.writeString(sourceFile, updatedContent)
     }.attempt
 
@@ -76,14 +76,14 @@ object FileHandler {
       indexExists <- Files[IO].exists(indexFilePath)
       _ <-
         if (indexExists) Files[IO].move(indexFilePath, newFilePath) else IO.unit
+      nextExists <- Files[IO].exists(nextFilePath)
       _ <-
-        if (indexExists) {
+        if (nextExists) {
           aDate match {
-            case Right(lDate) => updateFileHeader(newFilePath, lDate)
+            case Right(lDate) => updateFileHeader(nextFilePath, lDate)
             case _            => IO.unit
           }
         } else IO.unit
-      nextExists <- Files[IO].exists(nextFilePath)
       _ <-
         if (nextExists) Files[IO].move(nextFilePath, indexFilePath) else IO.unit
       _ <- create(false)

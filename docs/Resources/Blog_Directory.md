@@ -20,7 +20,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Haoyi Li | <https://www.lihaoyi.com/> | [rss feed](https://www.lihaoyi.com/feed.xml) |
 | Rock The JVM Blog | <https://blog.rockthejvm.com/> | [rss feed](https://blog.rockthejvm.com/feed.xml) |
 | Antonio Gelameris | <https://toniogela.dev/> | [rss feed](https://toniogela.dev/rss.xml) |
-| Juliano Alves | <https://juliano-alves.com/> | [rss feed](https://juliano-alves.com/feed.xml)
+| Juliano Alves | <https://juliano-alves.com/> | [rss feed](https://juliano-alves.com/feed.xml) |
 
 ###### Got a Scala related blog? Add it to this Blog Directory!
 

@@ -1,19 +1,18 @@
-# Scala News - February 9, 2023 
+# Scala News - February 16, 2023
 
 
 ## News
 
 [//]: # (Add to this list any link to news you want included in markdown format with description in square brackets followed by URL in normal brackets)
 
-- [10 YEARS OF SCALA.JS By Sébastien Doeraene](https://www.scala-lang.org/blog-detail/2023/02/05/ten-years-of-scala-js.html)
-- [Scala 3 and Spark? By Filip Zybała](https://medium.com/virtuslab/scala-3-and-spark-389f7ecef71b)
-- [Case study: The digital transformation of Santa’s logistical nightmare](https://functional-feline-society.github.io/2022/12/16/santas-logistical-nightmare-pt1/)
-- [OpenAI Scala Client is Out By Peter Banda](https://medium.com/@0xbnd/openai-scala-client-is-out-d7577de934ad)
-- [Deploy http4s on your domain with fly.io By Antonio Gelameris](https://toniogela.dev/http4s-on-fly-io/)
-- [Why Learn Contextual Abstractions in Scala 3 First By Esteban Marin](https://xebia.com/blog/why-learn-contextual-abstractions-in-scala-3-first/)
-- [Prototype Loom-based concurrency API for Scala By Adam Warski](https://softwaremill.com/prototype-loom-based-concurrency-api-for-scala/)
-- [Introducing kinesis4cats](https://etspaceman.github.io/kinesis4cats/)
-- [Introducing the first public release of otel4s, an OpenTelemetry implementation for Cats Effect](https://typelevel.org/otel4s/)
+- [Introduction to Bazel for Scala developers By Rikito Taniguchi](https://virtuslab.com/blog/introduction-to-bazel-for-scala-developers/)
+- [Gradle Inc. Acquires Triplequote to Expand Developer Productivity Solutions Footprint](https://gradle.com/press-media/gradle-inc.-acquires-triplequote-to-expand-developer-productivity-solutions-footprint/)
+- [Scala 2.13.11 release planning By Seth Tisue](https://contributors.scala-lang.org/t/scala-2-13-11-release-planning/6088/2)
+- [Play Framework roadmap to version 2.9](https://github.com/orgs/playframework/projects/3)
+- [Concise enumeration in Scala By Julien Truffaut](https://scalajobs.com/blog/concise-enumeration-in-scala/)
+- [Akka Streams - Working with Stage Actors (Video) By Rock The JVM](https://www.youtube.com/watch?v=CbROb078_Qs)
+- [Scaladays 2023 CFP - hurry! Closes February 20th, 2023](https://www.papercall.io/scala-days-2023)
+
 
 
 ## Events 
@@ -28,10 +27,8 @@
 
 ## New Releases
 
-[//]: # (Add to this list any link to new package release changelog you want included in markdown format with description in square brackets followed by URL in normal brackets)
-
-- [cats-effect - v3.4.6](https://github.com/typelevel/cats-effect/releases/tag/v3.4.6)
-- [http4s-netty - v0.5.5](https://github.com/http4s/http4s-netty/releases/tag/v0.5.5)
-- [circe - v0.14.4](https://github.com/circe/circe/releases/tag/v0.14.4)
-- [fs2 - v3.6.1](https://github.com/typelevel/fs2/releases/tag/v3.6.1)
+- [cats-effect - v3.4.7](https://github.com/typelevel/cats-effect/releases/tag/v3.4.7)
+- [scalaxb - 1.9.1](https://scalaxb.org/scalaxb-1.9.1)
+- [jarjar-abrams - 1.8.2](https://github.com/eed3si9n/jarjar-abrams/releases/tag/v1.8.2)
+- [sbt-assembly - 2.1.1](https://github.com/sbt/sbt-assembly/releases/tag/v2.1.1)
 

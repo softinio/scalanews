@@ -19,5 +19,8 @@
 - [Scala Days: Madrid September 11-14 2023](https://scaladays.org/)
 
 
+## New Releases
+
+[//]: # (Add to this list any link to new package release changelog you want included in markdown format with description in square brackets followed by URL in normal brackets)
 
 

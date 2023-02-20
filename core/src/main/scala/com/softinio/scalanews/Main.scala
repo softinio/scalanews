@@ -17,6 +17,7 @@
 package com.softinio.scalanews
 
 import cats.effect._
+import cats.implicits._
 
 import com.monovore.decline._
 import com.monovore.decline.effect._
@@ -28,21 +29,38 @@ object Main
       version = "0.1"
     ) {
 
-  case class Publish(archiveDate: Option[String])
+  case class Publish(
+      publishDate: Option[String],
+      archiveDate: String,
+      archiveFolder: Option[String]
+  )
   case class Create(overwrite: Boolean)
 
-  val archiveDateOps: Opts[Option[String]] =
+  val archiveDateOps: Opts[String] =
+    Opts
+      .argument[String](metavar = "archiveDate")
+
+  val publishDateOps: Opts[Option[String]] =
     Opts
       .option[String](
-        "date",
-        "Date to archive current newsletter to",
-        short = "d"
+        "publishdate",
+        "Publish date for current newsletter to",
+        short = "p"
+      )
+      .orNone
+
+  val archiveFolderOps: Opts[Option[String]] =
+    Opts
+      .option[String](
+        "folder",
+        "Folder name to archive current newsletter to",
+        short = "f"
       )
       .orNone
 
   val publishOpts: Opts[Publish] =
     Opts.subcommand("publish", "Publish next newsletter") {
-      archiveDateOps.map(Publish)
+      (publishDateOps, archiveDateOps, archiveFolderOps).mapN(Publish)
     }
 
   val createOpts: Opts[Create] =
@@ -55,7 +73,8 @@ object Main
 
   override def main: Opts[IO[ExitCode]] =
     (publishOpts orElse createOpts).map {
-      case Publish(archiveDate) => FileHandler.publish(archiveDate)
-      case Create(overwrite)    => FileHandler.create(overwrite)
+      case Publish(publishDate, archiveDate, archiveFolder) =>
+        FileHandler.publish(publishDate, archiveDate, archiveFolder)
+      case Create(overwrite) => FileHandler.create(overwrite)
     }
 }

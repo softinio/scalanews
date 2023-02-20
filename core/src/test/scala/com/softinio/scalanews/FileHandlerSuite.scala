@@ -65,19 +65,25 @@ class FileHandlerSuite extends CatsEffectSuite {
     assertIO(result, true)
   }
 
-  test("getDate for a valid date") {
-    val date = FileHandler.getDate(Some("20221220"))
+  test("getArchiveDate for a valid date") {
+    val date = FileHandler.getArchiveDate("20221220")
     val expected = Right(LocalDate.parse("20221220", BASIC_ISO_DATE))
     assertIO(date, expected)
   }
 
-  test("getDate for a invalid date") {
-    val date = FileHandler.getDate(Some("2022-12-20"))
+  test("getPublishDate for a valid date") {
+    val date = FileHandler.getPublishDate(Some("20221220"))
+    val expected = Right(LocalDate.parse("20221220", BASIC_ISO_DATE))
+    assertIO(date, expected)
+  }
+
+  test("getPublishDate for a invalid date") {
+    val date = FileHandler.getPublishDate(Some("2022-12-20"))
     date.map(r => assertEquals(r.isLeft, true))
   }
 
-  test("getDate for today") {
-    val date = FileHandler.getDate(None)
+  test("getPublishDate for today") {
+    val date = FileHandler.getPublishDate(None)
     assertIO(date, Right(LocalDate.now()))
   }
 }

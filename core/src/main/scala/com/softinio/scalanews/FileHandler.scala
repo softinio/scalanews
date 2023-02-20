@@ -47,9 +47,16 @@ object FileHandler {
       JFiles.writeString(sourceFile, updatedContent)
     }.attempt
 
-  def getDate(archiveDate: Option[String]): IO[Either[Throwable, LocalDate]] =
+  def getArchiveDate(archiveDate: String): IO[Either[Throwable, LocalDate]] =
     IO.blocking {
-      archiveDate match {
+      LocalDate.parse(archiveDate, BASIC_ISO_DATE)
+    }.attempt
+
+  def getPublishDate(
+      publishDate: Option[String]
+  ): IO[Either[Throwable, LocalDate]] =
+    IO.blocking {
+      publishDate match {
         case Some(aDate) => LocalDate.parse(aDate, BASIC_ISO_DATE)
         case None        => LocalDate.now()
       }
@@ -69,17 +76,50 @@ object FileHandler {
         else IO.unit
     } yield (ExitCode.Success)
 
-  def publish(archiveDate: Option[String]): IO[ExitCode] =
+  def createArchiveFolderPath(archiveFolder: Option[String]): IO[String] = {
+    IO.blocking {
+      val folderPath = archiveFolder match {
+        case Some(folder) => s"docs/Archive/${folder}/"
+        case None         => s"docs/Archive/"
+      }
+      JFiles.createDirectories(Paths.get(folderPath))
+      folderPath
+    }
+  }
+
+  def createArchiveFileName(archiveDate: String): IO[String] =
     for {
-      aDate <- getDate(archiveDate)
-      newFilePath <- IO(Paths.get(s"docs/Archive/scala_news_${aDate}.md"))
+      aDate <- getArchiveDate(archiveDate)
+      fileName <- aDate match {
+        case Right(rDate) => IO(s"scala_news_${rDate}.md")
+        case _            => IO("")
+      }
+    } yield (fileName)
+
+  def getArchivePath(
+      archiveDate: String,
+      archiveFolder: Option[String]
+  ): IO[Path] =
+    for {
+      fileName <- createArchiveFileName(archiveDate)
+      folderPath <- createArchiveFolderPath(archiveFolder)
+    } yield (Paths.get(s"${folderPath}${fileName}"))
+
+  def publish(
+      publishDate: Option[String],
+      archiveDate: String,
+      archiveFolder: Option[String]
+  ): IO[ExitCode] =
+    for {
+      pDate <- getPublishDate(publishDate)
+      newFilePath <- getArchivePath(archiveDate, archiveFolder)
       indexExists <- Files[IO].exists(indexFilePath)
       _ <-
         if (indexExists) Files[IO].move(indexFilePath, newFilePath) else IO.unit
       nextExists <- Files[IO].exists(nextFilePath)
       _ <-
         if (nextExists) {
-          aDate match {
+          pDate match {
             case Right(lDate) => updateFileHeader(nextFilePath, lDate)
             case _            => IO.unit
           }

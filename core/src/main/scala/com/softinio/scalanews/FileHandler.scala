@@ -52,7 +52,9 @@ object FileHandler {
       LocalDate.parse(archiveDate, BASIC_ISO_DATE)
     }.attempt
 
-  def getPublishDate(publishDate: Option[String]): IO[Either[Throwable, LocalDate]] =
+  def getPublishDate(
+      publishDate: Option[String]
+  ): IO[Either[Throwable, LocalDate]] =
     IO.blocking {
       publishDate match {
         case Some(aDate) => LocalDate.parse(aDate, BASIC_ISO_DATE)
@@ -78,7 +80,7 @@ object FileHandler {
     IO.blocking {
       val folderPath = archiveFolder match {
         case Some(folder) => s"docs/Archive/${folder}/"
-        case None => s"docs/Archive/"
+        case None         => s"docs/Archive/"
       }
       JFiles.createDirectories(Paths.get(folderPath))
       folderPath
@@ -90,17 +92,24 @@ object FileHandler {
       aDate <- getArchiveDate(archiveDate)
       fileName <- aDate match {
         case Right(rDate) => IO(s"scala_news_${rDate}.md")
-        case _ => IO("")
-      } 
+        case _            => IO("")
+      }
     } yield (fileName)
 
-  def getArchivePath(archiveDate: String, archiveFolder: Option[String]): IO[Path] =
+  def getArchivePath(
+      archiveDate: String,
+      archiveFolder: Option[String]
+  ): IO[Path] =
     for {
       fileName <- createArchiveFileName(archiveDate)
       folderPath <- createArchiveFolderPath(archiveFolder)
     } yield (Paths.get(s"${folderPath}${fileName}"))
 
-  def publish(publishDate: Option[String], archiveDate: String, archiveFolder: Option[String]): IO[ExitCode] =
+  def publish(
+      publishDate: Option[String],
+      archiveDate: String,
+      archiveFolder: Option[String]
+  ): IO[ExitCode] =
     for {
       pDate <- getPublishDate(publishDate)
       newFilePath <- getArchivePath(archiveDate, archiveFolder)

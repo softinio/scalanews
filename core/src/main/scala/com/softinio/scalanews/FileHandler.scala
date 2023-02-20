@@ -85,10 +85,18 @@ object FileHandler {
     }
   }
 
-  def getArchivePath(archiveDate: String, archiveFolder: Option[String]): IO[Path] =
+  def createArchiveFileName(archiveDate: String): IO[String] =
     for {
       aDate <- getArchiveDate(archiveDate)
-      fileName <- IO(s"scala_news_${aDate}.md")
+      fileName <- aDate match {
+        case Right(rDate) => IO(s"scala_news_${rDate}.md")
+        case _ => IO("")
+      } 
+    } yield (fileName)
+
+  def getArchivePath(archiveDate: String, archiveFolder: Option[String]): IO[Path] =
+    for {
+      fileName <- createArchiveFileName(archiveDate)
       folderPath <- createArchiveFolderPath(archiveFolder)
     } yield (Paths.get(s"${folderPath}${fileName}"))
 

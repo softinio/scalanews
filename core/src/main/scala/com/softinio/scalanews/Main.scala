@@ -29,12 +29,16 @@ object Main
       version = "0.1"
     ) {
 
-  case class Publish(publishDate: Option[String], archiveDate: String, archiveFolder: Option[String])
+  case class Publish(
+      publishDate: Option[String],
+      archiveDate: String,
+      archiveFolder: Option[String]
+  )
   case class Create(overwrite: Boolean)
 
   val archiveDateOps: Opts[String] =
     Opts
-      .argument[String]( metavar = "archiveDate" )
+      .argument[String](metavar = "archiveDate")
 
   val publishDateOps: Opts[Option[String]] =
     Opts
@@ -69,7 +73,8 @@ object Main
 
   override def main: Opts[IO[ExitCode]] =
     (publishOpts orElse createOpts).map {
-      case Publish(publishDate, archiveDate, archiveFolder) => FileHandler.publish(publishDate, archiveDate, archiveFolder)
-      case Create(overwrite)    => FileHandler.create(overwrite)
+      case Publish(publishDate, archiveDate, archiveFolder) =>
+        FileHandler.publish(publishDate, archiveDate, archiveFolder)
+      case Create(overwrite) => FileHandler.create(overwrite)
     }
 }

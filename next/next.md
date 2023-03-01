@@ -5,7 +5,8 @@
 
 [//]: # (Add to this list any link to news you want included in markdown format with description in square brackets followed by URL in normal brackets)
 
-- [Example article](https://www.softinio.com)
+- [Functional messaging abstraction in Scala with pass4s](https://blog.michalp.net/posts/scala/pass4s-basics/)
+- [JSON and XML messaging with pass4s](https://blog.michalp.net/posts/scala/pass4s-codecs/)
 
 
 

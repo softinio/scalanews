@@ -9,7 +9,7 @@
 - [JSON and XML messaging with pass4s By Michał Pawlik](https://blog.michalp.net/posts/scala/pass4s-codecs/)
 - [VS Code Profile for Scala (Video) By DevInsideYou](https://www.youtube.com/watch?v=g8Dd37e7GRk)
 - [Why should you wake up tomorrow and start to learn Scala? (Video) By Alexander Savin](https://www.youtube.com/watch?v=wHfD-BROv88)
-- [SempCLIfica la tua vita con Scala CLI (Video) By Antonio Gelameris](https://www.youtube.com/watch?v=TmsYHCiZ-4Q)
+- [SempCLIfica la tua vita con Scala CLI (Video, Italian) By Antonio Gelameris](https://www.youtube.com/watch?v=TmsYHCiZ-4Q)
 - [Monitoring Scala applications with OpenTelemetry & Mesmer (Video) By Łukasz Gajowy](https://www.youtube.com/watch?v=LJFll2rIJkI)
 
 

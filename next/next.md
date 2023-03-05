@@ -5,6 +5,7 @@
 
 [//]: # (Add to this list any link to news you want included in markdown format with description in square brackets followed by URL in normal brackets)
 
+- [Proxy large messages via S3 with pass4s](https://blog.michalp.net/posts/scala/pass4s-s3-proxy/)
 - [Example article By Author](https://www.softinio.com)
 
 

@@ -36,6 +36,8 @@ object Main
   )
   case class Create(overwrite: Boolean)
 
+  case class Blogger(directory: Boolean)
+
   val archiveDateOps: Opts[String] =
     Opts
       .argument[String](metavar = "archiveDate")
@@ -71,10 +73,26 @@ object Main
         .map(Create)
     }
 
+  val bloggerOpts: Opts[Blogger] =
+    Opts.subcommand("blogger", "Blogger directory tasks") {
+      Opts
+        .flag("directory", "create a new blogger directory page", short = "d")
+        .orFalse
+        .map(Blogger)
+    }
+
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts).map {
+    (publishOpts orElse createOpts orElse bloggerOpts).map {
       case Publish(publishDate, archiveDate, archiveFolder) =>
         FileHandler.publish(publishDate, archiveDate, archiveFolder)
       case Create(overwrite) => FileHandler.create(overwrite)
+      case Blogger(directory) => {
+        if (directory) {
+          for {
+            config <- ConfigLoader.load()
+            result <- Bloggers.createBloggerDirectory(config.bloggers)
+          } yield (result)
+        } else IO(ExitCode.Success)
+      }
     }
 }

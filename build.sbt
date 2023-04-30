@@ -40,9 +40,11 @@ lazy val core = crossProject(JVMPlatform)
     name := "scalanews",
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-core" % "2.9.0",
-      "org.typelevel" %% "cats-effect" % "3.4.2",
+      "org.typelevel" %% "cats-effect" % "3.4.10",
       "io.github.akiomik" %% "cats-nio-file" % "1.7.0",
-      "com.monovore" %% "decline-effect" % "2.4.0",
+      "com.monovore" %% "decline-effect" % "2.4.1",
+      "com.github.pureconfig" %% "pureconfig" % "0.17.3",
+      "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.3",
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test
     ),

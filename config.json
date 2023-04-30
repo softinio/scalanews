@@ -1,0 +1,94 @@
+{
+    "bloggers": [
+        {
+            "name": "Salar Rahmanian",
+            "url": "https://www.softinio.com",
+            "rss": "https://www.softinio.com/index.xml"
+        },
+        {
+            "name": "Scala Lang",
+            "url": "https://www.scala-lang.org/blog/",
+            "rss": "https://www.scala-lang.org/feed/blog.xml"
+        },
+        {
+            "name": "Typelevel",
+            "url": "https://typelevel.org/blog/",
+            "rss": "https://typelevel.org/blog/feed.rss"
+        },
+        {
+            "name": "Michael Pilquist",
+            "url": "https://mpilquist.github.io/",
+            "rss": "https://mpilquist.github.io/index.xml"
+        },
+        {
+            "name": "Justin Heyes-Jones",
+            "url": "http://justinhj.github.io/",
+            "rss": "http://justinhj.github.io/feed.xml"
+        },
+        {
+            "name": "Chris Kipp",
+            "url": "https://www.chris-kipp.io/",
+            "rss": "https://www.chris-kipp.io/rss.xml"
+        },
+        {
+            "name": "Anton Sviridov",
+            "url": "https://blog.indoorvivants.com",
+            "rss": "https://blog.indoorvivants.com/rss.xml"
+        },
+        {
+            "name": "James Ward",
+            "url": "https://jamesward.com",
+            "rss": "https://jamesward.com/index.xml"
+        },
+        {
+            "name": "Eugene Yokota",
+            "url": "https://eed3si9n.com/",
+            "rss": "https://eed3si9n.com/index.xml"
+        },
+        {
+            "name": "Alexandru Nedelcu",
+            "url": "https://alexn.org/blog/",
+            "rss": "https://alexn.org/feeds/all.xml"
+        },
+        {
+            "name": "Jakub Kozłowski",
+            "url": "https://blog.kubukoz.com/",
+            "rss": "https://blog.kubukoz.com/atom.xml"
+        },
+        {
+            "name": "Yadu Krishnan",
+            "url": "https://yadukrishnan.live/",
+            "rss": "https://yadukrishnan.live/rss.xml"
+        },
+        {
+            "name": "Michał Pawlik",
+            "url": "https://blog.michalp.net/",
+            "rss": "https://blog.michalp.net/index.xml"
+        },
+        {
+            "name": "Haoyi Li",
+            "url": "https://www.lihaoyi.com/",
+            "rss": "https://www.lihaoyi.com/feed.xml"
+        },
+        {
+            "name": "Rock The JVM Blog",
+            "url": "https://blog.rockthejvm.com/",
+            "rss": "https://blog.rockthejvm.com/feed.xml"
+        },
+        {
+            "name": "Antonio Gelameris",
+            "url": "https://toniogela.dev/",
+            "rss": "https://toniogela.dev/rss.xml"
+        },
+        {
+            "name": "Juliano Alves",
+            "url": "https://juliano-alves.com/",
+            "rss": "https://juliano-alves.com/feed.xml"
+        },
+        {
+            "name": "Inner Product",
+            "url": "https://inner-product.com/",
+            "rss": "https://www.inner-product.com/feed/feed.xml"
+        }
+    ]
+}

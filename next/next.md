@@ -15,6 +15,7 @@
 
 - [Scala Days: Seattle June 4-7 2023](https://scaladays.org/)
 - [Scala Days: Madrid September 11-14 2023](https://scaladays.org/)
+- [Scala.IO: Paris October 25-27 2023](https://scala.io/)
 
 
 ## New Releases

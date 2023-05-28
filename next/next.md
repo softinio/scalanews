@@ -5,6 +5,7 @@
 
 [//]: # (Add to this list any link to news you want included in markdown format with description in square brackets followed by URL in normal brackets)
 
+- [Intermediate's guide to derivations in Scala: using Magnolia](https://blog.michalp.net/posts/scala/scala-derivations-show/)
 - [Example article By Author](https://www.softinio.com)
 
 

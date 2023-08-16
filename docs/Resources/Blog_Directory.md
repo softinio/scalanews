@@ -18,7 +18,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Alexandru Nedelcu | <https://alexn.org/blog/> | [rss feed](https://alexn.org/feeds/all.xml) |
 | Jakub Kozłowski | <https://blog.kubukoz.com/> | [rss feed](https://blog.kubukoz.com/atom.xml) |
 | Yadu Krishnan | <https://yadukrishnan.live/> | [rss feed](https://yadukrishnan.live/rss.xml) |
-| Michał Pawlik | <https://blog.michalp.net/> | [rss feed](https://blog.michalp.net/index.xml) |
+| Michał Pawlik | <https://blog.michal.pawlik.dev> | [rss feed](https://blog.michal.pawlik.dev/index.xml) |
 | Haoyi Li | <https://www.lihaoyi.com/> | [rss feed](https://www.lihaoyi.com/feed.xml) |
 | Rock The JVM Blog | <https://blog.rockthejvm.com/> | [rss feed](https://blog.rockthejvm.com/feed.xml) |
 | Antonio Gelameris | <https://toniogela.dev/> | [rss feed](https://toniogela.dev/rss.xml) |

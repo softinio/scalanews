@@ -18,13 +18,19 @@ package com.softinio.scalanews
 
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
+import java.util.Date
 import cats.effect._
 import cats.nio.file.Files
+import com.rometools.rome.feed.synd.SyndEntry
+import org.http4s.Uri
 
+import scala.jdk.CollectionConverters._
+import com.softinio.scalanews.algebra.Article
 import com.softinio.scalanews.algebra.Blog
 
 object Bloggers {
-  val directoryMarkdownFilePath = Paths.get("docs/Resources/Blog_Directory.md")
+  private val directoryMarkdownFilePath =
+    Paths.get("docs/Resources/Blog_Directory.md")
   def generateDirectory(bloggerList: List[Blog]): IO[String] = {
     IO.blocking {
       val header = """
@@ -45,11 +51,68 @@ object Bloggers {
       }
 
       s"""
-      ${header}
+      $header
       ${directory.mkString("\n")}
-      ${footer}\n""".stripMargin
+      $footer\n""".stripMargin
     }
   }
+
+  private def getArticlesFromEntries(
+      entries: List[SyndEntry],
+      startDate: Date,
+      endDate: Date
+  ): Option[List[Article]] =
+    entries
+      .filter(_.getPublishedDate != null)
+      .filter(_.getLink != null)
+      .filter(_.getTitle != null)
+      .map { entry =>
+        Article(
+          entry.getTitle,
+          Uri
+            .fromString(entry.getLink)
+            .getOrElse(Uri.unsafeFromString("https://www.scala-lang.org/")),
+          entry.getPublishedDate
+        )
+      }
+      .filter { case Article(_, _, publishedDate) =>
+        publishedDate.after(startDate) && publishedDate.before(endDate)
+      }
+      .distinct
+      .sortBy(_.publishedDate.getTime)
+      .reverse match {
+      case Nil  => None
+      case list => Some(list)
+    }
+
+  def getArticlesForBlogger(
+      blog: Blog,
+      startDate: Date,
+      endDate: Date
+  ): IO[Option[List[Article]]] =
+    for {
+      feedResult <- Rome.fetchFeed(blog.rss.toURL.toString)
+    } yield {
+      getArticlesFromEntries(
+        feedResult
+          .map(_.getEntries.asScala.toList)
+          .getOrElse(List[SyndEntry]()),
+        startDate,
+        endDate
+      )
+    }
+
+  def createBlogList(startDate: Date, endDate: Date): IO[List[Article]] =
+    ConfigLoader.load().flatMap { conf =>
+      conf.bloggers.foldLeft(IO.pure(List[Article]()))((acc, blog) =>
+        acc.flatMap { articleList =>
+          getArticlesForBlogger(blog, startDate, endDate).map {
+            maybeArticleList =>
+              articleList ++ maybeArticleList.getOrElse(List[Article]())
+          }
+        }
+      )
+    }
 
   def createBloggerDirectory(bloggerList: List[Blog]): IO[ExitCode] = {
     for {
@@ -61,6 +124,6 @@ object Bloggers {
         directory.getBytes(),
         StandardOpenOption.CREATE_NEW
       )
-    } yield (ExitCode.Success)
+    } yield ExitCode.Success
   }
 }

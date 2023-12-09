@@ -16,11 +16,11 @@
 
 package com.softinio.scalanews
 
-import java.net.URI
-
+import com.softinio.scalanews.algebra.Blog
 import munit.CatsEffectSuite
 
-import com.softinio.scalanews.algebra.Blog
+import java.net.URI
+import java.text.SimpleDateFormat
 
 class BloggersSuite extends CatsEffectSuite {
   test("generateDirectory - test the new blogger directory is generated") {
@@ -31,9 +31,49 @@ class BloggersSuite extends CatsEffectSuite {
     )
     val obtained = for {
       result <- Bloggers.generateDirectory(List(blog))
-    } yield (result.contains(
+    } yield result.contains(
       "| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |"
-    ))
+    )
+    assertIO(obtained, true)
+  }
+
+  test(
+    "getArticlesForBlogger - test getting articles for a blog list for a blogger for a given date range"
+  ) {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")
+    val blog = Blog(
+      "Salar Rahmanian",
+      new URI("https://www.softinio.com"),
+      new URI("https://www.softinio.com/index.xml")
+    )
+    val obtained = for {
+      result <- Bloggers.getArticlesForBlogger(
+        blog,
+        formatter.parse("2021-01-01"),
+        formatter.parse("2021-12-31")
+      )
+    } yield {
+      result match {
+        case Some(articles) => articles.nonEmpty
+        case None           => false
+      }
+    }
+    assertIO(obtained, true)
+  }
+
+  test(
+    "createBlogList - test getting articles for a blog list for all bloggers for a given date range"
+  ) {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")
+
+    val obtained = for {
+      result <- Bloggers.createBlogList(
+        formatter.parse("2021-01-01"),
+        formatter.parse("2021-12-31")
+      )
+    } yield {
+      result.nonEmpty
+    }
     assertIO(obtained, true)
   }
 }

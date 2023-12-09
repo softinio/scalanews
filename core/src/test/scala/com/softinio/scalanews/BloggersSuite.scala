@@ -31,9 +31,9 @@ class BloggersSuite extends CatsEffectSuite {
     )
     val obtained = for {
       result <- Bloggers.generateDirectory(List(blog))
-    } yield (result.contains(
+    } yield result.contains(
       "| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |"
-    ))
+    )
     assertIO(obtained, true)
   }
 

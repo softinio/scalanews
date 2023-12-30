@@ -6,7 +6,8 @@ For more information have a look at our [about us](docs/Resources/About.md)
 
 ## How to contribute Links
 
-Create a PR adding your link to [next/next.md](next/next.md). This is the file that will get published next.
+Add yourself with details of your rss path to our directory (see next section below) of bloggers and your articles will automatically be included in our next edition of Scala News.
+
 
 ## Do you have a Scala related Blog? Want to add it in our [Blog Directory](docs/Resources/Blog_Directory.md)?
 

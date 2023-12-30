@@ -32,6 +32,9 @@ object Bloggers {
     Paths.get("next/next.md")
   private val directoryMarkdownFilePath =
     Paths.get("docs/Resources/Blog_Directory.md")
+  private val blogsToSkipByUrl = List(
+    "petr-zapletal.medium.com",
+    )
   def generateDirectory(bloggerList: List[Blog]): IO[String] = {
     IO.blocking {
       val header = """
@@ -81,6 +84,28 @@ object Bloggers {
     }
   }
 
+  private def isAboutScala(entry: SyndEntry): Boolean = {
+    val hasScalaCategory = Option(entry.getCategories)
+      .map(_.asScala.toList)
+      .getOrElse(List())
+      .exists(_.getName.toLowerCase.contains("scala"))
+
+    val hasScalaInTitle = Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("scala")
+
+    val hasScalaInDescription = Option(entry.getDescription)
+      .map(_.getValue.toLowerCase)
+      .getOrElse("")
+      .contains("scala")
+
+    hasScalaCategory || hasScalaInTitle || hasScalaInDescription
+  }
+
+  private def getBlogAuthor(entry: SyndEntry, blog: Blog): String =
+    Option(entry.getAuthor)
+      .filter(!_.isEmpty)
+      .filter(_.toLowerCase() != "unknown")
+      .getOrElse(blog.name)
+
   private def getArticlesFromEntries(
       blog: Blog,
       entries: List[SyndEntry],
@@ -90,22 +115,10 @@ object Bloggers {
     entries
       .filter(_.getPublishedDate != null)
       .filter(_.getLink != null)
+      .filter(entryItem => blogsToSkipByUrl.forall( skipItem => !entryItem.getLink.contains(skipItem)))
       .filter(_.getTitle != null)
-      .map { entry =>
-        {
-          val blogAuthor = Option(entry.getAuthor)
-            .filter(!_.isEmpty)
-            .filter(_.toLowerCase() != "unknown")
-            .getOrElse(blog.name)
-
-          Article(
-            entry.getTitle,
-            entry.getLink,
-            blogAuthor,
-            entry.getPublishedDate
-          )
-        }
-      }
+      .filter(isAboutScala(_))
+      .map(entry => Article(entry.getTitle, entry.getLink, getBlogAuthor(entry, blog), entry.getPublishedDate))
       .filter { case Article(_, _, _, publishedDate) =>
         publishedDate.after(startDate) && publishedDate.before(endDate)
       }

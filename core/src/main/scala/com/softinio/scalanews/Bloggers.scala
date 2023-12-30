@@ -33,8 +33,8 @@ object Bloggers {
   private val directoryMarkdownFilePath =
     Paths.get("docs/Resources/Blog_Directory.md")
   private val blogsToSkipByUrl = List(
-    "petr-zapletal.medium.com",
-    )
+    "petr-zapletal.medium.com"
+  )
   def generateDirectory(bloggerList: List[Blog]): IO[String] = {
     IO.blocking {
       val header = """
@@ -90,7 +90,8 @@ object Bloggers {
       .getOrElse(List())
       .exists(_.getName.toLowerCase.contains("scala"))
 
-    val hasScalaInTitle = Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("scala")
+    val hasScalaInTitle =
+      Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("scala")
 
     val hasScalaInDescription = Option(entry.getDescription)
       .map(_.getValue.toLowerCase)
@@ -115,10 +116,21 @@ object Bloggers {
     entries
       .filter(_.getPublishedDate != null)
       .filter(_.getLink != null)
-      .filter(entryItem => blogsToSkipByUrl.forall( skipItem => !entryItem.getLink.contains(skipItem)))
+      .filter(entryItem =>
+        blogsToSkipByUrl.forall(skipItem =>
+          !entryItem.getLink.contains(skipItem)
+        )
+      )
       .filter(_.getTitle != null)
       .filter(isAboutScala(_))
-      .map(entry => Article(entry.getTitle, entry.getLink, getBlogAuthor(entry, blog), entry.getPublishedDate))
+      .map(entry =>
+        Article(
+          entry.getTitle,
+          entry.getLink,
+          getBlogAuthor(entry, blog),
+          entry.getPublishedDate
+        )
+      )
       .filter { case Article(_, _, _, publishedDate) =>
         publishedDate.after(startDate) && publishedDate.before(endDate)
       }

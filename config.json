@@ -89,6 +89,41 @@
             "name": "Inner Product",
             "url": "https://inner-product.com/",
             "rss": "https://www.inner-product.com/feed/feed.xml"
+        },
+        {
+            "name": "Ross Baker",
+            "url": "https://rossabaker.com/",
+            "rss": "https://rossabaker.com/blog/index.xml"
+        },
+        {
+            "name": "Xebia",
+            "url": "https://xebia.com/blog/",
+            "rss": "https://xebia.com/blog/category/technology/scala/feed/"
+        },
+        {
+            "name": "Chistian Hollinger",
+            "url": "https://chollinger.com/blog/",
+            "rss": "https://chollinger.com/blog/index.xml"
+        },
+        {
+            "name": "Anton Kovalevsky",
+            "url": "https://antonkw.github.io/",
+            "rss": "https://antonkw.github.io/feed.xml"
+        },
+        {
+            "name": "Medium",
+            "url": "https://medium.com/tag/scala",
+            "rss": "https://medium.com/feed/tag/scala"
+        },
+        {
+            "name": "VirtusLab",
+            "url": "https://virtuslab.com/blog/",
+            "rss": "https://virtuslab.com/blog/feed/"
+        },
+        {
+            "name": "Jendrik Poloczek",
+            "url": "https://www.madewithtea.com",
+            "rss": "https://www.madewithtea.com/rss.xml"
         }
     ]
 }

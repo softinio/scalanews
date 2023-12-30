@@ -18,7 +18,7 @@
           imports = [ typelevel-nix.typelevelShell ];
           name = "scalanews-shell";
           typelevelShell = {
-            jdk.package = pkgs.jdk17;
+            jdk.package = pkgs.jdk21;
             nodejs.enable = true;
           };
         };

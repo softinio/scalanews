@@ -16,6 +16,8 @@
 
 package com.softinio.scalanews
 
+import java.text.SimpleDateFormat
+
 import cats.effect._
 import cats.implicits._
 
@@ -38,9 +40,24 @@ object Main
 
   case class Blogger(directory: Boolean)
 
+  case class GenerateNextBlog(
+    startDate: String,
+    endDate: String
+  )
+
+  val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
+
   val archiveDateOps: Opts[String] =
     Opts
       .argument[String](metavar = "archiveDate")
+
+  val startDateOps: Opts[String] =
+    Opts
+      .argument[String](metavar = "startDate")
+
+  val endDateOps: Opts[String] =
+    Opts
+      .argument[String](metavar = "endDate")
 
   val publishDateOps: Opts[Option[String]] =
     Opts
@@ -81,11 +98,20 @@ object Main
         .map(Blogger)
     }
 
+  val generateNextBlogOpts: Opts[GenerateNextBlog] =
+    Opts.subcommand("generate", "Generate next blog") {
+      (startDateOps, endDateOps).mapN(GenerateNextBlog)
+    }
+
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse bloggerOpts).map {
+    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts).map {
       case Publish(publishDate, archiveDate, archiveFolder) =>
         FileHandler.publish(publishDate, archiveDate, archiveFolder)
       case Create(overwrite) => FileHandler.create(overwrite)
+      case GenerateNextBlog(startDate, endDate) => Bloggers.generateNextBlog(
+        dateFormatter.parse(startDate), 
+        dateFormatter.parse(endDate)
+      )
       case Blogger(directory) => {
         if (directory) {
           for {

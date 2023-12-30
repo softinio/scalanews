@@ -22,13 +22,14 @@ import java.util.Date
 import cats.effect._
 import cats.nio.file.Files
 import com.rometools.rome.feed.synd.SyndEntry
-import org.http4s.Uri
 
 import scala.jdk.CollectionConverters._
 import com.softinio.scalanews.algebra.Article
 import com.softinio.scalanews.algebra.Blog
 
 object Bloggers {
+  private val nextMarkdownFilePath =
+    Paths.get("next/next.md")
   private val directoryMarkdownFilePath =
     Paths.get("docs/Resources/Blog_Directory.md")
   def generateDirectory(bloggerList: List[Blog]): IO[String] = {
@@ -57,25 +58,54 @@ object Bloggers {
     }
   }
 
+  def generateNews(articleList: List[Article]): IO[String] = {
+    IO.blocking {
+      val header = """
+      |# Scala News
+
+      |A curated list of Scala related news from the community.
+
+      |## Articles
+
+      || Article       | Author  |
+      || ------------- | -----:|"""
+
+      val news = articleList.map { article =>
+        s"|| [${article.title}](${article.url}) | ${article.author} |"
+      }
+
+      s"""
+      $header
+      ${news.mkString("\n")}
+      """.stripMargin
+    }
+  }
+
   private def getArticlesFromEntries(
+      blog: Blog,
       entries: List[SyndEntry],
       startDate: Date,
       endDate: Date
-  ): Option[List[Article]] =
+  ): Option[List[Article]] = 
     entries
       .filter(_.getPublishedDate != null)
       .filter(_.getLink != null)
       .filter(_.getTitle != null)
-      .map { entry =>
-        Article(
-          entry.getTitle,
-          Uri
-            .fromString(entry.getLink)
-            .getOrElse(Uri.unsafeFromString("https://www.scala-lang.org/")),
-          entry.getPublishedDate
-        )
+      .map { entry => {
+          val blogAuthor = Option(entry.getAuthor)
+            .filter(!_.isEmpty)
+            .filter(_.toLowerCase() != "unknown")
+            .getOrElse(blog.name)
+
+          Article(
+            entry.getTitle,
+            entry.getLink,
+            blogAuthor,
+            entry.getPublishedDate
+          )
+        }
       }
-      .filter { case Article(_, _, publishedDate) =>
+      .filter { case Article(_, _, _,publishedDate) =>
         publishedDate.after(startDate) && publishedDate.before(endDate)
       }
       .distinct
@@ -94,6 +124,7 @@ object Bloggers {
       feedResult <- Rome.fetchFeed(blog.rss.toURL.toString)
     } yield {
       getArticlesFromEntries(
+        blog,
         feedResult
           .map(_.getEntries.asScala.toList)
           .getOrElse(List[SyndEntry]()),
@@ -122,6 +153,23 @@ object Bloggers {
       _ <- Files[IO].write(
         directoryMarkdownFilePath,
         directory.getBytes(),
+        StandardOpenOption.CREATE_NEW
+      )
+    } yield ExitCode.Success
+  }
+
+  def generateNextBlog(
+      startDate: Date,
+      endDate: Date
+  ): IO[ExitCode] = {
+    for {
+      exists <- Files[IO].exists(nextMarkdownFilePath)
+      _ <- if (exists) Files[IO].delete(nextMarkdownFilePath) else IO.unit
+      articleList <- createBlogList(startDate, endDate)
+      news <- generateNews(articleList)
+      _ <- Files[IO].write(
+        nextMarkdownFilePath,
+        news.getBytes(),
         StandardOpenOption.CREATE_NEW
       )
     } yield ExitCode.Success

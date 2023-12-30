@@ -23,7 +23,7 @@ ThisBuild / githubWorkflowPublishTargetBranches := Seq()
 // publish website from this branch
 ThisBuild / tlSitePublishBranch := Some("main")
 
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17"))
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("21"))
 
 val Scala213 = "2.13.12"
 ThisBuild / crossScalaVersions := Seq(Scala213)

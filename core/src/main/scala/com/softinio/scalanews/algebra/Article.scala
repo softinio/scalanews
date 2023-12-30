@@ -22,9 +22,13 @@ import org.http4s.Uri
 case class Article(title: String, url: Uri, author: String, publishedDate: Date)
 
 object Article {
-  def apply(title: String, url: String, author: String, publishedDate: Date): Article = {
-    val parsedUrl = Uri.fromString(url).toOption.get 
+  def apply(
+      title: String,
+      url: String,
+      author: String,
+      publishedDate: Date
+  ): Article = {
+    val parsedUrl = Uri.fromString(url).toOption.get
     Article(title, parsedUrl, author, publishedDate)
   }
 }
-

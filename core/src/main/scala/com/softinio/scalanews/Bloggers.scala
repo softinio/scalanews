@@ -86,12 +86,13 @@ object Bloggers {
       entries: List[SyndEntry],
       startDate: Date,
       endDate: Date
-  ): Option[List[Article]] = 
+  ): Option[List[Article]] =
     entries
       .filter(_.getPublishedDate != null)
       .filter(_.getLink != null)
       .filter(_.getTitle != null)
-      .map { entry => {
+      .map { entry =>
+        {
           val blogAuthor = Option(entry.getAuthor)
             .filter(!_.isEmpty)
             .filter(_.toLowerCase() != "unknown")
@@ -105,7 +106,7 @@ object Bloggers {
           )
         }
       }
-      .filter { case Article(_, _, _,publishedDate) =>
+      .filter { case Article(_, _, _, publishedDate) =>
         publishedDate.after(startDate) && publishedDate.before(endDate)
       }
       .distinct

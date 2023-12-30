@@ -41,8 +41,8 @@ object Main
   case class Blogger(directory: Boolean)
 
   case class GenerateNextBlog(
-    startDate: String,
-    endDate: String
+      startDate: String,
+      endDate: String
   )
 
   val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
@@ -104,21 +104,23 @@ object Main
     }
 
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts).map {
-      case Publish(publishDate, archiveDate, archiveFolder) =>
-        FileHandler.publish(publishDate, archiveDate, archiveFolder)
-      case Create(overwrite) => FileHandler.create(overwrite)
-      case GenerateNextBlog(startDate, endDate) => Bloggers.generateNextBlog(
-        dateFormatter.parse(startDate), 
-        dateFormatter.parse(endDate)
-      )
-      case Blogger(directory) => {
-        if (directory) {
-          for {
-            config <- ConfigLoader.load()
-            result <- Bloggers.createBloggerDirectory(config.bloggers)
-          } yield (result)
-        } else IO(ExitCode.Success)
+    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts)
+      .map {
+        case Publish(publishDate, archiveDate, archiveFolder) =>
+          FileHandler.publish(publishDate, archiveDate, archiveFolder)
+        case Create(overwrite) => FileHandler.create(overwrite)
+        case GenerateNextBlog(startDate, endDate) =>
+          Bloggers.generateNextBlog(
+            dateFormatter.parse(startDate),
+            dateFormatter.parse(endDate)
+          )
+        case Blogger(directory) => {
+          if (directory) {
+            for {
+              config <- ConfigLoader.load()
+              result <- Bloggers.createBloggerDirectory(config.bloggers)
+            } yield (result)
+          } else IO(ExitCode.Success)
+        }
       }
-    }
 }

@@ -31,6 +31,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Medium | <https://medium.com/tag/scala> | [rss feed](https://medium.com/feed/tag/scala) |
 | VirtusLab | <https://virtuslab.com/blog/> | [rss feed](https://virtuslab.com/blog/feed/) |
 | Jendrik Poloczek | <https://www.madewithtea.com> | [rss feed](https://www.madewithtea.com/rss.xml) |
+| Pierre Ricadat | <https://blog.pierre-ricadat.com/> | [rss feed](https://blog.pierre-ricadat.com/rss.xml) |
       
 ###### Got a Scala related blog? Add it to this Blog Directory!
 

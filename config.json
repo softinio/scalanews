@@ -124,6 +124,11 @@
             "name": "Jendrik Poloczek",
             "url": "https://www.madewithtea.com",
             "rss": "https://www.madewithtea.com/rss.xml"
+        },
+        {
+            "name": "Pierre Ricadat",
+            "url": "https://blog.pierre-ricadat.com/",
+            "rss": "https://blog.pierre-ricadat.com/rss.xml"
         }
     ]
 }

@@ -129,6 +129,11 @@
             "name": "Pierre Ricadat",
             "url": "https://blog.pierre-ricadat.com/",
             "rss": "https://blog.pierre-ricadat.com/rss.xml"
+        },
+        {
+            "name": "Lachlan O'Dea",
+            "url": "https://lachlan.hashnode.dev/newsletter",
+            "rss": "https://lachlan.hashnode.dev/rss.xml"
         }
     ]
 }

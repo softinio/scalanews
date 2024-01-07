@@ -32,6 +32,8 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | VirtusLab | <https://virtuslab.com/blog/> | [rss feed](https://virtuslab.com/blog/feed/) |
 | Jendrik Poloczek | <https://www.madewithtea.com> | [rss feed](https://www.madewithtea.com/rss.xml) |
 | Pierre Ricadat | <https://blog.pierre-ricadat.com/> | [rss feed](https://blog.pierre-ricadat.com/rss.xml) |
+| Lachlan O'Dea | <https://lachlan.hashnode.dev/newsletter> | [rss feed](https://lachlan.hashnode.dev/rss.xml) |
+| SoftwareMill | <https://softwaremill.com/blog/> | [rss feed](https://softwaremill.com/blog.rss) |
       
 ###### Got a Scala related blog? Add it to this Blog Directory!
 

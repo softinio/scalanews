@@ -103,7 +103,7 @@ object Bloggers {
 
   private def getBlogAuthor(entry: SyndEntry, blog: Blog): String =
     Option(entry.getAuthor)
-      .filter(!_.isEmpty)
+      .filter(_.nonEmpty)
       .filter(_.toLowerCase() != "unknown")
       .getOrElse(blog.name)
 

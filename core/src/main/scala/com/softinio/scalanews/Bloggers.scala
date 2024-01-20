@@ -61,7 +61,7 @@ object Bloggers {
     }
   }
 
-  def generateNews(articleList: List[Article]): IO[String] = {
+  private def generateNews(articleList: List[Article]): IO[String] = {
     IO.blocking {
       val header = """
       |# Scala News
@@ -122,7 +122,7 @@ object Bloggers {
         )
       )
       .filter(_.getTitle != null)
-      .filter(isAboutScala(_))
+      .filter(isAboutScala)
       .map(entry =>
         Article(
           entry.getTitle,

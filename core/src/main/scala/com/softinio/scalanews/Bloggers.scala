@@ -61,7 +61,7 @@ object Bloggers {
     }
   }
 
-  def generateNews(articleList: List[Article]): IO[String] = {
+  private def generateNews(articleList: List[Article]): IO[String] = {
     IO.blocking {
       val header = """
       |# Scala News
@@ -103,7 +103,7 @@ object Bloggers {
 
   private def getBlogAuthor(entry: SyndEntry, blog: Blog): String =
     Option(entry.getAuthor)
-      .filter(!_.isEmpty)
+      .filter(_.nonEmpty)
       .filter(_.toLowerCase() != "unknown")
       .getOrElse(blog.name)
 
@@ -122,7 +122,7 @@ object Bloggers {
         )
       )
       .filter(_.getTitle != null)
-      .filter(isAboutScala(_))
+      .filter(isAboutScala)
       .map(entry =>
         Article(
           entry.getTitle,

@@ -18,9 +18,21 @@
           imports = [ typelevel-nix.typelevelShell ];
           name = "scalanews-shell";
           typelevelShell = {
-            jdk.package = pkgs.jdk21;
+            jdk.package = pkgs.graalvm-ce;
             nodejs.enable = true;
           };
+          commands = [
+            {
+                name = "ni";
+                category = "development";
+                help = "Create new scalanews executable";
+                command = ''
+                  sbt coreJVM/nativeImage
+                  chmod +x scalanews
+                  ./scalanews --help
+                '';
+            }
+          ];
         };
       }
     );

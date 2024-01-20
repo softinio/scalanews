@@ -51,9 +51,16 @@ lazy val core = crossProject(JVMPlatform)
       "org.scalameta" %% "munit" % "0.7.29" % Test,
       "org.typelevel" %% "munit-cats-effect-3" % "1.0.7" % Test
     ),
+    Compile / mainClass := Some("com.softinio.scalanews.Main"),
+    nativeImageVersion := "21.0.1",
+    nativeImageJvm := "graalvm-java21",
+    nativeImageOptions += "--no-fallback",
+    nativeImageOutput := file(".") / "scalanews",
+    nativeImageReady := { () => println("SBT Finished creating image.") },
     resolvers +=
       "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   )
+  .enablePlugins(NativeImagePlugin)
 
 lazy val docs = project
   .in(file("site"))

@@ -139,6 +139,11 @@
             "name": "SoftwareMill",
             "url": "https://softwaremill.com/blog/",
             "rss": "https://softwaremill.com/blog.rss"
+        },
+        {
+            "name": "Ruslan Shevchenko",
+            "url": "https://github.com/rssh/notes",
+            "rss": "https://rssh.github.io/notes/feed.xml"
         }
     ]
 }

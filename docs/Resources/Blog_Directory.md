@@ -34,6 +34,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Pierre Ricadat | <https://blog.pierre-ricadat.com/> | [rss feed](https://blog.pierre-ricadat.com/rss.xml) |
 | Lachlan O'Dea | <https://lachlan.hashnode.dev> | [rss feed](https://lachlan.hashnode.dev/rss.xml) |
 | SoftwareMill | <https://softwaremill.com/blog/> | [rss feed](https://softwaremill.com/blog.rss) |
+| Ruslan Shevchenko | <https://github.com/rssh/notes> | [rss feed](https://rssh.github.io/notes/feed.xml) |
       
 ###### Got a Scala related blog? Add it to this Blog Directory!
 

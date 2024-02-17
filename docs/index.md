@@ -11,7 +11,6 @@ A curated list of Scala related news from the community.
 | [Simple anti-toddler game with Scala Native and Raylib](https://blog.indoorvivants.com/2024-02-05-defeating-toddler-with-raylib.html) | Anton Sviridov |
 | [Better Shell Scripting with Scala-CLI](https://xebia.com/blog/better-shell-scripting-with-scala-cli/) | Dave Smith |
 | [Modular Programming in Scala with the Cake Pattern](https://medium.com/@remisharoon/modular-programming-in-scala-with-the-cake-pattern-aefa6723d3ca?source=rss------scala-5) | Remis Haroon |
-| [Group the strings with occurance count using scala](https://sudarshankasar.medium.com/group-the-strings-with-occurance-count-using-scala-c877ecfd42be?source=rss------scala-5) | Sudarshan Kasar |
 | [Comparing Kotlin, Go (Golang), Rust, Scala, and Perl Programming Languages](https://imallenglines.medium.com/comparing-kotlin-go-golang-rust-scala-and-perl-programming-languages-665810bce195?source=rss------scala-5) | Allen Glines |
 | [The Algebra of Pretty Printing](https://medium.com/e4r/the-algebra-of-pretty-printing-b354b9ad0b17?source=rss------scala-5) | Nimalan |
 | [Data Engineering: Getting Started with Delta Lake](https://medium.com/@krishnaiitd/data-engineering-getting-started-with-delta-lake-a142f8025687?source=rss------scala-5) | Krishna Prasad |

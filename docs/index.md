@@ -1,6 +1,6 @@
 
       
-# Scala News - January 29, 2024
+# Scala News - February 16, 2024
 
 A curated list of Scala related news from the community.
 
@@ -8,25 +8,22 @@ A curated list of Scala related news from the community.
 
 | Article       | Author  |
 | ------------- | -----:|
-| [sbt website update 2024](https://eed3si9n.com/sbt-website-update-2024/) | Eugene Yokota |
-| [Scala's Future](https://alexn.org/blog/2024/01/10/scala-future/?pk_campaign=rss) | Alexandru Nedelcu |
-| [Update NextDNS with a Scala CLI script](https://alexn.org/blog/2024/01/10/update-nextdns-with-a-scala-cli-script/?pk_campaign=rss) | Alexandru Nedelcu |
-| [ScalaSql: a New SQL Database Query Library for the com-lihaoyi Scala Ecosystem](http://www.lihaoyi.com/post/ScalaSqlaNewSQLDatabaseQueryLibraryforthecomlihaoyiScalaEcosystem.html) | Haoyi Li |
-| [How to Write a Full-Stack Scala 3 Application with the Typelevel Stack](https://blog.rockthejvm.com/full-stack-typelevel/) | Daniel Ciocîrlan |
-| [Spark Essentials: A Guide to Setting up and Running Spark projects with Scala and sbt](https://medium.com/@suffyan.asad1/spark-essentials-a-guide-to-setting-up-and-running-spark-projects-with-scala-and-sbt-80e2680d3528?source=rss------scala-5) | Suffyan Asad |
-| [Working with Different Types of Data in spar](https://aspinfo.medium.com/working-with-different-types-of-data-in-spar-28bd8adfc20f?source=rss------scala-5) | Pinjari Akbar |
-| [Protecting Your Files: Setting Up BitLocker Encryption on Windows 11 Pro](https://medium.com/@nothanjack/protecting-your-files-setting-up-bitlocker-encryption-on-windows-11-pro-e962fa36971d?source=rss------scala-5) | Jack Nothan |
-| [Oozie vs Airflow? Apple to Orange comparison or both are the same?](https://medium.com/@sukumaar/oozie-vs-airflow-apple-to-orange-comparison-or-both-are-the-same-0dad0512ed00?source=rss------scala-5) | Sukumaar Mane |
-| [How I used Scala CLI to delete annoying unread emails from my gmail inbox](https://medium.com/@rahul.bhatia023/how-i-used-scala-cli-to-delete-annoying-unread-emails-from-my-gmail-inbox-74faa70d1145?source=rss------scala-5) | Rahul Bhatia |
-| [Unlocking Spark’s Hidden Power: The Secret Weapon of Caching Revealed in a Tale of Bug Hunting and…](https://medium.com/@demir97yavuz/unlocking-sparks-hidden-power-the-secret-weapon-of-caching-revealed-in-a-tale-of-bug-hunting-and-d139721c6637?source=rss------scala-5) | Ahmet Yavuz Demir |
-| [Software for the Jumbo Telescope](https://medium.com/e4r/software-for-the-jumbo-telescope-fb2f3146c8a6?source=rss------scala-5) | Parag Mahajani |
-| [Reference Architecture: A roadmap to efficiency and scalability](https://virtuslab.com/blog/reference-architecture-roadmap/) | Sebastian Synowiec |
-| [GraphQL in Scala: Handling side effects](https://blog.pierre-ricadat.com/graphql-in-scala-handling-side-effects) | Pierre Ricadat |
-| [GraphQL in Scala: Advanced Schema Generation](https://blog.pierre-ricadat.com/graphql-in-scala-advanced-schema-generation) | Pierre Ricadat |
-| [Every Argument for Static Typing Applies to Typed Errors](https://lachlan.hashnode.dev/every-argument-for-static-typing-applies-to-typed-errors) | Lachlan O'Dea |
-| [Using a C library from Scala Native](https://lachlan.hashnode.dev/using-a-c-library-from-scala-native) | Lachlan O'Dea |
-| [Vladyslav Pekker - My Scala Story](https://softwaremill.com/vladyslav-pekker-my-scala-story) | SoftwareMill |
-| [Jakub Kozłowski - My Scala Story](https://softwaremill.com/my-scala-story-jakub-kozlowski) | SoftwareMill |
-| [LLM for tapir - Chatbot for OSS](https://softwaremill.com/llm-for-tapir-chatbot-for-oss) | SoftwareMill |
-| [Go-like selects using jox channels in Java](https://softwaremill.com/go-like-selects-using-jox-channels-in-java) | SoftwareMill |
+| [Simple anti-toddler game with Scala Native and Raylib](https://blog.indoorvivants.com/2024-02-05-defeating-toddler-with-raylib.html) | Anton Sviridov |
+| [Better Shell Scripting with Scala-CLI](https://xebia.com/blog/better-shell-scripting-with-scala-cli/) | Dave Smith |
+| [Modular Programming in Scala with the Cake Pattern](https://medium.com/@remisharoon/modular-programming-in-scala-with-the-cake-pattern-aefa6723d3ca?source=rss------scala-5) | Remis Haroon |
+| [Group the strings with occurance count using scala](https://sudarshankasar.medium.com/group-the-strings-with-occurance-count-using-scala-c877ecfd42be?source=rss------scala-5) | Sudarshan Kasar |
+| [Comparing Kotlin, Go (Golang), Rust, Scala, and Perl Programming Languages](https://imallenglines.medium.com/comparing-kotlin-go-golang-rust-scala-and-perl-programming-languages-665810bce195?source=rss------scala-5) | Allen Glines |
+| [The Algebra of Pretty Printing](https://medium.com/e4r/the-algebra-of-pretty-printing-b354b9ad0b17?source=rss------scala-5) | Nimalan |
+| [Data Engineering: Getting Started with Delta Lake](https://medium.com/@krishnaiitd/data-engineering-getting-started-with-delta-lake-a142f8025687?source=rss------scala-5) | Krishna Prasad |
+| [Destructuring Assignment- Kotlin vs Scala](https://kinya.medium.com/destructuring-assignment-kotlin-vs-scala-07e0e3bf2602?source=rss------scala-5) | Beatrice Kinya |
+| [Debugging session #1: zio-logging & quill](https://blog.pierre-ricadat.com/debugging-session-1-zio-logging-quill) | Pierre Ricadat |
+| [scala-uv v0.0.2](https://lachlan.hashnode.dev/scala-uv-v0-0-2) | Lachlan O'Dea |
+| [19 Best Tech Conferences in Europe in 2024](https://softwaremill.com/19-best-tech-conference-in-europe-in-2024) | SoftwareMill |
+| [Solve the Scalaversary coding challenge and secure your Scalar ticket!](https://softwaremill.com/scalaversary-coding-challenge) | SoftwareMill |
+| [Alexandru Nedelcu - My Scala Story](https://softwaremill.com/alexandru-nedelcu-my-scala-story) | SoftwareMill |
+| [Michał Matłoka - My Scala Story](https://softwaremill.com/michal-matloka-my-scala-story) | SoftwareMill |
+| [Maciej Gorywoda - My Scala Story](https://softwaremill.com/maciej-gorywoda-my-scala-story) | SoftwareMill |
+| [Adam Warski - My Scala Story](https://softwaremill.com/adam-warski-my-scala-story) | SoftwareMill |
+| [Nicolas Rinaudo - My Scala Story](https://softwaremill.com/nicolas-rinaudo-my-scala-story) | SoftwareMill |
+| [Scala and logical monad programming.](https://github.com/rssh/notes/blob/master/2024_01_30_logic-monad-1.md) | Ruslan Shevchenko <ruslan@shevchenko.kiev.ua> |
       

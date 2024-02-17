@@ -25,5 +25,5 @@ A curated list of Scala related news from the community.
 | [Maciej Gorywoda - My Scala Story](https://softwaremill.com/maciej-gorywoda-my-scala-story) | SoftwareMill |
 | [Adam Warski - My Scala Story](https://softwaremill.com/adam-warski-my-scala-story) | SoftwareMill |
 | [Nicolas Rinaudo - My Scala Story](https://softwaremill.com/nicolas-rinaudo-my-scala-story) | SoftwareMill |
-| [Scala and logical monad programming.](https://github.com/rssh/notes/blob/master/2024_01_30_logic-monad-1.md) | Ruslan Shevchenko <ruslan@shevchenko.kiev.ua> |
+| [Scala and logical monad programming.](https://github.com/rssh/notes/blob/master/2024_01_30_logic-monad-1.md) | Ruslan Shevchenko |
       

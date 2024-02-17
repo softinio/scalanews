@@ -33,7 +33,8 @@ object Bloggers {
   private val directoryMarkdownFilePath =
     Paths.get("docs/Resources/Blog_Directory.md")
   private val blogsToSkipByUrl = List(
-    "petr-zapletal.medium.com"
+    "petr-zapletal.medium.com",
+    "sudarshankasar.medium.com"
   )
   def generateDirectory(bloggerList: List[Blog]): IO[String] = {
     IO.blocking {

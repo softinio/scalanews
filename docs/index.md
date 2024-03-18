@@ -8,9 +8,9 @@ A curated list of Scala related news from the community.
 
 | Article       | Author  |
 | ------------- | -----:|
-| [New Code of Conduct](/typelevel.github.com/blog/2024/03/11/code-of-conduct.html) | typelevel |
-| [GitHub Seats](/typelevel.github.com/blog/2024/03/10/github-seats.html) | valencik |
-| [Typelevel Summer of Code 2024](/typelevel.github.com/blog/2024/03/02/gsoc.html) | armanbilge |
+| [New Code of Conduct](https://typelevel.org/typelevel.github.com/blog/2024/03/11/code-of-conduct.html) | typelevel |
+| [GitHub Seats](https://typelevel.org/typelevel.github.com/blog/2024/03/10/github-seats.html) | valencik |
+| [Typelevel Summer of Code 2024](https://typelevel.org/typelevel.github.com/blog/2024/03/02/gsoc.html) | armanbilge |
 | [Optimizing Functional Walks of File Trees](https://mpilquist.github.io/blog/2024/02/20/fs2/) | Michael Pilquist |
 | [Jar Jar Abrams 1.14.0 and sbt-assembly 2.2.0](https://eed3si9n.com/jarjar-abrams-1.14.0-sbt-assembly-2.2.0) | Eugene Yokota |
 | [tree-sitter-scala 0.21.0](https://eed3si9n.com/tree-sitter-scala-0.21.0) | Eugene Yokota |
@@ -33,4 +33,3 @@ A curated list of Scala related news from the community.
 | [Paweł Marks - My Scala Story](https://softwaremill.com/pawel-marks-my-scala-story) | SoftwareMill |
 | ["Essential Effects" is now updated to use Cats Effect 3!](https://www.inner-product.com/posts/essential-effects-now-with-cats-effect-3/) | Adam Rosien |
 | [Decoding the stack frames in the debugger (Scala 3 only)](https://contributors.scala-lang.org/t/decoding-the-stack-frames-in-the-debugger-scala-3-only/6591) | Adrien Piquerez |
-

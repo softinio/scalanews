@@ -24,7 +24,7 @@ class RomeSuite extends CatsEffectSuite {
 
   test("Fetch Feed") {
     val obtained: IO[Boolean] = for {
-      result <- Rome.fetchFeed("https://www.softinio.com/index.xml")
+      result <- Rome.fetchFeed("https://www.softinio.com/atom.xml")
     } yield {
       result match {
         case Right(feed) => {

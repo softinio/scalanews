@@ -1,12 +1,12 @@
 
-      
-# Blog Directory 
+
+# Blog Directory
 
 A Directory of bloggers producing Scala related content with links to their rss feed when available.
 
 | Blog        | URL           | RSS Feed  |
 | ------------- |:-------------:| -----:|
-| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |
+| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/atom.xml) |
 | Scala Lang | <https://www.scala-lang.org/blog/> | [rss feed](https://www.scala-lang.org/feed/blog.xml) |
 | Typelevel | <https://typelevel.org/blog/> | [rss feed](https://typelevel.org/blog/feed.rss) |
 | Michael Pilquist | <https://mpilquist.github.io/> | [rss feed](https://mpilquist.github.io/index.xml) |
@@ -35,7 +35,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Lachlan O'Dea | <https://lachlan.hashnode.dev> | [rss feed](https://lachlan.hashnode.dev/rss.xml) |
 | SoftwareMill | <https://softwaremill.com/blog/> | [rss feed](https://softwaremill.com/blog.rss) |
 | Ruslan Shevchenko | <https://github.com/rssh/notes> | [rss feed](https://rssh.github.io/notes/feed.xml) |
-      
+
 ###### Got a Scala related blog? Add it to this Blog Directory!
 
 See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details.

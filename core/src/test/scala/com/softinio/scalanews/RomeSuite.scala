@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.softinio.scalanews
 
-import cats.effect._
+import cats.effect.*
 
 import munit.CatsEffectSuite
 
@@ -27,10 +27,9 @@ class RomeSuite extends CatsEffectSuite {
       result <- Rome.fetchFeed("https://www.softinio.com/atom.xml")
     } yield {
       result match {
-        case Right(feed) => {
+        case Right(feed) =>
           val title = feed.getTitle
           title == "Salar Rahmanian"
-        }
         case _ => false
       }
     }

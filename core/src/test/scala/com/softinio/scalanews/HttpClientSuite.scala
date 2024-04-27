@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package com.softinio.scalanews
 
-import cats.effect._
+import scala.io.Source.fromInputStream
+import cats.effect.*
 import munit.CatsEffectSuite
 
 import cats.effect.unsafe.IORuntime
@@ -27,7 +28,7 @@ class HttpClientSuite extends CatsEffectSuite {
   test("Fetch Rss") {
     val result = HttpClient.fetchRss("https://www.softinio.com/atom.xml")
     val obtained = result.use { res =>
-      val resultStr = new String(res.readAllBytes)
+      val resultStr = fromInputStream(res).mkString
       IO(resultStr.contains("lightening-talks-at-pybay-2018"))
     }
     assertIO(obtained, true)

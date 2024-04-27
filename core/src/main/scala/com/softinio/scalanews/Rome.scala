@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.softinio.scalanews
 
 import java.io.InputStream
 
-import cats.effect._
+import cats.effect.*
 
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
@@ -34,5 +34,5 @@ object Rome {
     }.attempt
 
   def fetchFeed(feedUrl: String): IO[Either[Throwable, SyndFeed]] =
-    HttpClient.fetchRss(feedUrl).use(parseFeed(_))
+    HttpClient.fetchRss(feedUrl).use(parseFeed)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,21 @@
 
 package com.softinio.scalanews
 
-import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
 import java.util.Date
-import cats.effect._
-import cats.nio.file.Files
+import cats.effect.*
+import fs2.io.file.*
+import fs2.Stream
 import com.rometools.rome.feed.synd.SyndEntry
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import com.softinio.scalanews.algebra.Article
 import com.softinio.scalanews.algebra.Blog
 
 object Bloggers {
   private val nextMarkdownFilePath =
-    Paths.get("next/next.md")
+    Path("next/next.md")
   private val directoryMarkdownFilePath =
-    Paths.get("docs/Resources/Blog_Directory.md")
+    Path("docs/Resources/Blog_Directory.md")
   private val blogsToSkipByUrl = List(
     "petr-zapletal.medium.com",
     "sudarshankasar.medium.com"
@@ -39,7 +38,7 @@ object Bloggers {
   def generateDirectory(bloggerList: List[Blog]): IO[String] = {
     IO.blocking {
       val header = """
-      |# Blog Directory 
+      |# Blog Directory
 
       |A Directory of bloggers producing Scala related content with links to their rss feed when available.
 
@@ -177,11 +176,14 @@ object Bloggers {
       exists <- Files[IO].exists(directoryMarkdownFilePath)
       _ <- if (exists) Files[IO].delete(directoryMarkdownFilePath) else IO.unit
       directory <- generateDirectory(bloggerList)
-      _ <- Files[IO].write(
-        directoryMarkdownFilePath,
-        directory.getBytes(),
-        StandardOpenOption.CREATE_NEW
-      )
+      _ <- fs2.Stream
+        .emits(List(directory))
+        .through(fs2.text.utf8.encode)
+        .through(
+          Files[IO].writeAll(directoryMarkdownFilePath, Flags(Flag.CreateNew))
+        )
+        .compile
+        .drain
     } yield ExitCode.Success
   }
 
@@ -194,11 +196,14 @@ object Bloggers {
       _ <- if (exists) Files[IO].delete(nextMarkdownFilePath) else IO.unit
       articleList <- createBlogList(startDate, endDate)
       news <- generateNews(articleList)
-      _ <- Files[IO].write(
-        nextMarkdownFilePath,
-        news.getBytes(),
-        StandardOpenOption.CREATE_NEW
-      )
+      _ <- fs2.Stream
+        .emits(List(news))
+        .through(fs2.text.utf8.encode)
+        .through(
+          Files[IO].writeAll(directoryMarkdownFilePath, Flags(Flag.CreateNew))
+        )
+        .compile
+        .drain
     } yield ExitCode.Success
   }
 }

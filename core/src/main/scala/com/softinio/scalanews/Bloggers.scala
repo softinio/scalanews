@@ -17,12 +17,12 @@
 package com.softinio.scalanews
 
 import java.util.Date
-import cats.effect._
-import fs2.io.file._
+import cats.effect.*
+import fs2.io.file.*
 import fs2.Stream
 import com.rometools.rome.feed.synd.SyndEntry
 
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 import com.softinio.scalanews.algebra.Article
 import com.softinio.scalanews.algebra.Blog
 

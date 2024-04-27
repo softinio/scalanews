@@ -16,14 +16,14 @@
 
 package com.softinio.scalanews
 
-import cats.effect._
+import cats.effect.*
 import org.http4s.client.Client
 import org.http4s.ember.client.EmberClientBuilder
 import java.io.InputStream
 import org.http4s.Request
 import org.http4s.Method
 import org.http4s.Uri
-import fs2._
+import fs2.*
 
 object HttpClient {
 

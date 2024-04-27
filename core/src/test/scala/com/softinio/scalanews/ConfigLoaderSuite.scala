@@ -23,10 +23,10 @@ import java.nio.charset.StandardCharsets
 import munit.CatsEffectSuite
 
 class ConfigLoaderSuite extends CatsEffectSuite {
-  val sampleConfig = FunFixture[Path](
+  val sampleConfig: FunFixture[Path] = FunFixture[Path](
     setup = { test =>
       val filename = test.name.replace(" ", "_")
-      val theFile = Files.createTempFile("tmp", s"${filename}.json")
+      val theFile = Files.createTempFile("tmp", s"$filename.json")
       val sampleJson = """
           {
               "bloggers": [
@@ -48,7 +48,7 @@ class ConfigLoaderSuite extends CatsEffectSuite {
   )
   sampleConfig.test("test loading json config") { file =>
     val result = for {
-      conf <- ConfigLoader.load(file.toString())
+      conf <- ConfigLoader.load(file.toString)
     } yield conf.bloggers.head.name == "Salar Rahmanian"
     assertIO(result, true)
   }

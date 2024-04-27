@@ -16,8 +16,8 @@
 
 package com.softinio.scalanews
 
-import pureconfig._
-import pureconfig.module.catseffect.syntax._
+import pureconfig.*
+import pureconfig.module.catseffect.syntax.*
 import cats.effect.IO
 import com.softinio.scalanews.algebra.Configuration
 

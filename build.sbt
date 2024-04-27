@@ -1,10 +1,12 @@
-import laika.ast._
-import laika.ast.Path._
-import laika.ast.InternalTarget
-import laika.helium.Helium
+
+import laika.ast.Path.*
+
 import laika.helium.config.Favicon
 import laika.helium.config.HeliumIcon
 import laika.helium.config.IconLink
+
+Global / excludeLintKeys += ThisBuild / nativeImageJvm
+Global / excludeLintKeys += ThisBuild / nativeImageVersion
 
 // https://typelevel.org/sbt-typelevel/faq.html#what-is-a-base-version-anyway
 ThisBuild / tlBaseVersion := "0.1" // your current series x.y
@@ -66,32 +68,23 @@ lazy val core = crossProject(JVMPlatform)
 lazy val docs = project
   .in(file("site"))
   .settings(
-    tlSiteRelatedProjects := Seq(
-      TypelevelProject.CatsEffect,
-      "sbt-typelevel" -> url("https://github.com/typelevel/sbt-typelevel"),
-      "decline" -> url("https://ben.kirw.in/decline/"),
-      "Laika" -> url("https://planet42.github.io/Laika/")
-    ),
-    tlSiteHeliumConfig := {
-      tlSiteHeliumConfig.value.all
+
+    tlSiteHelium := {
+      tlSiteHelium.value.all
         .metadata(
           title = Some("Scala News"),
           language = Some("en")
         )
         .site
         .topNavigationBar(
-          homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
-          navLinks = Seq(
-            IconLink.external(
-              "https://github.com/softinio/scalanews",
-              HeliumIcon.github
-            )
-          )
+          homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home)
         )
         .site
         .favIcons(
           Favicon.internal(Root / "img/favicon-32x32.png", sizes = "32x32")
         )
+        .site
+        .footer("<br/>\n          Created by <a href=\"https://www.softinio.com\">Salar Rahmanian</a> and Contributors.\n          <br/>\n          <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />The content on this site by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">Salar Rahmanian and contributors</span> is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.<br/> \n         Made with ❤\uFE0F  in San Francisco using:   | <a href=\"https://typelevel.org/cats-effect/\">cats-effect</a> |   | <a href=\"https://github.com/typelevel/sbt-typelevel\">sbt-typelevel</a> |   | <a href=\"https://ben.kirw.in/decline/\">decline</a> |   | <a href=\"https://planet42.github.io/Laika/\">Laika</a> | ")
     }
   )
   .enablePlugins(TypelevelSitePlugin)

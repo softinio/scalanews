@@ -22,8 +22,8 @@ import java.time.format.FormatStyle
 import java.time.LocalDate
 
 import fs2.text
-import cats.effect._
-import fs2.io.file._
+import cats.effect.*
+import fs2.io.file.*
 
 object FileHandler {
   private val nextFilePath = Path("next/next.md")
@@ -39,7 +39,7 @@ object FileHandler {
       headerDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
     val updatedHeader = s"$HEADER_TEXT - $headerDateString"
 
-    Files[IO].tempFile().use { tempFile =>
+    Files[IO].tempFile(dir = None).use { tempFile =>
       val usingTempFile = Path.fromNioPath(tempFile)
       val updatedContent = for {
         _ <- Files[IO]
@@ -89,14 +89,14 @@ object FileHandler {
           )
         else if (!exists) Files[IO].copy(templateFilePath, nextFilePath)
         else IO.unit
-    } yield (ExitCode.Success)
+    } yield ExitCode.Success
 
   private def createArchiveFolderPath(
       archiveFolder: Option[String]
   ): IO[String] = {
     IO.blocking {
       val folderPath = archiveFolder match {
-        case Some(folder) => s"docs/Archive/${folder}/"
+        case Some(folder) => s"docs/Archive/$folder/"
         case None         => s"docs/Archive/"
       }
       Files[IO].createDirectories(Path(folderPath))
@@ -108,10 +108,10 @@ object FileHandler {
     for {
       aDate <- getArchiveDate(archiveDate)
       fileName <- aDate match {
-        case Right(rDate) => IO(s"scala_news_${rDate}.md")
+        case Right(rDate) => IO(s"scala_news_$rDate.md")
         case _            => IO("")
       }
-    } yield (fileName)
+    } yield fileName
 
   private def getArchivePath(
       archiveDate: String,
@@ -120,7 +120,7 @@ object FileHandler {
     for {
       fileName <- createArchiveFileName(archiveDate)
       folderPath <- createArchiveFolderPath(archiveFolder)
-    } yield (Path(s"${folderPath}${fileName}"))
+    } yield Path(s"$folderPath$fileName")
 
   def publish(
       publishDate: Option[String],
@@ -144,5 +144,5 @@ object FileHandler {
       _ <-
         if (nextExists) Files[IO].move(nextFilePath, indexFilePath) else IO.unit
       _ <- create(false)
-    } yield (ExitCode.Success)
+    } yield ExitCode.Success
 }

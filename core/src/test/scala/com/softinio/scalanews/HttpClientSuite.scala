@@ -17,7 +17,7 @@
 package com.softinio.scalanews
 
 import scala.io.Source.fromInputStream
-import cats.effect._
+import cats.effect.*
 import munit.CatsEffectSuite
 
 import cats.effect.unsafe.IORuntime

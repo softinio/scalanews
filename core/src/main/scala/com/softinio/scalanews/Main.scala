@@ -18,11 +18,11 @@ package com.softinio.scalanews
 
 import java.text.SimpleDateFormat
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 
-import com.monovore.decline._
-import com.monovore.decline.effect._
+import com.monovore.decline.*
+import com.monovore.decline.effect.*
 
 object Main
     extends CommandIOApp(
@@ -114,13 +114,12 @@ object Main
             dateFormatter.parse(startDate),
             dateFormatter.parse(endDate)
           )
-        case Blogger(directory) => {
+        case Blogger(directory) =>
           if (directory) {
             for {
               config <- ConfigLoader.load()
               result <- Bloggers.createBloggerDirectory(config.bloggers)
-            } yield (result)
+            } yield result
           } else IO(ExitCode.Success)
-        }
       }
 }

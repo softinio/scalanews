@@ -18,7 +18,7 @@ package com.softinio.scalanews
 
 import java.io.InputStream
 
-import cats.effect._
+import cats.effect.*
 
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
@@ -34,5 +34,5 @@ object Rome {
     }.attempt
 
   def fetchFeed(feedUrl: String): IO[Either[Throwable, SyndFeed]] =
-    HttpClient.fetchRss(feedUrl).use(parseFeed(_))
+    HttpClient.fetchRss(feedUrl).use(parseFeed)
 }

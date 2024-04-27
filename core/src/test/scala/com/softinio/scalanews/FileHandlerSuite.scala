@@ -18,14 +18,14 @@ package com.softinio.scalanews
 
 import java.time.format.DateTimeFormatter.BASIC_ISO_DATE
 import java.time.LocalDate
-import fs2.io.file._
+import fs2.io.file.*
 import java.nio.charset.StandardCharsets
 
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 import munit.CatsEffectSuite
-import cats.effect._
+import cats.effect.*
 
 class FileHandlerSuite extends CatsEffectSuite {
 
@@ -34,7 +34,7 @@ class FileHandlerSuite extends CatsEffectSuite {
       val filename = test.name.replace(" ", "_")
       val content =
         fs2.Stream.emits("# Scala News\n".getBytes(StandardCharsets.UTF_8))
-      val theFile = Path.apply((s"$filename.md"))
+      val theFile = Path.apply(s"$filename.md")
       Files[IO].writeAll(theFile)(content).compile.drain.unsafeRunSync()
       theFile
     },
@@ -62,8 +62,7 @@ class FileHandlerSuite extends CatsEffectSuite {
     val result = for {
       got <- FileHandler.updateFileHeader(file, LocalDate.now())
       exists <- got match {
-        case Right(path) => {
-          println(s"got path: $path")
+        case Right(path) =>
           Files[IO]
             .readAll(path)
             .through(fs2.text.utf8.decode)
@@ -71,7 +70,6 @@ class FileHandlerSuite extends CatsEffectSuite {
             .exists(line => line.contains(expectedHeader))
             .compile
             .lastOrError
-        }
         case _ => IO.pure("")
       }
     } yield exists

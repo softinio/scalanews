@@ -1,4 +1,3 @@
-
 import laika.ast.Path.*
 
 import laika.helium.config.Favicon
@@ -68,7 +67,6 @@ lazy val core = crossProject(JVMPlatform)
 lazy val docs = project
   .in(file("site"))
   .settings(
-
     tlSiteHelium := {
       tlSiteHelium.value.all
         .metadata(
@@ -84,7 +82,9 @@ lazy val docs = project
           Favicon.internal(Root / "img/favicon-32x32.png", sizes = "32x32")
         )
         .site
-        .footer("<br/>\n          Created by <a href=\"https://www.softinio.com\">Salar Rahmanian</a> and Contributors.\n          <br/>\n          <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />The content on this site by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">Salar Rahmanian and contributors</span> is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.<br/> \n         Made with ❤\uFE0F  in San Francisco using:   | <a href=\"https://typelevel.org/cats-effect/\">cats-effect</a> |   | <a href=\"https://github.com/typelevel/sbt-typelevel\">sbt-typelevel</a> |   | <a href=\"https://ben.kirw.in/decline/\">decline</a> |   | <a href=\"https://planet42.github.io/Laika/\">Laika</a> | ")
+        .footer(
+          "<br/>\n          Created by <a href=\"https://www.softinio.com\">Salar Rahmanian</a> and Contributors.\n          <br/>\n          <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />The content on this site by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">Salar Rahmanian and contributors</span> is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.<br/> \n         Made with ❤\uFE0F  in San Francisco using:   | <a href=\"https://typelevel.org/cats-effect/\">cats-effect</a> |   | <a href=\"https://github.com/typelevel/sbt-typelevel\">sbt-typelevel</a> |   | <a href=\"https://ben.kirw.in/decline/\">decline</a> |   | <a href=\"https://planet42.github.io/Laika/\">Laika</a> | "
+        )
     }
   )
   .enablePlugins(TypelevelSitePlugin)

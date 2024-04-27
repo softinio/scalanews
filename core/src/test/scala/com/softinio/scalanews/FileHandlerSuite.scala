@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,50 +18,63 @@ package com.softinio.scalanews
 
 import java.time.format.DateTimeFormatter.BASIC_ISO_DATE
 import java.time.LocalDate
-import java.nio.file.Files
-import java.nio.file.Path
+import fs2.io.file._
 import java.nio.charset.StandardCharsets
 
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-
-import java.util.stream.Collectors
 
 import munit.CatsEffectSuite
 import cats.effect._
 
 class FileHandlerSuite extends CatsEffectSuite {
 
-  val sampleFile = FunFixture[Path](
+  val sampleFile: FunFixture[Path] = FunFixture[Path](
     setup = { test =>
       val filename = test.name.replace(" ", "_")
-      val theFile = Files.createTempFile("tmp", s"${filename}.md")
-      Files.write(theFile, "# Scala News\n".getBytes(StandardCharsets.UTF_8))
+      val content =
+        fs2.Stream.emits("# Scala News\n".getBytes(StandardCharsets.UTF_8))
+      val theFile = Path.apply((s"$filename.md"))
+      Files[IO].writeAll(theFile)(content).compile.drain.unsafeRunSync()
+      theFile
     },
     teardown = { file =>
-      Files.deleteIfExists(file)
+      Files[IO].deleteIfExists(file).unsafeRunSync()
       ()
     }
   )
 
-  sampleFile.test("updateFileHeader succesfully") { file =>
-    val updated = FileHandler.updateFileHeader(file, LocalDate.now())
+  sampleFile.test("test testfile") { file =>
+    val result = Files[IO]
+      .readAll(file)
+      .through(fs2.text.utf8.decode)
+      .compile
+      .foldMonoid
+      .map(_.trim)
+    assertIO(result, "# Scala News")
+  }
+
+  sampleFile.test("updateFileHeader successfully") { file =>
     val expectedDate = LocalDate
       .now()
       .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
     val expectedHeader = s"# Scala News - $expectedDate"
     val result = for {
-      got <- updated
-      extracted <- got match {
-        case Right(path) =>
-          IO(
-            Files
-              .lines(path, StandardCharsets.UTF_8)
-              .collect(Collectors.joining(System.lineSeparator()))
-          )
+      got <- FileHandler.updateFileHeader(file, LocalDate.now())
+      exists <- got match {
+        case Right(path) => {
+          println(s"got path: $path")
+          Files[IO]
+            .readAll(path)
+            .through(fs2.text.utf8.decode)
+            .through(fs2.text.lines)
+            .exists(line => line.contains(expectedHeader))
+            .compile
+            .lastOrError
+        }
         case _ => IO.pure("")
       }
-    } yield extracted.contains(expectedHeader)
+    } yield exists
     assertIO(result, true)
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
 package com.softinio.scalanews
 
 import pureconfig._
-import pureconfig.generic.auto._
 import pureconfig.module.catseffect.syntax._
 import cats.effect.IO
-
 import com.softinio.scalanews.algebra.Configuration
 
 object ConfigLoader {

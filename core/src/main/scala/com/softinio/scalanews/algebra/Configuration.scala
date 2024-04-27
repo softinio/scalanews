@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,14 @@
 
 package com.softinio.scalanews.algebra
 
+import pureconfig._
+import pureconfig.generic.derivation.default._
+
 import java.net.URI
 
-case class Blog(name: String, url: URI, rss: URI)
+final case class Blog(name: String, url: URI, rss: URI) derives ConfigReader
+final case class Configuration(bloggers: List[Blog]) derives ConfigReader
 
-case class Configuration(bloggers: List[Blog])
+object Config {
+  given urlReader: ConfigReader[URI] = ConfigReader[String].map(URI.create)
+}

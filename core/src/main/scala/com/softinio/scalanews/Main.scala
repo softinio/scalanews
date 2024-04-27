@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,35 +31,35 @@ object Main
       version = "0.1"
     ) {
 
-  case class Publish(
+  private case class Publish(
       publishDate: Option[String],
       archiveDate: String,
       archiveFolder: Option[String]
   )
-  case class Create(overwrite: Boolean)
+  private case class Create(overwrite: Boolean)
 
-  case class Blogger(directory: Boolean)
+  private case class Blogger(directory: Boolean)
 
-  case class GenerateNextBlog(
+  private case class GenerateNextBlog(
       startDate: String,
       endDate: String
   )
 
-  val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
+  private val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
 
-  val archiveDateOps: Opts[String] =
+  private val archiveDateOps: Opts[String] =
     Opts
       .argument[String](metavar = "archiveDate")
 
-  val startDateOps: Opts[String] =
+  private val startDateOps: Opts[String] =
     Opts
       .argument[String](metavar = "startDate")
 
-  val endDateOps: Opts[String] =
+  private val endDateOps: Opts[String] =
     Opts
       .argument[String](metavar = "endDate")
 
-  val publishDateOps: Opts[Option[String]] =
+  private val publishDateOps: Opts[Option[String]] =
     Opts
       .option[String](
         "publishdate",
@@ -68,7 +68,7 @@ object Main
       )
       .orNone
 
-  val archiveFolderOps: Opts[Option[String]] =
+  private val archiveFolderOps: Opts[Option[String]] =
     Opts
       .option[String](
         "folder",
@@ -77,30 +77,30 @@ object Main
       )
       .orNone
 
-  val publishOpts: Opts[Publish] =
+  private val publishOpts: Opts[Publish] =
     Opts.subcommand("publish", "Publish next newsletter") {
-      (publishDateOps, archiveDateOps, archiveFolderOps).mapN(Publish)
+      (publishDateOps, archiveDateOps, archiveFolderOps).mapN(Publish.apply)
     }
 
-  val createOpts: Opts[Create] =
+  private val createOpts: Opts[Create] =
     Opts.subcommand("create", "Create file for next newsletter edition") {
       Opts
         .flag("overwrite", "Overwrite next file if it exists", short = "o")
         .orFalse
-        .map(Create)
+        .map(Create.apply)
     }
 
-  val bloggerOpts: Opts[Blogger] =
+  private val bloggerOpts: Opts[Blogger] =
     Opts.subcommand("blogger", "Blogger directory tasks") {
       Opts
         .flag("directory", "create a new blogger directory page", short = "d")
         .orFalse
-        .map(Blogger)
+        .map(Blogger.apply)
     }
 
-  val generateNextBlogOpts: Opts[GenerateNextBlog] =
+  private val generateNextBlogOpts: Opts[GenerateNextBlog] =
     Opts.subcommand("generate", "Generate next blog") {
-      (startDateOps, endDateOps).mapN(GenerateNextBlog)
+      (startDateOps, endDateOps).mapN(GenerateNextBlog.apply)
     }
 
   override def main: Opts[IO[ExitCode]] =

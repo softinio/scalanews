@@ -59,8 +59,6 @@ lazy val core = crossProject(JVMPlatform)
     nativeImageOptions += "--enable-url-protocols=https",
     nativeImageOutput := file(".") / "scalanews",
     nativeImageReady := { () => println("SBT Finished creating image.") }
-    // resolvers +=
-    // "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   )
   .enablePlugins(NativeImagePlugin)
 

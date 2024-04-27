@@ -144,6 +144,21 @@
             "name": "Ruslan Shevchenko",
             "url": "https://github.com/rssh/notes",
             "rss": "https://rssh.github.io/notes/feed.xml"
+        },
+        {
+            "name": "Neandertech",
+            "url": "https://neander.tech",
+            "rss": "https://neander.tech/rss.xml"
+        },
+        {
+            "name": "Scala Metals",
+            "url": "https://scalameta.org/metals/blog/",
+            "rss": "https://scalameta.org/metals/blog/rss.xml"
+        },
+        {
+            "name": "Scala for Fun and Profit",
+            "url": "https://podcasters.spotify.com/pod/show/julien-truffaut/episodes/Music-DSL-in-Scala-js-with-Paul-Matthews-e2i4cqi",
+            "rss": "https://anchor.fm/s/f303e5b4/podcast/rss"
         }
     ]
 }

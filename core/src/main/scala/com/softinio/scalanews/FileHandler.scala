@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Salar Rahmanian
+ * Copyright 2024 Salar Rahmanian
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,36 +16,51 @@
 
 package com.softinio.scalanews
 
-import java.nio.file.{Files => JFiles}
-import java.nio.file.Paths
-import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 import java.time.format.DateTimeFormatter.BASIC_ISO_DATE
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.LocalDate
 
+import fs2.text
 import cats.effect._
-import cats.nio.file.Files
+import fs2.io.file._
 
 object FileHandler {
-  val nextFilePath = Paths.get("next/next.md")
-  val templateFilePath = Paths.get("next/template.md")
-  val indexFilePath = Paths.get("docs/index.md")
+  private val nextFilePath = Path("next/next.md")
+  private val templateFilePath = Path("next/template.md")
+  private val indexFilePath = Path("docs/index.md")
 
   def updateFileHeader(
       sourceFile: Path,
       headerDate: LocalDate
-  ): IO[Either[Throwable, Path]] =
-    IO.blocking {
-      val HEADER_TEXT = "# Scala News"
-      val headerDateString =
-        headerDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
-      val content = JFiles.readString(sourceFile)
-      val updatedContent =
-        content.replace(HEADER_TEXT, s"$HEADER_TEXT - $headerDateString")
-      JFiles.writeString(sourceFile, updatedContent)
-    }.attempt
+  ): IO[Either[Throwable, Path]] = {
+    val HEADER_TEXT = "# Scala News"
+    val headerDateString =
+      headerDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+    val updatedHeader = s"$HEADER_TEXT - $headerDateString"
+
+    Files[IO].tempFile().use { tempFile =>
+      val usingTempFile = Path.fromNioPath(tempFile)
+      val updatedContent = for {
+        _ <- Files[IO]
+          .readAll(sourceFile)
+          .through(text.utf8.decode)
+          .through(text.lines)
+          .map(line =>
+            if (line.startsWith(HEADER_TEXT)) updatedHeader else line
+          )
+          .intersperse("\n")
+          .through(text.utf8.encode)
+          .through(Files[IO].writeAll(usingTempFile))
+          .compile
+          .drain
+        _ <- Files[IO]
+          .move(usingTempFile, sourceFile, CopyFlags(CopyFlag.ReplaceExisting))
+      } yield sourceFile
+
+      updatedContent.attempt
+    }
+  }
 
   def getArchiveDate(archiveDate: String): IO[Either[Throwable, LocalDate]] =
     IO.blocking {
@@ -70,24 +85,26 @@ object FileHandler {
           Files[IO].copy(
             templateFilePath,
             nextFilePath,
-            StandardCopyOption.REPLACE_EXISTING
+            CopyFlags(CopyFlag.ReplaceExisting)
           )
         else if (!exists) Files[IO].copy(templateFilePath, nextFilePath)
         else IO.unit
     } yield (ExitCode.Success)
 
-  def createArchiveFolderPath(archiveFolder: Option[String]): IO[String] = {
+  private def createArchiveFolderPath(
+      archiveFolder: Option[String]
+  ): IO[String] = {
     IO.blocking {
       val folderPath = archiveFolder match {
         case Some(folder) => s"docs/Archive/${folder}/"
         case None         => s"docs/Archive/"
       }
-      JFiles.createDirectories(Paths.get(folderPath))
+      Files[IO].createDirectories(Path(folderPath))
       folderPath
     }
   }
 
-  def createArchiveFileName(archiveDate: String): IO[String] =
+  private def createArchiveFileName(archiveDate: String): IO[String] =
     for {
       aDate <- getArchiveDate(archiveDate)
       fileName <- aDate match {
@@ -96,14 +113,14 @@ object FileHandler {
       }
     } yield (fileName)
 
-  def getArchivePath(
+  private def getArchivePath(
       archiveDate: String,
       archiveFolder: Option[String]
   ): IO[Path] =
     for {
       fileName <- createArchiveFileName(archiveDate)
       folderPath <- createArchiveFolderPath(archiveFolder)
-    } yield (Paths.get(s"${folderPath}${fileName}"))
+    } yield (Path(s"${folderPath}${fileName}"))
 
   def publish(
       publishDate: Option[String],

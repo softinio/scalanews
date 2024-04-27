@@ -52,7 +52,7 @@ lazy val core = crossProject(JVMPlatform)
       "org.typelevel" %% "munit-cats-effect" % "2.0.0-M5" % Test
     ),
     Compile / mainClass := Some("com.softinio.scalanews.Main"),
-    nativeImageVersion := "21.0.2",
+    nativeImageVersion := "21.0.1",
     nativeImageJvm := "graalvm-java21",
     nativeImageOptions += "--no-fallback",
     nativeImageOptions += "--enable-url-protocols=http",

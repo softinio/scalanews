@@ -1,5 +1,5 @@
 
-
+      
 # Blog Directory
 
 A Directory of bloggers producing Scala related content with links to their rss feed when available.
@@ -35,7 +35,10 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Lachlan O'Dea | <https://lachlan.hashnode.dev> | [rss feed](https://lachlan.hashnode.dev/rss.xml) |
 | SoftwareMill | <https://softwaremill.com/blog/> | [rss feed](https://softwaremill.com/blog.rss) |
 | Ruslan Shevchenko | <https://github.com/rssh/notes> | [rss feed](https://rssh.github.io/notes/feed.xml) |
-
+| Neandertech | <https://neander.tech> | [rss feed](https://neander.tech/rss.xml) |
+| Scala Metals | <https://scalameta.org/metals/blog/> | [rss feed](https://scalameta.org/metals/blog/rss.xml) |
+| Scala for Fun and Profit | <https://podcasters.spotify.com/pod/show/julien-truffaut> | [rss feed](https://anchor.fm/s/f303e5b4/podcast/rss) |
+      
 ###### Got a Scala related blog? Add it to this Blog Directory!
 
 See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details.

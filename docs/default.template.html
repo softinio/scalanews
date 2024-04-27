@@ -1,101 +1,28 @@
 <!DOCTYPE html>
 <html lang="${?laika.site.metadata.language}">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="Laika 0.18.1 + Helium Theme" />
-    <title>${cursor.currentDocument.title}</title>
-    @:for(laika.site.metadata.authors)
-      <meta name="author" content="${_}"/>
-    @:@
-    @:for(laika.site.metadata.description)
-      <meta name="description" content="${_}"/>
-    @:@
-    @:for(helium.favIcons)
-      <link rel="icon" @:attribute(sizes, _.sizes) @:attribute(type, _.type) @:attribute(href, _.target)/>
-    @:@
-    @:for(helium.webFonts)
-      <link rel="stylesheet" href="${_}">
-    @:@
-    @:linkCSS { paths = ${helium.site.includeCSS} }
-    @:linkJS { paths = ${helium.site.includeJS} }
-    @:heliumInitVersions
-    @:heliumInitPreview(container)
-    <script> /* for avoiding page load transitions */ </script>
-  </head>
 
-  <body>
+@:include(helium.site.templates.head)
 
-    <header id="top-bar">
+<body>
 
-      <div class="row">
-        <a id="nav-icon">
-          @:icon(navigationMenu)
-        </a>
-        @:for(laika.versions)
-        <div id="version-menu-container">
-          <a id="version-menu-toggle" class="text-link drop-down-toggle" href="#">
-            @:if(laika.versioned)
-            ${helium.topBar.versionPrefix} ${laika.versions.currentVersion.displayValue}
-            @:else
-            Documentation
-            @:@
-          </a>
-          <nav id="version-menu">
-            <ul id="version-list" class="nav-list">
-            </ul>
-          </nav>
-        </div>
-        @:@
-      </div>
+@:include(helium.site.templates.topNav)
 
-      ${?helium.topBar.home}
+@:include(helium.site.templates.mainNav)
 
-      ${?helium.topBar.links}
+<div id="container">
 
-    </header>
+  @:include(helium.site.templates.pageNav)
 
-    <nav id="sidebar">
+  <main class="content">
 
-      ${?helium.topBar.phoneLinks}
+    ${cursor.currentDocument.content}
 
-      @:navigationTree {
-        entries = [
-          { target = "/", excludeRoot = true, excludeSections = true, depth = 2 }
-        ]
-      }
+    @:include(helium.site.templates.footer)
 
-    </nav>
+  </main>
 
-    <div id="container">
+</div>
 
-      <nav id="page-nav">
-        <p class="header"><a href="#">${cursor.currentDocument.title}</a></p>
+</body>
 
-        @:navigationTree {
-          entries = [
-           { target = "#", excludeRoot = true, depth = 2 }
-          ]
-        }
-
-        <p class="footer">@:for(helium.markupEditLinks)<a href="${_.baseURL}${cursor.currentDocument.path}">${_.icon}${_.text}</a>@:@</p>
-      </nav>
-
-      <main class="content">
-
-        ${cursor.currentDocument.content}
-
-        <hr style="margin-top: 30px"/>
-        <footer style="font-size: 90%; text-align: center">
-          <br/>
-          Created by <a href="https://www.softinio.com">Salar Rahmanian</a> and Contributors.
-          <br/>
-          <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br />The content on this site by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Salar Rahmanian and contributors</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.<br/> 
-         Made with ❤️  in San Francisco using: @:for(typelevel.site.related)  | <a href="${_.url}">${_.name}</a> | @:@
-        </footer>
-      </main>
-    </div>
-  </body>
 </html>
-

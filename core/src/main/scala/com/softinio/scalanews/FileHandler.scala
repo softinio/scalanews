@@ -39,8 +39,10 @@ object FileHandler {
       headerDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
     val updatedHeader = s"$HEADER_TEXT - $headerDateString"
 
-    Files[IO].tempFile(dir = None).use { tempFile =>
-      val usingTempFile = Path.fromNioPath(tempFile)
+    val tempFilePath: Resource[IO, Path] =
+      Files[IO].tempFile
+
+    tempFilePath.use { usingTempFile =>
       val updatedContent = for {
         _ <- Files[IO]
           .readAll(sourceFile)

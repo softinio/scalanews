@@ -200,7 +200,7 @@ object Bloggers {
         .emits(List(news))
         .through(fs2.text.utf8.encode)
         .through(
-          Files[IO].writeAll(directoryMarkdownFilePath, Flags(Flag.CreateNew))
+          Files[IO].writeAll(nextMarkdownFilePath, Flags(Flag.CreateNew))
         )
         .compile
         .drain

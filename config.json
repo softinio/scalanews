@@ -159,6 +159,11 @@
             "name": "Scala for Fun and Profit",
             "url": "https://podcasters.spotify.com/pod/show/julien-truffaut",
             "rss": "https://anchor.fm/s/f303e5b4/podcast/rss"
+        },
+        {
+            "name": "Mark Galea",
+            "url": "https://cloudmark.github.io/",
+            "rss": "https://cloudmark.github.io/feed.xml"
         }
     ]
 }

@@ -38,6 +38,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Neandertech | <https://neander.tech> | [rss feed](https://neander.tech/rss.xml) |
 | Scala Metals | <https://scalameta.org/metals/blog/> | [rss feed](https://scalameta.org/metals/blog/rss.xml) |
 | Scala for Fun and Profit | <https://podcasters.spotify.com/pod/show/julien-truffaut> | [rss feed](https://anchor.fm/s/f303e5b4/podcast/rss) |
+| Mark Galea | <https://cloudmark.github.io/> | [rss feed](https://cloudmark.github.io/feed.xml) |
       
 ###### Got a Scala related blog? Add it to this Blog Directory!
 

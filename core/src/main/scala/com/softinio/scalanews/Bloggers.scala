@@ -19,7 +19,6 @@ package com.softinio.scalanews
 import java.util.Date
 import cats.effect.*
 import fs2.io.file.*
-import fs2.Stream
 import com.rometools.rome.feed.synd.SyndEntry
 
 import scala.jdk.CollectionConverters.*

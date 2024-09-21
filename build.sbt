@@ -24,9 +24,9 @@ ThisBuild / githubWorkflowPublishTargetBranches := Seq()
 // publish website from this branch
 ThisBuild / tlSitePublishBranch := Some("main")
 
-ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.corretto("21"))
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("21"))
 
-val Scala3 = "3.3.3"
+val Scala3 = "3.5.1"
 ThisBuild / crossScalaVersions := Seq(Scala3)
 ThisBuild / scalaVersion := Scala3 // the default Scala
 
@@ -38,18 +38,18 @@ lazy val core = crossProject(JVMPlatform)
   .settings(
     name := "scalanews",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.10.0",
+      "org.typelevel" %% "cats-core" % "2.12.0",
       "org.typelevel" %% "cats-effect" % "3.5.4",
       "com.monovore" %% "decline-effect" % "2.4.1",
-      "com.github.pureconfig" %% "pureconfig-core" % "0.17.6",
-      "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.6",
-      "org.http4s" %% "http4s-ember-client" % "0.23.26",
-      "org.http4s" %% "http4s-dsl" % "0.23.26",
-      "co.fs2" %% "fs2-core" % "3.10.2",
-      "co.fs2" %% "fs2-io" % "3.10.2",
+      "com.github.pureconfig" %% "pureconfig-core" % "0.17.7",
+      "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.7",
+      "org.http4s" %% "http4s-ember-client" % "0.23.28",
+      "org.http4s" %% "http4s-dsl" % "0.23.28",
+      "co.fs2" %% "fs2-core" % "3.11.0",
+      "co.fs2" %% "fs2-io" % "3.11.0",
       "com.rometools" % "rome" % "2.1.0",
-      "org.scalameta" %% "munit" % "1.0.0-RC1" % Test,
-      "org.typelevel" %% "munit-cats-effect" % "2.0.0-M5" % Test
+      "org.scalameta" %% "munit" % "1.0.2" % Test,
+      "org.typelevel" %% "munit-cats-effect" % "2.0.0" % Test
     ),
     Compile / mainClass := Some("com.softinio.scalanews.Main"),
     nativeImageVersion := "21.0.1",

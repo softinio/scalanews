@@ -1,0 +1,126 @@
+{
+  "meetups": [
+    {
+      "name": "Bay Area Scala",
+      "meetup_url": null,
+      "luma_url": "https://lu.ma/scala",
+      "other_url": "https://bayareascala.com",
+      "locations": [
+        {
+          "city": "San Francisco",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "Berkeley",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "Walnut Creek",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "San Jose",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "Mountain View",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "Cupertino",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "Palo Alto",
+          "state": "California",
+          "country": "USA"
+        }
+      ],
+      "description": "Bay Area Scala is a group for functional programmers who use Scala to build software who are based in San Francisco Bay Area or nearby. We welcome programmers of all skill levels to our events."
+    },
+    {
+      "name": "SF Scala",
+      "meetup_url": "http://www.meetup.com/SF-Scala/",
+      "luma_url": "https://lu.ma/scala",
+      "other_url": "https://www.sfscala.org/",
+      "locations": [
+        {
+          "city": "San Francisco",
+          "state": "California",
+          "country": "USA"
+        }
+      ],
+      "description": "SF Scala is a group for functional programmers who use Scala to build software who are based in San Francisco or nearby. We welcome programmers of all skill levels to our events."
+    },
+    {
+      "name": "Scala Bay",
+      "meetup_url": "https://www.meetup.com/scala-bay/",
+      "luma_url": "https://lu.ma/scala",
+      "other_url": "https://bayareascala.com",
+      "locations": [
+        {
+          "city": "Palo Alto",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "Mountain View",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "Cupertino",
+          "state": "California",
+          "country": "USA"
+        },
+        {
+          "city": "San Jose",
+          "state": "California",
+          "country": "USA"
+        }
+      ],
+      "description": "Scala Bay is a group for functional programmers who use Scala to build software are based near Palo Alto / Mountain View / Cupertino (South of Bay Area). We welcome programmers of all skill levels to our events."
+    }
+  ],
+  "conferences": [
+    {
+      "name": "Scale By The Bay",
+      "conference_url": "https://scale.bythebay.io/",
+      "luma_url": null,
+      "other_url": "http://functional.tv/",
+      "locations": [
+        {
+          "city": "San Francisco",
+          "state": "California",
+          "country": "USA"
+        }
+      ],
+      "description": "Scale By the Bay is a developers' own conference. It is a community conference with the best Bay Area meetups and technologies powering the global leaders in data, operations, ML, and the art and craft of software engineering."
+    },
+    {
+      "name": "Scala Days",
+      "conference_url": "https://scaladays.org",
+      "luma_url": null,
+      "other_url": "https://www.youtube.com/c/ScalaDaysConferences",
+      "locations": [
+        {
+          "city": "Seattle",
+          "state": "Washington",
+          "country": "USA"
+        },
+        {
+          "city": "Madrid",
+          "state": null,
+          "country": "Spain"
+        }
+      ],
+      "description": "Scala Days brings developers from around the globe to share their experiences and new ideas around creating applications with Scala and related technologies, like Spark, Kafka, and Akka. Scala Days provides a unique opportunity for Scala users to interact with the contributors to the language and related technologies and connect with fellow developers."
+    }
+  ]
+}

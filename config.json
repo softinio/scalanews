@@ -164,6 +164,11 @@
             "name": "Mark Galea",
             "url": "https://cloudmark.github.io/",
             "rss": "https://cloudmark.github.io/feed.xml"
+        },
+        {
+            "name": "A Developer's Experience",
+            "url": "https://blog.rhetoricalmusings.com",
+            "rss": "https://blog.rhetoricalmusings.com/index.xml"
         }
     ]
 }

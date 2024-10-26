@@ -20,9 +20,14 @@ import pureconfig.*
 import pureconfig.module.catseffect.syntax.*
 import cats.effect.IO
 import com.softinio.scalanews.algebra.Configuration
+import com.softinio.scalanews.algebra.EventConfig
 
 object ConfigLoader {
   def load(filePath: String = "config.json"): IO[Configuration] = {
     ConfigSource.file(filePath).loadF[IO, Configuration]()
+  }
+
+  def loadEventsConfig(filePath: String = "events.json"): IO[EventConfig] = {
+    ConfigSource.file(filePath).loadF[IO, EventConfig]()
   }
 }

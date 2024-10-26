@@ -23,7 +23,9 @@ import java.net.URI
 
 final case class Blog(name: String, url: URI, rss: URI) derives ConfigReader
 final case class Configuration(bloggers: List[Blog]) derives ConfigReader
+final case class EventConfig(meetups: List[Event], conferences: List[Event])
+    derives ConfigReader
 
 object Config {
-  given urlReader: ConfigReader[URI] = ConfigReader[String].map(URI.create)
+  given ConfigReader[URI] = ConfigReader[String].map(URI.create)
 }

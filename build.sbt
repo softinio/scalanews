@@ -41,8 +41,9 @@ lazy val core = crossProject(JVMPlatform)
       "org.typelevel" %% "cats-core" % "2.12.0",
       "org.typelevel" %% "cats-effect" % "3.5.4",
       "com.monovore" %% "decline-effect" % "2.4.1",
-      "com.github.pureconfig" %% "pureconfig-core" % "0.17.7",
+      "com.github.pureconfig" %% "pureconfig-generic-scala3" % "0.17.7",
       "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.7",
+      "com.github.pureconfig" %% "pureconfig-http4s" % "0.17.7",
       "org.http4s" %% "http4s-ember-client" % "0.23.28",
       "org.http4s" %% "http4s-dsl" % "0.23.28",
       "co.fs2" %% "fs2-core" % "3.11.0",
@@ -80,8 +81,12 @@ lazy val docs = project
           Favicon.internal(Root / "img/favicon-32x32.png", sizes = "32x32")
         )
         .site
+        .mainNavigation(
+          depth = 3
+        )
+        .site
         .footer(
-          "<br/>\n          Created by <a href=\"https://www.softinio.com\">Salar Rahmanian</a> and Contributors.\n          <br/>\n          <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />The content on this site by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">Salar Rahmanian and contributors</span> is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.<br/> \n         Made with ❤\uFE0F  in San Francisco using:   | <a href=\"https://typelevel.org/cats-effect/\">cats-effect</a> |   | <a href=\"https://github.com/typelevel/sbt-typelevel\">sbt-typelevel</a> |   | <a href=\"https://ben.kirw.in/decline/\">decline</a> |   | <a href=\"https://planet42.github.io/Laika/\">Laika</a> | "
+          "<br/>\n          Created by <a href=\"https://www.softinio.com\">Salar Rahmanian</a> and Contributors.\n          <br/>\n          <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />The content on this site by <span xmlns:cc=\"http://creativecommons.org/ns#\" property=\"cc:attributionName\">Salar Rahmanian and contributors</span> is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.<br/> \n         Made with ❤\uFE0F  in San Francisco using:   | <a href=\"https://typelevel.org/cats-effect/\">cats-effect</a> |   | <a href=\"https://github.com/typelevel/sbt-typelevel\">sbt-typelevel</a> |   | <a href=\"https://ben.kirw.in/decline/\">decline</a> |   | <a href=\"https://typelevel.org/Laika/\">Laika</a> | "
         )
     }
   )

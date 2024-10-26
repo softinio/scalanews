@@ -16,24 +16,27 @@
 
 package com.softinio.scalanews.algebra
 
-import java.util.Date
 import org.http4s.Uri
+import pureconfig.*
+import pureconfig.generic.derivation.default.*
 
-case class Article(
-    title: String,
-    url: Option[Uri],
-    author: String,
-    publishedDate: Date
-)
+enum EventType:
+  case Meetup, Conference
 
-object Article {
-  def apply(
-      title: String,
-      url: String,
-      author: String,
-      publishedDate: Date
-  ): Article = {
-    val parsedUrl = Uri.fromString(url).toOption
-    Article(title, parsedUrl, author, publishedDate)
-  }
+case class Location(city: String, state: Option[String], country: String)
+    derives ConfigReader
+
+case class Event(
+    name: String,
+    description: String,
+    meetupUrl: Option[Uri],
+    lumaUrl: Option[Uri],
+    socialMediaUrl: Option[Uri],
+    otherUrl: Option[Uri],
+    locations: List[Location]
+) derives ConfigReader
+
+object Event {
+  given ConfigReader[Option[Uri]] =
+    ConfigReader[Option[String]].map(_.flatMap(Uri.fromString(_).toOption))
 }

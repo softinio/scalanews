@@ -2,9 +2,10 @@
   "meetups": [
     {
       "name": "Bay Area Scala",
-      "meetup_url": null,
-      "luma_url": "https://lu.ma/scala",
-      "other_url": "https://bayareascala.com",
+      "meetup-url": null,
+      "luma-url": "https://lu.ma/scala",
+      "other-url": "https://bayareascala.com",
+      "social-media-url": "https://x.com/BayAreaScala",
       "locations": [
         {
           "city": "San Francisco",
@@ -46,9 +47,10 @@
     },
     {
       "name": "SF Scala",
-      "meetup_url": "http://www.meetup.com/SF-Scala/",
-      "luma_url": "https://lu.ma/scala",
-      "other_url": "https://www.sfscala.org/",
+      "meetup-url": "http://www.meetup.com/SF-Scala/",
+      "luma-url": "https://lu.ma/scala",
+      "other-url": "https://www.sfscala.org/",
+      "social-media-url": "https://x.com/BayAreaScala",
       "locations": [
         {
           "city": "San Francisco",
@@ -60,9 +62,10 @@
     },
     {
       "name": "Scala Bay",
-      "meetup_url": "https://www.meetup.com/scala-bay/",
-      "luma_url": "https://lu.ma/scala",
-      "other_url": "https://bayareascala.com",
+      "meetup-url": "https://www.meetup.com/scala-bay/",
+      "luma-url": "https://lu.ma/scala",
+      "other-url": "https://bayareascala.com",
+      "social-media-url": "https://x.com/BayAreaScala",
       "locations": [
         {
           "city": "Palo Alto",
@@ -91,12 +94,13 @@
   "conferences": [
     {
       "name": "Scale By The Bay",
-      "conference_url": "https://scale.bythebay.io/",
-      "luma_url": null,
-      "other_url": "http://functional.tv/",
+      "meetup-url": "https://scale.bythebay.io/",
+      "luma-url": null,
+      "other-url": "http://functional.tv/",
+      "social-media-url": "https://x.com/ScaleByTheBay",
       "locations": [
         {
-          "city": "San Francisco",
+          "city": "Oakland",
           "state": "California",
           "country": "USA"
         }
@@ -105,9 +109,10 @@
     },
     {
       "name": "Scala Days",
-      "conference_url": "https://scaladays.org",
-      "luma_url": null,
-      "other_url": "https://www.youtube.com/c/ScalaDaysConferences",
+      "meetup-url": "https://scaladays.org",
+      "luma-url": null,
+      "other-url": "https://www.youtube.com/c/ScalaDaysConferences",
+      "social-media-url": "https://x.com/scaladays",
       "locations": [
         {
           "city": "Seattle",

@@ -24,6 +24,8 @@ import cats.implicits.*
 import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
+import com.softinio.scalanews.algebra.EventType
+
 object Main
     extends CommandIOApp(
       name = "scalanews",
@@ -39,6 +41,8 @@ object Main
   private case class Create(overwrite: Boolean)
 
   private case class Blogger(directory: Boolean)
+
+  private case class Event(directory: Boolean)
 
   private case class GenerateNextBlog(
       startDate: String,
@@ -98,13 +102,21 @@ object Main
         .map(Blogger.apply)
     }
 
+  private val eventOpts: Opts[Event] =
+    Opts.subcommand("event", "Event tasks") {
+      Opts
+        .flag("directory", "create a new event directory page", short = "e")
+        .orFalse
+        .map(Event.apply)
+    }
+
   private val generateNextBlogOpts: Opts[GenerateNextBlog] =
     Opts.subcommand("generate", "Generate next blog") {
       (startDateOps, endDateOps).mapN(GenerateNextBlog.apply)
     }
 
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts)
+    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts orElse eventOpts)
       .map {
         case Publish(publishDate, archiveDate, archiveFolder) =>
           FileHandler.publish(publishDate, archiveDate, archiveFolder)
@@ -120,6 +132,22 @@ object Main
               config <- ConfigLoader.load()
               result <- Bloggers.createBloggerDirectory(config.bloggers)
             } yield result
+          } else IO(ExitCode.Success)
+        case Event(directory) =>
+          if (directory) {
+            for {
+              config <- ConfigLoader.loadEventsConfig()
+              _ <- Events.cleanEventDirectory()
+              _ <- Events.addTopHeader()
+              _ <- Events.addHeader(EventType.Meetup)
+              _ <- Events.createEventDirectory(config.meetups, EventType.Meetup)
+              _ <- Events.addHeader(EventType.Conference)
+              _ <- Events.createEventDirectory(
+                config.conferences,
+                EventType.Conference
+              )
+              _ <- Events.addFooter()
+            } yield ExitCode.Success
           } else IO(ExitCode.Success)
       }
 }

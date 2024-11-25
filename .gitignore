@@ -25,3 +25,6 @@ metals.sbt
 
 # npm
 node_modules/
+
+# binary
+scalanews

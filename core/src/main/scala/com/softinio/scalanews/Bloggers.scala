@@ -73,7 +73,7 @@ object Bloggers {
       || ------------- | -----:|"""
 
       val news = articleList.map { article =>
-        s"|| [${article.title}](${article.url}) | ${article.author} |"
+        s"|| [${article.title}](${article.url.getOrElse("URL Missing")}) | ${article.author} |"
       }
 
       s"""

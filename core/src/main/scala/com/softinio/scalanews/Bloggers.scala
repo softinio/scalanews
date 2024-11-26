@@ -72,8 +72,8 @@ object Bloggers {
       || Article       | Author  |
       || ------------- | -----:|"""
 
-      val news = articleList.map { article =>
-        s"|| [${article.title}](${article.url}) | ${article.author} |"
+      val news = articleList.sortBy(_.title).map { article =>
+        s"|| [${article.title}](${article.url.getOrElse("URL Missing")}) | ${article.author} |"
       }
 
       s"""
@@ -84,20 +84,31 @@ object Bloggers {
   }
 
   private def isAboutScala(entry: SyndEntry): Boolean = {
-    val hasScalaCategory = Option(entry.getCategories)
+    val hasRelevantCategory = Option(entry.getCategories)
       .map(_.asScala.toList)
       .getOrElse(List())
-      .exists(_.getName.toLowerCase.contains("scala"))
+      .exists(category => {
+        val name = category.getName.toLowerCase
+        name.contains("scala") || name.contains("sbt")
+      })
 
-    val hasScalaInTitle =
-      Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("scala")
+    val hasRelevantTitle =
+      Option(entry.getTitle)
+        .map(_.toLowerCase)
+        .getOrElse("")
+        .contains("scala") ||
+        Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("sbt")
 
-    val hasScalaInDescription = Option(entry.getDescription)
+    val hasRelevantDescription = Option(entry.getDescription)
       .map(_.getValue.toLowerCase)
       .getOrElse("")
-      .contains("scala")
+      .contains("scala") ||
+      Option(entry.getDescription)
+        .map(_.getValue.toLowerCase)
+        .getOrElse("")
+        .contains("sbt")
 
-    hasScalaCategory || hasScalaInTitle || hasScalaInDescription
+    hasRelevantCategory || hasRelevantTitle || hasRelevantDescription
   }
 
   private def getBlogAuthor(entry: SyndEntry, blog: Blog): String =
@@ -147,16 +158,22 @@ object Bloggers {
   ): IO[Option[List[Article]]] =
     for {
       feedResult <- Rome.fetchFeed(blog.rss.toURL.toString)
-    } yield {
-      getArticlesFromEntries(
-        blog,
-        feedResult
-          .map(_.getEntries.asScala.toList)
-          .getOrElse(List[SyndEntry]()),
-        startDate,
-        endDate
-      )
-    }
+      result <- feedResult match {
+        case Left(exception) =>
+          IO.println(
+            s"Error fetching feed for blog ${blog.name}: ${exception.getMessage}"
+          ) *> IO.pure(None)
+        case Right(feed) =>
+          IO.pure(
+            getArticlesFromEntries(
+              blog,
+              feed.getEntries.asScala.toList,
+              startDate,
+              endDate
+            )
+          )
+      }
+    } yield result
 
   def createBlogList(startDate: Date, endDate: Date): IO[List[Article]] =
     ConfigLoader.load().flatMap { conf =>

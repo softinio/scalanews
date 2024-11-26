@@ -1,174 +1,174 @@
 {
-    "bloggers": [
-        {
-            "name": "Salar Rahmanian",
-            "url": "https://www.softinio.com",
-            "rss": "https://www.softinio.com/atom.xml"
-        },
-        {
-            "name": "Scala Lang",
-            "url": "https://www.scala-lang.org/blog/",
-            "rss": "https://www.scala-lang.org/feed/blog.xml"
-        },
-        {
-            "name": "Typelevel",
-            "url": "https://typelevel.org/blog/",
-            "rss": "https://typelevel.org/blog/feed.rss"
-        },
-        {
-            "name": "Michael Pilquist",
-            "url": "https://mpilquist.github.io/",
-            "rss": "https://mpilquist.github.io/index.xml"
-        },
-        {
-            "name": "Justin Heyes-Jones",
-            "url": "http://justinhj.github.io/",
-            "rss": "http://justinhj.github.io/feed.xml"
-        },
-        {
-            "name": "Chris Kipp",
-            "url": "https://www.chris-kipp.io/",
-            "rss": "https://www.chris-kipp.io/rss.xml"
-        },
-        {
-            "name": "Anton Sviridov",
-            "url": "https://blog.indoorvivants.com",
-            "rss": "https://blog.indoorvivants.com/rss.xml"
-        },
-        {
-            "name": "James Ward",
-            "url": "https://jamesward.com",
-            "rss": "https://jamesward.com/index.xml"
-        },
-        {
-            "name": "Eugene Yokota",
-            "url": "https://eed3si9n.com/",
-            "rss": "https://eed3si9n.com/index.xml"
-        },
-        {
-            "name": "Alexandru Nedelcu",
-            "url": "https://alexn.org/blog/",
-            "rss": "https://alexn.org/feeds/blog.xml"
-        },
-        {
-            "name": "Jakub Kozłowski",
-            "url": "https://blog.kubukoz.com/",
-            "rss": "https://blog.kubukoz.com/atom.xml"
-        },
-        {
-            "name": "Yadu Krishnan",
-            "url": "https://yadukrishnan.live/",
-            "rss": "https://yadukrishnan.live/rss.xml"
-        },
-        {
-            "name": "Michał Pawlik",
-            "url": "https://blog.michal.pawlik.dev/",
-            "rss": "https://blog.michal.pawlik.dev/index.xml"
-        },
-        {
-            "name": "Haoyi Li",
-            "url": "https://www.lihaoyi.com/",
-            "rss": "https://www.lihaoyi.com/feed.xml"
-        },
-        {
-            "name": "Rock The JVM Blog",
-            "url": "https://blog.rockthejvm.com/",
-            "rss": "https://blog.rockthejvm.com/feed.xml"
-        },
-        {
-            "name": "Antonio Gelameris",
-            "url": "https://toniogela.dev/",
-            "rss": "https://toniogela.dev/rss.xml"
-        },
-        {
-            "name": "Juliano Alves",
-            "url": "https://juliano-alves.com/",
-            "rss": "https://juliano-alves.com/feed.xml"
-        },
-        {
-            "name": "Inner Product",
-            "url": "https://inner-product.com/",
-            "rss": "https://www.inner-product.com/feed/feed.xml"
-        },
-        {
-            "name": "Ross Baker",
-            "url": "https://rossabaker.com/",
-            "rss": "https://rossabaker.com/blog/index.xml"
-        },
-        {
-            "name": "Xebia",
-            "url": "https://xebia.com/blog/",
-            "rss": "https://xebia.com/blog/category/technology/scala/feed/"
-        },
-        {
-            "name": "Chistian Hollinger",
-            "url": "https://chollinger.com/blog/",
-            "rss": "https://chollinger.com/blog/index.xml"
-        },
-        {
-            "name": "Anton Kovalevsky",
-            "url": "https://antonkw.github.io/",
-            "rss": "https://antonkw.github.io/feed.xml"
-        },
-        {
-            "name": "Medium",
-            "url": "https://medium.com/tag/scala",
-            "rss": "https://medium.com/feed/tag/scala"
-        },
-        {
-            "name": "VirtusLab",
-            "url": "https://virtuslab.com/blog/",
-            "rss": "https://virtuslab.com/blog/feed/"
-        },
-        {
-            "name": "Jendrik Poloczek",
-            "url": "https://www.madewithtea.com",
-            "rss": "https://www.madewithtea.com/rss.xml"
-        },
-        {
-            "name": "Pierre Ricadat",
-            "url": "https://blog.pierre-ricadat.com/",
-            "rss": "https://blog.pierre-ricadat.com/rss.xml"
-        },
-        {
-            "name": "Lachlan O'Dea",
-            "url": "https://lachlan.hashnode.dev",
-            "rss": "https://lachlan.hashnode.dev/rss.xml"
-        },
-        {
-            "name": "SoftwareMill",
-            "url": "https://softwaremill.com/blog/",
-            "rss": "https://softwaremill.com/blog.rss"
-        },
-        {
-            "name": "Ruslan Shevchenko",
-            "url": "https://github.com/rssh/notes",
-            "rss": "https://rssh.github.io/notes/feed.xml"
-        },
-        {
-            "name": "Neandertech",
-            "url": "https://neander.tech",
-            "rss": "https://neander.tech/rss.xml"
-        },
-        {
-            "name": "Scala Metals",
-            "url": "https://scalameta.org/metals/blog/",
-            "rss": "https://scalameta.org/metals/blog/rss.xml"
-        },
-        {
-            "name": "Scala for Fun and Profit",
-            "url": "https://podcasters.spotify.com/pod/show/julien-truffaut",
-            "rss": "https://anchor.fm/s/f303e5b4/podcast/rss"
-        },
-        {
-            "name": "Mark Galea",
-            "url": "https://cloudmark.github.io/",
-            "rss": "https://cloudmark.github.io/feed.xml"
-        },
-        {
-            "name": "A Developer's Experience",
-            "url": "https://blog.rhetoricalmusings.com",
-            "rss": "https://blog.rhetoricalmusings.com/index.xml"
-        }
-    ]
+  "bloggers": [
+    {
+      "name": "Salar Rahmanian",
+      "url": "https://www.softinio.com",
+      "rss": "https://www.softinio.com/atom.xml"
+    },
+    {
+      "name": "Scala Lang",
+      "url": "https://www.scala-lang.org/blog/",
+      "rss": "https://www.scala-lang.org/feed/blog.xml"
+    },
+    {
+      "name": "Typelevel",
+      "url": "https://typelevel.org/blog/",
+      "rss": "https://typelevel.org/blog/feed.rss"
+    },
+    {
+      "name": "Michael Pilquist",
+      "url": "https://mpilquist.github.io/",
+      "rss": "https://mpilquist.github.io/index.xml"
+    },
+    {
+      "name": "Justin Heyes-Jones",
+      "url": "http://justinhj.github.io/",
+      "rss": "http://justinhj.github.io/feed.xml"
+    },
+    {
+      "name": "Chris Kipp",
+      "url": "https://www.chris-kipp.io/",
+      "rss": "https://www.chris-kipp.io/rss.xml"
+    },
+    {
+      "name": "Anton Sviridov",
+      "url": "https://blog.indoorvivants.com",
+      "rss": "https://blog.indoorvivants.com/rss.xml"
+    },
+    {
+      "name": "James Ward",
+      "url": "https://jamesward.com",
+      "rss": "https://jamesward.com/index.xml"
+    },
+    {
+      "name": "Eugene Yokota",
+      "url": "https://eed3si9n.com/",
+      "rss": "https://eed3si9n.com/index.xml"
+    },
+    {
+      "name": "Alexandru Nedelcu",
+      "url": "https://alexn.org/blog/",
+      "rss": "https://alexn.org/feeds/blog.xml"
+    },
+    {
+      "name": "Jakub Kozłowski",
+      "url": "https://blog.kubukoz.com/",
+      "rss": "https://blog.kubukoz.com/atom.xml"
+    },
+    {
+      "name": "Yadu Krishnan",
+      "url": "https://yadukrishnan.live/",
+      "rss": "https://yadukrishnan.live/rss.xml"
+    },
+    {
+      "name": "Michał Pawlik",
+      "url": "https://blog.michal.pawlik.dev/",
+      "rss": "https://blog.michal.pawlik.dev/index.xml"
+    },
+    {
+      "name": "Haoyi Li",
+      "url": "https://www.lihaoyi.com/",
+      "rss": "https://www.lihaoyi.com/feed.xml"
+    },
+    {
+      "name": "Rock The JVM Blog",
+      "url": "https://blog.rockthejvm.com/",
+      "rss": "https://rockthejvm.com/articles/feed.xml"
+    },
+    {
+      "name": "Antonio Gelameris",
+      "url": "https://toniogela.dev/",
+      "rss": "https://toniogela.dev/rss.xml"
+    },
+    {
+      "name": "Juliano Alves",
+      "url": "https://juliano-alves.com/",
+      "rss": "https://juliano-alves.com/feed.xml"
+    },
+    {
+      "name": "Inner Product",
+      "url": "https://inner-product.com/",
+      "rss": "https://www.inner-product.com/feed/feed.xml"
+    },
+    {
+      "name": "Ross Baker",
+      "url": "https://rossabaker.com/",
+      "rss": "https://rossabaker.com/blog/index.xml"
+    },
+    {
+      "name": "Xebia",
+      "url": "https://xebia.com/blog/",
+      "rss": "https://xebia.com/blog/category/technology/scala/feed/"
+    },
+    {
+      "name": "Chistian Hollinger",
+      "url": "https://chollinger.com/blog/",
+      "rss": "https://chollinger.com/blog/index.xml"
+    },
+    {
+      "name": "Anton Kovalevsky",
+      "url": "https://antonkw.github.io/",
+      "rss": "https://antonkw.github.io/feed.xml"
+    },
+    {
+      "name": "Medium",
+      "url": "https://medium.com/tag/scala",
+      "rss": "https://medium.com/feed/tag/scala"
+    },
+    {
+      "name": "VirtusLab",
+      "url": "https://virtuslab.com/blog/",
+      "rss": "https://virtuslab.com/feeds/blog/rss.xml"
+    },
+    {
+      "name": "Jendrik Poloczek",
+      "url": "https://www.madewithtea.com",
+      "rss": "https://www.madewithtea.com/rss.xml"
+    },
+    {
+      "name": "Pierre Ricadat",
+      "url": "https://blog.pierre-ricadat.com/",
+      "rss": "https://blog.pierre-ricadat.com/rss.xml"
+    },
+    {
+      "name": "Lachlan O'Dea",
+      "url": "https://lachlan.hashnode.dev",
+      "rss": "https://lachlan.hashnode.dev/rss.xml"
+    },
+    {
+      "name": "SoftwareMill",
+      "url": "https://softwaremill.com/blog/",
+      "rss": "https://softwaremill.com/blog.rss"
+    },
+    {
+      "name": "Ruslan Shevchenko",
+      "url": "https://github.com/rssh/notes",
+      "rss": "https://rssh.github.io/notes/feed.xml"
+    },
+    {
+      "name": "Neandertech",
+      "url": "https://neander.tech",
+      "rss": "https://neander.tech/rss.xml"
+    },
+    {
+      "name": "Scala Metals",
+      "url": "https://scalameta.org/metals/blog/",
+      "rss": "https://scalameta.org/metals/blog/rss.xml"
+    },
+    {
+      "name": "Scala for Fun and Profit",
+      "url": "https://podcasters.spotify.com/pod/show/julien-truffaut",
+      "rss": "https://anchor.fm/s/f303e5b4/podcast/rss"
+    },
+    {
+      "name": "Mark Galea",
+      "url": "https://cloudmark.github.io/",
+      "rss": "https://cloudmark.github.io/feed.xml"
+    },
+    {
+      "name": "A Developer's Experience",
+      "url": "https://blog.rhetoricalmusings.com",
+      "rss": "https://blog.rhetoricalmusings.com/index.xml"
+    }
+  ]
 }

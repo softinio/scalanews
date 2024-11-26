@@ -1,6 +1,6 @@
 
 
-# Scala News - May 24, 2024
+# Scala News - November 24, 2024
 
 A curated list of Scala related news from the community.
 
@@ -8,35 +8,55 @@ A curated list of Scala related news from the community.
 
 | Article       | Author  |
 | ------------- | -----:|
-| [Besom and Smithy4s on AWS -  Scala 3 good vibes only](https://blog.indoorvivants.com/2024-04-14-besom-smithy4s-aws.html) | Anton Sviridov |
-| [sbt 1.10.0](https://eed3si9n.com/sbt-1.10.0) | Eugene Yokota |
-| [sbt 1.10.0-RC2](https://eed3si9n.com/sbt-1.10.0-beta) | Eugene Yokota |
-| [sbt 2.x remote cache with Bazel compatibility](https://eed3si9n.com/sbt-remote-cache-with-bazel-compat/) | Eugene Yokota |
-| [WebSockets in Scala, Part 2: Integrating Redis and PostgreSQL](https://blog.rockthejvm.com/scala-redis-websockets-part-2/) | Daniel Ciocîrlan |
-| [The Skunk Scala Library for Database Interaction: A Comprehensive Guide](https://blog.rockthejvm.com/skunk-complete-guide/) | Daniel Ciocîrlan |
-| [Functional Parallel Programming in the wild](https://blog.rockthejvm.com/cats-effect-parallelism/) | Daniel Ciocîrlan |
-| [Streamlining Scala Development with Nix and Scala-cli](https://xebia.com/blog/streamlining-scala-development-nix-scala-cli/) | Esteban Marin |
-| [Announcing Business4s: a new value proposition for Scala](https://medium.com/@w.pitula/announcing-business4s-a-new-value-proposition-for-scala-f44ed7ff5f28?source=rss------scala-5) | Voytek Pituła |
-| [DataFrames and Datasets: The Building Blocks of Big Data in Apache Spark](https://medium.com/@rajt7258/dataframes-and-datasets-the-building-blocks-of-big-data-in-apache-spark-3530f2864c28?source=rss------scala-5) | Raj Tiwari |
-| [Apache Spark on Scala basic example](https://rycharlind.medium.com/apache-spark-on-scala-basic-example-7aab11d58c08?source=rss------scala-5) | Ryan Lindbeck |
-| [It is good to have an Option](https://blog.craftlab.hu/it-is-good-to-have-an-option-ef4ad3f95837?source=rss------scala-5) | Gábor Manner |
-| [Lean Scala using Scala 3](https://medium.com/@shrutibce/lean-scala-using-scala-3-a503d72ebf32?source=rss------scala-5) | Shruti Bhambhani |
-| [Tuning ZIO for high performance](https://blog.pierre-ricadat.com/tuning-zio-for-high-performance) | Pierre Ricadat |
-| [Supporting high-performance response streaming in Shardcake](https://blog.pierre-ricadat.com/supporting-high-performance-response-streaming-in-shardcake) | Pierre Ricadat |
-| [IO effect tracking using Ox](https://softwaremill.com/io-effect-tracking-using-ox) | SoftwareMill |
-| [Introduction to OtterJet](https://softwaremill.com/introduction-to-otterjet) | SoftwareMill |
-| [Integrating callbacks with structured concurrency in Scala](https://softwaremill.com/integrating-callbacks-with-structured-concurrency-in-scala) | SoftwareMill |
-| [Safe direct-style Scala: Ox 0.1.0 released](https://softwaremill.com/safe-direct-style-scala-ox-0-1-0-released) | SoftwareMill |
-| [Discover the highlights: Scalar Conference 2024](https://softwaremill.com/discover-the-highlights-scalar-conference-2024) | SoftwareMill |
-| [Jacek Kunicki - My Scala Story](https://softwaremill.com/jacek-kunicki-my-scala-story) | SoftwareMill |
-| [Benchmarking Tapir: Part 3 (Loom)](https://softwaremill.com/benchmarking-tapir-part-3-loom) | SoftwareMill |
-| [Krzysztof Ciesielski - My Scala Story](https://softwaremill.com/krzysztof-ciesielski-my-scala-story) | SoftwareMill |
-| [Data Engineering at Netflix using Apache Spark and Flink with Joan Goyeau](https://podcasters.spotify.com/pod/show/julien-truffaut/episodes/Data-Engineering-at-Netflix-using-Apache-Spark-and-Flink-with-Joan-Goyeau-e2jaij9) | Julien Truffaut |
-| [Music DSL in Scala.js with Paul Matthews](https://podcasters.spotify.com/pod/show/julien-truffaut/episodes/Music-DSL-in-Scala-js-with-Paul-Matthews-e2i4cqi) | Julien Truffaut |
-| [Simple Scala with Li-Haoyi](https://podcasters.spotify.com/pod/show/julien-truffaut/episodes/Simple-Scala-with-Li-Haoyi-e2h7jvu) | Julien Truffaut |
-| [Learning Smithy4s - a new series](https://www.youtube.com/watch?v=nNUnSbyyxGI&list=PL1NS3pe5mmu25RK5lJnLxnllcMkxBqaI5) | Jakub Kozłowski |
-| [Improved Reuse in Smithy with Mixins](https://www.youtube.com/watch?si=YoX9jmf4zDAgqjVh&v=sgAHR4dCAWs&feature=youtu.be) | Jakub Kozłowski |
-| [Explore your Smithy models with the CLI](https://www.youtube.com/watch?v=JuEHyp40wvM) | Jakub Kozłowski |
-| [htmx, ScalaTags and ZIO HTTP - Single-Page Web Applications in Scala](https://www.youtube.com/watch?v=xJnuXAc4siY) | Daniel Ciocîrlan |
-| [10 flavors of Scala's future - Scalar 2024 recap](https://www.youtube.com/watch?v=RWn80MhSdvI) | Jakub Kozłowski |
-
+| [12 years of the com.lihaoyi Scala Platform](http://www.lihaoyi.com/post/12yearsofthecomlihaoyiScalaPlatform.html) | Haoyi Li |
+| [A Distributed Code Execution Engine in Pekko with Scala](https://rockthejvm.com/articles/a-distributed-code-execution-engine-in-pekko-with-scala/) | Rock The JVM Blog |
+| [A Logic Circuit Simulator with Cats-Actors](http://cloudmark.github.io/Cats-Actors/) | Mark Galea |
+| [Autowire: Zero-Cost Dependency Injection](https://softwaremill.com/autowire-zero-cost-dependency-injection) | SoftwareMill |
+| [Bluesky Scala Starter Pack](https://go.bsky.app/APytbWH) | Salar Rahmanian |
+| [Cancellable HTTP requests via Scala's Tapir](https://alexn.org/blog/2024/09/29/cancellable-http-server-client-requests-via-scala-s-tapir/?pk_campaign=rss) | Alexandru Nedelcu |
+| [Cross-JDK Compilation in SBT](https://blog.rhetoricalmusings.com/posts/sbt-xcompile-jdk/) | Higher-Kinded Type |
+| [Custom SBT Task to List Direct Dependencies of a Project](https://yadukrishnan.live/custom-sbt-task-to-list-direct-dependencies-of-a-project) | Yadukrishnan |
+| [Customer Segmentation: an example with Scala on GCP Dataproc](https://medium.com/@henri.haitofr/customer-segmentation-with-scala-on-gcp-dataproc-674ada05bd22?source=rss------scala-5) | Henri TO |
+| [Developing Java Applications with Scala-CLI](https://yadukrishnan.live/developing-java-applications-with-scala-cli) | Yadukrishnan |
+| [Direct-style Bootzooka: 2024 update](https://softwaremill.com/direct-style-bootzooka-2024-update) | SoftwareMill |
+| [Direct-style concurrent streaming](https://softwaremill.com/direct-style-concurrent-streaming) | SoftwareMill |
+| [Discover SiriusXM new streaming platform with Luka Jacobowitz and Damian Mazurkiewicz](https://podcasters.spotify.com/pod/show/julien-truffaut/episodes/Discover-SiriusXM-new-streaming-platform-with-Luka-Jacobowitz-and-Damian-Mazurkiewicz-e2l9cvi) | Julien Truffaut |
+| [From Scala to Silicon: The Chisel Journey with Jack Koenig](https://podcasters.spotify.com/pod/show/julien-truffaut/episodes/From-Scala-to-Silicon-The-Chisel-Journey-with-Jack-Koenig-e2qkbl5) | Julien Truffaut |
+| [GraphQL in Scala: Role-Based Access Control](https://blog.pierre-ricadat.com/graphql-in-scala-role-based-access-control) | Pierre Ricadat |
+| [How I SBT - I](https://blog.rhetoricalmusings.com/posts/how-i-sbt1/) | Higher-Kinded Type |
+| [How I SBT - II](https://blog.rhetoricalmusings.com/posts/how-i-sbt2/) | Higher-Kinded Type |
+| [How I SBT - III](https://blog.rhetoricalmusings.com/posts/how-i-sbt3/) | Higher-Kinded Type |
+| [How I SBT - IV](https://blog.rhetoricalmusings.com/posts/how-i-sbt4/) | Higher-Kinded Type |
+| [How I SBT - V](https://blog.rhetoricalmusings.com/posts/how-i-sbt5/) | Higher-Kinded Type |
+| [How to Build a ZIO Full-Stack Web Application](https://rockthejvm.com/articles/zio-full-stack-webapp/) | Rock The JVM Blog |
+| [Idiomatic dependency injection for ZIO applications in Scala](https://blog.pierre-ricadat.com/idiomatic-dependency-injection-for-zio-applications-in-scala) | Pierre Ricadat |
+| [Optimal Scalafmt configuration using Genetic Algorithms](https://blog.indoorvivants.com/2024-09-27-scalafmt-genetic-optimiser.html) | Anton Sviridov |
+| [Parallel Collections and Actors in Scala](https://xebia.com/blog/parallel-collections-and-actors-in-scala/) | Jan Vermeir |
+| [RFC-4: persistent worker](https://eed3si9n.com/rfc-4-persistent-worker/) | Eugene Yokota |
+| [Scala 3 Manifesto 0.1.0](https://eed3si9n.com/manifesto/) | Eugene Yokota |
+| [Scala 3 Roadmap for 2024](https://virtuslab.com/blog/scala/scala-3-roadmap-for-2024) | Paweł Marks |
+| [Scala Applications in Data Engineering: A Comprehensive Overview](https://medium.com/@sarthakupreti.upreti/scala-applications-in-data-engineering-a-comprehensive-overview-b052265f20d9?source=rss------scala-5) | Sarthak Upreti |
+| [Scala Long-Term Support retrospective](https://virtuslab.com/blog/scala/scala-lts-retrospective) | Paweł Marks |
+| [Scala Pattern Matching](https://medium.com/@abilngeorge/scala-pattern-matching-862152781fd4?source=rss------scala-5) | Abil N George |
+| [The Tri-Z Architecture: a Pattern for Layering ZIO Applications in Scala](https://blog.pierre-ricadat.com/the-tri-z-architecture-a-pattern-for-layering-zio-applications-in-scala) | Pierre Ricadat |
+| [Things I wish I knew when I started with Event Sourcing - part 3, storage](https://softwaremill.com/things-i-wish-i-knew-when-i-started-with-event-sourcing-part-3-storage) | SoftwareMill |
+| [how to see the trees using the Scala compilers](https://eed3si9n.com/trees/) | Eugene Yokota |
+| [ifdef 0.3.0: conditional compilation in Scala](https://eed3si9n.com/ifdef-0.3.0-conditional-compilation-in-scala) | Eugene Yokota |
+| [intro to Hedgehog for Scala](https://eed3si9n.com/hedgehog-scala/) | Eugene Yokota |
+| [sbt 1.10.1](https://eed3si9n.com/sbt-1.10.1) | Eugene Yokota |
+| [sbt 1.10.2](https://eed3si9n.com/sbt-1.10.2) | Eugene Yokota |
+| [sbt 1.10.3](https://eed3si9n.com/sbt-1.10.3) | Eugene Yokota |
+| [sbt 1.10.4](https://eed3si9n.com/sbt-1.10.4) | Eugene Yokota |
+| [sbt 1.10.5](https://eed3si9n.com/sbt-1.10.5) | Eugene Yokota |
+| [sbt 2.0.0-M2](https://eed3si9n.com/sbt-2.0.0-beta) | Eugene Yokota |
+| [sbt-assembly 2.3.0, Contraband 0.6.0, and sbt-pgp 2.3.0](https://eed3si9n.com/sbt-assembly-2.3.0) | Eugene Yokota |
+| [sbt-projectmatrix 0.10.1](https://eed3si9n.com/sbt-projectmatrix-0.10.1) | Eugene Yokota |
+| [setup-sbt GitHub Action](https://eed3si9n.com/setup-sbt/) | Eugene Yokota |
+| [sudori part 4](https://eed3si9n.com/sudori-part4/) | Eugene Yokota |
+| [sudori part 5](https://eed3si9n.com/sudori-part5/) | Eugene Yokota |
+| [sudori part 6: sbt query](https://eed3si9n.com/sudori-part6/) | Eugene Yokota |
+| [tag-based back publishing with sbt](https://eed3si9n.com/tag-based-back-publishing-with-sbt/) | Eugene Yokota |
+| [ten things I like about Scala 3](https://eed3si9n.com/10things/) | Eugene Yokota |
+| [tree-sitter-scala 0.22.0](https://eed3si9n.com/tree-sitter-scala-0.22.0) | Eugene Yokota |
+| [tree-sitter-scala 0.22.1](https://eed3si9n.com/tree-sitter-scala-0.22.1) | Eugene Yokota |
+| [Typelevel Code of Conduct Committee](https://typelevel.org/blog/2024/11/21/new-code-of-conduct-committee-members.html) | Typelevel |

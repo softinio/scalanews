@@ -72,7 +72,7 @@ object Bloggers {
       || Article       | Author  |
       || ------------- | -----:|"""
 
-      val news = articleList.map { article =>
+      val news = articleList.sortBy(_.title).map { article =>
         s"|| [${article.title}](${article.url.getOrElse("URL Missing")}) | ${article.author} |"
       }
 

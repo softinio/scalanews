@@ -84,20 +84,28 @@ object Bloggers {
   }
 
   private def isAboutScala(entry: SyndEntry): Boolean = {
-    val hasScalaCategory = Option(entry.getCategories)
+    val hasRelevantCategory = Option(entry.getCategories)
       .map(_.asScala.toList)
       .getOrElse(List())
-      .exists(_.getName.toLowerCase.contains("scala"))
+      .exists(category => {
+        val name = category.getName.toLowerCase
+        name.contains("scala") || name.contains("sbt")
+      })
 
-    val hasScalaInTitle =
-      Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("scala")
+    val hasRelevantTitle =
+      Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("scala") ||
+      Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("sbt")
 
-    val hasScalaInDescription = Option(entry.getDescription)
+    val hasRelevantDescription = Option(entry.getDescription)
       .map(_.getValue.toLowerCase)
       .getOrElse("")
-      .contains("scala")
+      .contains("scala") ||
+      Option(entry.getDescription)
+      .map(_.getValue.toLowerCase)
+      .getOrElse("")
+      .contains("sbt")
 
-    hasScalaCategory || hasScalaInTitle || hasScalaInDescription
+    hasRelevantCategory || hasRelevantTitle || hasRelevantDescription
   }
 
   private def getBlogAuthor(entry: SyndEntry, blog: Blog): String =

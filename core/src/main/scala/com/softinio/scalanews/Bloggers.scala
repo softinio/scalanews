@@ -93,17 +93,20 @@ object Bloggers {
       })
 
     val hasRelevantTitle =
-      Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("scala") ||
-      Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("sbt")
+      Option(entry.getTitle)
+        .map(_.toLowerCase)
+        .getOrElse("")
+        .contains("scala") ||
+        Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("sbt")
 
     val hasRelevantDescription = Option(entry.getDescription)
       .map(_.getValue.toLowerCase)
       .getOrElse("")
       .contains("scala") ||
       Option(entry.getDescription)
-      .map(_.getValue.toLowerCase)
-      .getOrElse("")
-      .contains("sbt")
+        .map(_.getValue.toLowerCase)
+        .getOrElse("")
+        .contains("sbt")
 
     hasRelevantCategory || hasRelevantTitle || hasRelevantDescription
   }
@@ -157,7 +160,9 @@ object Bloggers {
       feedResult <- Rome.fetchFeed(blog.rss.toURL.toString)
       result <- feedResult match {
         case Left(exception) =>
-          IO.println(s"Error fetching feed for blog ${blog.name}: ${exception.getMessage}") *> IO.pure(None)
+          IO.println(
+            s"Error fetching feed for blog ${blog.name}: ${exception.getMessage}"
+          ) *> IO.pure(None)
         case Right(feed) =>
           IO.pure(
             getArticlesFromEntries(

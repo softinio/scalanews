@@ -147,16 +147,20 @@ object Bloggers {
   ): IO[Option[List[Article]]] =
     for {
       feedResult <- Rome.fetchFeed(blog.rss.toURL.toString)
-    } yield {
-      getArticlesFromEntries(
-        blog,
-        feedResult
-          .map(_.getEntries.asScala.toList)
-          .getOrElse(List[SyndEntry]()),
-        startDate,
-        endDate
-      )
-    }
+      result <- feedResult match {
+        case Left(exception) =>
+          IO.println(s"Error fetching feed for blog ${blog.name}: ${exception.getMessage}") *> IO.pure(None)
+        case Right(feed) =>
+          IO.pure(
+            getArticlesFromEntries(
+              blog,
+              feed.getEntries.asScala.toList,
+              startDate,
+              endDate
+            )
+          )
+      }
+    } yield result
 
   def createBlogList(startDate: Date, endDate: Date): IO[List[Article]] =
     ConfigLoader.load().flatMap { conf =>

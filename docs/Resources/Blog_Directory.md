@@ -20,7 +20,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Yadu Krishnan | <https://yadukrishnan.live/> | [rss feed](https://yadukrishnan.live/rss.xml) |
 | Michał Pawlik | <https://blog.michal.pawlik.dev/> | [rss feed](https://blog.michal.pawlik.dev/index.xml) |
 | Haoyi Li | <https://www.lihaoyi.com/> | [rss feed](https://www.lihaoyi.com/feed.xml) |
-| Rock The JVM Blog | <https://blog.rockthejvm.com/> | [rss feed](https://blog.rockthejvm.com/feed.xml) |
+| Rock The JVM Blog | <https://blog.rockthejvm.com/> | [rss feed](https://rockthejvm.com/articles/feed.xml) |
 | Antonio Gelameris | <https://toniogela.dev/> | [rss feed](https://toniogela.dev/rss.xml) |
 | Juliano Alves | <https://juliano-alves.com/> | [rss feed](https://juliano-alves.com/feed.xml) |
 | Inner Product | <https://inner-product.com/> | [rss feed](https://www.inner-product.com/feed/feed.xml) |
@@ -29,7 +29,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Chistian Hollinger | <https://chollinger.com/blog/> | [rss feed](https://chollinger.com/blog/index.xml) |
 | Anton Kovalevsky | <https://antonkw.github.io/> | [rss feed](https://antonkw.github.io/feed.xml) |
 | Medium | <https://medium.com/tag/scala> | [rss feed](https://medium.com/feed/tag/scala) |
-| VirtusLab | <https://virtuslab.com/blog/> | [rss feed](https://virtuslab.com/blog/feed/) |
+| VirtusLab | <https://virtuslab.com/blog/> | [rss feed](https://virtuslab.com/feeds/blog/rss.xml) |
 | Jendrik Poloczek | <https://www.madewithtea.com> | [rss feed](https://www.madewithtea.com/rss.xml) |
 | Pierre Ricadat | <https://blog.pierre-ricadat.com/> | [rss feed](https://blog.pierre-ricadat.com/rss.xml) |
 | Lachlan O'Dea | <https://lachlan.hashnode.dev> | [rss feed](https://lachlan.hashnode.dev/rss.xml) |

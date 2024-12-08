@@ -40,6 +40,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Scala for Fun and Profit | <https://podcasters.spotify.com/pod/show/julien-truffaut> | [rss feed](https://anchor.fm/s/f303e5b4/podcast/rss) |
 | Mark Galea | <https://cloudmark.github.io/> | [rss feed](https://cloudmark.github.io/feed.xml) |
 | A Developer's Experience | <https://blog.rhetoricalmusings.com> | [rss feed](https://blog.rhetoricalmusings.com/index.xml) |
+| Erik van Oosten | <https://day-to-day-stuff.blogspot.com/> | [rss feed](https://day-to-day-stuff.blogspot.com/feeds/posts/default?q=label:scala&alt=rss) |
       
 ###### Got a Scala related blog? Add it to this Blog Directory!
 

@@ -17,7 +17,6 @@
 package com.softinio.scalanews.algebra
 
 import pureconfig.*
-import pureconfig.generic.derivation.default.*
 
 import java.net.URI
 

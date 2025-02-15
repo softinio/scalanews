@@ -18,7 +18,6 @@ package com.softinio.scalanews.algebra
 
 import org.http4s.Uri
 import pureconfig.*
-import pureconfig.generic.derivation.default.*
 
 enum EventType:
   case Meetup, Conference

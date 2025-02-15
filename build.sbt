@@ -58,7 +58,7 @@ lazy val core = crossProject(JVMPlatform)
     nativeImageOptions += "--no-fallback",
     nativeImageOptions += "--enable-url-protocols=http",
     nativeImageOptions += "--enable-url-protocols=https",
-    nativeImageOutput := file(".") / "scalanews",
+    nativeImageOutput := file("target") / "scalanews",
     nativeImageReady := { () => println("SBT Finished creating image.") }
   )
   .enablePlugins(NativeImagePlugin)

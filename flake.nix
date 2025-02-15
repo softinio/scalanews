@@ -35,8 +35,8 @@
               help = "Create new scalanews executable";
               command = ''
                 sbt coreJVM/nativeImage
-                chmod +x scalanews
-                ./scalanews --help
+                chmod +x target/scalanews
+                ./target/scalanews --help
               '';
             }
           ];

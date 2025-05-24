@@ -180,5 +180,8 @@
       "url": "https://theexceptioncatcher.com/",
       "rss": "https://theexceptioncatcher.com/feed"
     }
-  ]
+  ],
+  "server": {
+    "port": 8080
+  }
 }

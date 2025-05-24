@@ -31,7 +31,7 @@ class ServerSuite extends CatsEffectSuite {
     val response = service.orNotFound.run(request)
 
     assertIO(response.map(_.status), Status.Ok) >>
-    assertIO(response.flatMap(_.as[String]), "Server is running")
+      assertIO(response.flatMap(_.as[String]), "Server is running")
   }
 
   test("GET / should return 404 for root path") {

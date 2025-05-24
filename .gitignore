@@ -7,6 +7,13 @@ boot/
 lib_managed/
 src_managed/
 
+# Mill
+out/
+
+# Scala CLI
+.scala-build/
+
+
 # vim
 *.sw?
 

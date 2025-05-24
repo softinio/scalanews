@@ -21,7 +21,11 @@ import pureconfig.*
 import java.net.URI
 
 final case class Blog(name: String, url: URI, rss: URI) derives ConfigReader
-final case class Configuration(bloggers: List[Blog]) derives ConfigReader
+final case class ServerConfig(port: Int = 8080) derives ConfigReader
+final case class Configuration(
+    bloggers: List[Blog],
+    server: Option[ServerConfig] = None
+) derives ConfigReader
 final case class EventConfig(meetups: List[Event], conferences: List[Event])
     derives ConfigReader
 

@@ -24,7 +24,7 @@ import cats.implicits.*
 import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
-import com.softinio.scalanews.algebra.EventType
+import com.softinio.scalanews.algebra.{EventType, ServerConfig}
 
 object Main
     extends CommandIOApp(
@@ -160,6 +160,10 @@ object Main
             } yield ExitCode.Success
           } else IO(ExitCode.Success)
         case ServerCmd(port) =>
-          Server.run(port)
+          for {
+            config <- ConfigLoader.load()
+            serverConfig = config.server.getOrElse(ServerConfig(port))
+            result <- Server.run(serverConfig)
+          } yield result
       }
 }

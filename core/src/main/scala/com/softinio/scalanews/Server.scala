@@ -25,6 +25,7 @@ import org.http4s.ember.server.*
 import org.http4s.server.Router
 
 import com.comcast.ip4s.*
+import com.softinio.scalanews.algebra.ServerConfig
 
 object Server {
 
@@ -37,17 +38,19 @@ object Server {
     "/" -> scalaNewsService
   ).orNotFound
 
-  def run(port: Int = 8080): IO[ExitCode] = {
+  def run(serverConfig: ServerConfig): IO[ExitCode] = {
     EmberServerBuilder
       .default[IO]
       .withHost(ipv4"0.0.0.0")
-      .withPort(Port.fromInt(port).getOrElse(port"8080"))
+      .withPort(Port.fromInt(serverConfig.port).getOrElse(port"8080"))
       .withHttpApp(httpApp)
       .build
       .use { server =>
         IO.println(s"Server started at ${server.address}") >>
-        IO.never
+          IO.never
       }
       .as(ExitCode.Success)
   }
+
+  def run(port: Int = 8080): IO[ExitCode] = run(ServerConfig(port))
 }

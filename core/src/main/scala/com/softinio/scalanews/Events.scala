@@ -104,7 +104,6 @@ object Events {
         .drain
     } yield ExitCode.Success
   }
-
   def addHeader(eventType: EventType): IO[ExitCode] = {
     val header = IO.blocking {
       s"""

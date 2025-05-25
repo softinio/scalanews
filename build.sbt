@@ -30,6 +30,18 @@ val Scala3 = "3.7.0"
 ThisBuild / crossScalaVersions := Seq(Scala3)
 ThisBuild / scalaVersion := Scala3 // the default Scala
 
+Test / fork := true
+
+Test / envVars := Map(
+  "SCALA_NEWS_CONFIG" -> "test-config.json"
+)
+
+// Define aliases for test commands
+addCommandAlias("testQuick", "testOnly * -- -l IntegrationTest")
+addCommandAlias("testIntegration", "testOnly * -- -n IntegrationTest")
+addCommandAlias("testAll", "test")
+
+
 lazy val root = tlCrossRootProject.aggregate(core)
 
 lazy val core = crossProject(JVMPlatform)
@@ -44,6 +56,7 @@ lazy val core = crossProject(JVMPlatform)
       "com.github.pureconfig" %% "pureconfig-generic-scala3" % "0.17.9",
       "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.9",
       "com.github.pureconfig" %% "pureconfig-http4s" % "0.17.9",
+      "org.http4s" %% "http4s-circe" % "0.23.30",
       "org.http4s" %% "http4s-ember-client" % "0.23.30",
       "org.http4s" %% "http4s-ember-server" % "0.23.30",
       "org.http4s" %% "http4s-dsl" % "0.23.30",
@@ -52,6 +65,8 @@ lazy val core = crossProject(JVMPlatform)
       "io.circe" %% "circe-core" % "0.14.13",
       "io.circe" %% "circe-generic" % "0.14.13",
       "io.circe" %% "circe-parser" % "0.14.13",
+      "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
+      "ch.qos.logback" % "logback-classic" % "1.4.14",
       "com.rometools" % "rome" % "2.1.0",
       "org.scalameta" %% "munit" % "1.1.1" % Test,
       "org.typelevel" %% "munit-cats-effect" % "2.1.0" % Test

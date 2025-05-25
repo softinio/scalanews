@@ -24,10 +24,12 @@ import com.softinio.scalanews.algebra.EventConfig
 
 object ConfigLoader {
   def load(filePath: String = "config.json"): IO[Configuration] = {
-    ConfigSource.file(filePath).loadF[IO, Configuration]()
+    val configPath = sys.env.getOrElse("SCALA_NEWS_CONFIG", filePath)
+    ConfigSource.file(configPath).loadF[IO, Configuration]()
   }
 
   def loadEventsConfig(filePath: String = "events.json"): IO[EventConfig] = {
-    ConfigSource.file(filePath).loadF[IO, EventConfig]()
+    val configPath = sys.env.getOrElse("SCALA_NEWS_EVENTS_CONFIG", filePath)
+    ConfigSource.file(configPath).loadF[IO, EventConfig]()
   }
 }

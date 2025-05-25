@@ -26,6 +26,7 @@ import org.http4s.server.Router
 
 import com.comcast.ip4s.*
 import com.softinio.scalanews.algebra.ServerConfig
+import com.softinio.scalanews.service.BlogService
 
 object Server {
 
@@ -35,7 +36,7 @@ object Server {
   }
 
   private val httpApp = Router(
-    "/" -> scalaNewsService
+    "/" -> (scalaNewsService <+> BlogService.routes)
   ).orNotFound
 
   def run(serverConfig: ServerConfig): IO[ExitCode] = {

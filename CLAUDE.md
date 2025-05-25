@@ -15,6 +15,15 @@ sbt compile
 # Run tests
 sbt test
 
+# Run fast tests (excluding integration tests)
+sbt testQuick
+
+# Run only integration tests (slow, real RSS fetching)
+sbt testIntegration
+
+# Run all tests (including integration tests)
+sbt testAll
+
 # Run Before creating a pull request
 sbt prePR
 

@@ -30,31 +30,42 @@ class BlogServiceSuite extends CatsEffectSuite {
 
   private val service = BlogService.routes
 
-  test("GET /blog should return 200 with JSON array of articles".tag(IntegrationTest)) {
+  test(
+    "GET /blog should return 200 with JSON array of articles".tag(
+      IntegrationTest
+    )
+  ) {
     val request = Request[IO](Method.GET, uri"/blog")
     val response = service.orNotFound.run(request)
 
     assertIO(response.map(_.status), Status.Ok) >>
-    response.flatMap(_.as[String]).map { body =>
-      val json = parse(body)
-      assert(json.isRight, s"Response should be valid JSON: $body")
-      val jsonValue = json.getOrElse(Json.Null)
-      assert(jsonValue.isArray, "Response should be a JSON array")
-      assert(jsonValue.asArray.size == 1)
-    }
+      response.flatMap(_.as[String]).map { body =>
+        val json = parse(body)
+        assert(json.isRight, s"Response should be valid JSON: $body")
+        val jsonValue = json.getOrElse(Json.Null)
+        assert(jsonValue.isArray, "Response should be a JSON array")
+        assert(jsonValue.asArray.size == 1)
+      }
   }
 
-  test("GET /blog with custom startDate and endDate parameters".tag(IntegrationTest)) {
-    val request = Request[IO](Method.GET, uri"/blog?startDate=2024-01-01&endDate=2024-01-07")
+  test(
+    "GET /blog with custom startDate and endDate parameters".tag(
+      IntegrationTest
+    )
+  ) {
+    val request = Request[IO](
+      Method.GET,
+      uri"/blog?startDate=2024-01-01&endDate=2024-01-07"
+    )
     val response = service.orNotFound.run(request)
 
     assertIO(response.map(_.status), Status.Ok) >>
-    response.flatMap(_.as[String]).map { body =>
-      val json = parse(body)
-      assert(json.isRight, s"Response should be valid JSON: $body")
-      val jsonValue = json.getOrElse(Json.Null)
-      assert(jsonValue.isArray, "Response should be a JSON array")
-    }
+      response.flatMap(_.as[String]).map { body =>
+        val json = parse(body)
+        assert(json.isRight, s"Response should be valid JSON: $body")
+        val jsonValue = json.getOrElse(Json.Null)
+        assert(jsonValue.isArray, "Response should be a JSON array")
+      }
   }
 
   test("GET /blog with only startDate parameter".tag(IntegrationTest)) {
@@ -62,12 +73,12 @@ class BlogServiceSuite extends CatsEffectSuite {
     val response = service.orNotFound.run(request)
 
     assertIO(response.map(_.status), Status.Ok) >>
-    response.flatMap(_.as[String]).map { body =>
-      val json = parse(body)
-      assert(json.isRight, s"Response should be valid JSON: $body")
-      val jsonValue = json.getOrElse(Json.Null)
-      assert(jsonValue.isArray, "Response should be a JSON array")
-    }
+      response.flatMap(_.as[String]).map { body =>
+        val json = parse(body)
+        assert(json.isRight, s"Response should be valid JSON: $body")
+        val jsonValue = json.getOrElse(Json.Null)
+        assert(jsonValue.isArray, "Response should be a JSON array")
+      }
   }
 
   test("GET /blog with only endDate parameter".tag(IntegrationTest)) {
@@ -75,12 +86,12 @@ class BlogServiceSuite extends CatsEffectSuite {
     val response = service.orNotFound.run(request)
 
     assertIO(response.map(_.status), Status.Ok) >>
-    response.flatMap(_.as[String]).map { body =>
-      val json = parse(body)
-      assert(json.isRight, s"Response should be valid JSON: $body")
-      val jsonValue = json.getOrElse(Json.Null)
-      assert(jsonValue.isArray, "Response should be a JSON array")
-    }
+      response.flatMap(_.as[String]).map { body =>
+        val json = parse(body)
+        assert(json.isRight, s"Response should be valid JSON: $body")
+        val jsonValue = json.getOrElse(Json.Null)
+        assert(jsonValue.isArray, "Response should be a JSON array")
+      }
   }
 
   test("GET /blog/nonexistent should return 404") {

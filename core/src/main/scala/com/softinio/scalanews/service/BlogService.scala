@@ -37,30 +37,51 @@ object BlogService {
 
   private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-  
-  object StartDateQueryParamMatcher extends OptionalQueryParamDecoderMatcher[String]("startDate")
-  object EndDateQueryParamMatcher extends OptionalQueryParamDecoderMatcher[String]("endDate")
 
-  implicit val uriEncoder: Encoder[org.http4s.Uri] = Encoder.encodeString.contramap(_.toString)
-  implicit val dateEncoder: Encoder[Date] = Encoder.encodeString.contramap { date =>
-    val instant = date.toInstant
-    val localDate = instant.atZone(java.time.ZoneId.systemDefault()).toLocalDate
-    localDate.format(dateFormatter)
+  private object StartDateQueryParamMatcher
+      extends OptionalQueryParamDecoderMatcher[String]("startDate")
+  private object EndDateQueryParamMatcher
+      extends OptionalQueryParamDecoderMatcher[String]("endDate")
+
+  implicit val uriEncoder: Encoder[org.http4s.Uri] =
+    Encoder.encodeString.contramap(_.toString)
+  implicit val dateEncoder: Encoder[Date] = Encoder.encodeString.contramap {
+    date =>
+      val instant = date.toInstant
+      val localDate =
+        instant.atZone(java.time.ZoneId.systemDefault()).toLocalDate
+      localDate.format(dateFormatter)
   }
   implicit val articleEncoder: Encoder[Article] = deriveEncoder[Article]
 
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> Root / "blog" :? StartDateQueryParamMatcher(startDateOpt) +& EndDateQueryParamMatcher(endDateOpt) =>
+    case GET -> Root / "blog" :? StartDateQueryParamMatcher(
+          startDateOpt
+        ) +& EndDateQueryParamMatcher(endDateOpt) =>
       val today = LocalDate.now()
-      val endLocalDate = endDateOpt.map(LocalDate.parse(_, dateFormatter)).getOrElse(today)
-      val startLocalDate = startDateOpt.map(LocalDate.parse(_, dateFormatter)).getOrElse(today.minusDays(7))
-      
+      val endLocalDate =
+        endDateOpt.map(LocalDate.parse(_, dateFormatter)).getOrElse(today)
+      val startLocalDate = startDateOpt
+        .map(LocalDate.parse(_, dateFormatter))
+        .getOrElse(today.minusDays(7))
+
       // Convert LocalDate to java.util.Date for Bloggers API
-      val startDate = Date.from(startLocalDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant())
-      val endDate = Date.from(endLocalDate.atTime(23, 59, 59).atZone(java.time.ZoneId.systemDefault()).toInstant())
-      
+      val startDate = Date.from(
+        startLocalDate
+          .atStartOfDay()
+          .atZone(java.time.ZoneId.systemDefault())
+          .toInstant
+      )
+      val endDate = Date.from(
+        endLocalDate
+          .atTime(23, 59, 59)
+          .atZone(java.time.ZoneId.systemDefault())
+          .toInstant
+      )
+
       for {
-        _ <- logger.info(s"Fetching blog articles from ${startLocalDate.format(dateFormatter)} to ${endLocalDate.format(dateFormatter)}")
+        _ <- logger.info(s"Fetching blog articles from ${startLocalDate
+            .format(dateFormatter)} to ${endLocalDate.format(dateFormatter)}")
         articles <- Bloggers.createBlogList(startDate, endDate)
         _ <- logger.info(s"Found ${articles.size} articles")
         response <- Ok(articles.asJson)

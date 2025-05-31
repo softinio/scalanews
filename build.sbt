@@ -41,7 +41,6 @@ addCommandAlias("testQuick", "testOnly * -- -l IntegrationTest")
 addCommandAlias("testIntegration", "testOnly * -- -n IntegrationTest")
 addCommandAlias("testAll", "test")
 
-
 lazy val root = tlCrossRootProject.aggregate(core)
 
 lazy val core = crossProject(JVMPlatform)
@@ -65,8 +64,8 @@ lazy val core = crossProject(JVMPlatform)
       "io.circe" %% "circe-core" % "0.14.13",
       "io.circe" %% "circe-generic" % "0.14.13",
       "io.circe" %% "circe-parser" % "0.14.13",
-      "org.typelevel" %% "log4cats-slf4j" % "2.7.0",
-      "ch.qos.logback" % "logback-classic" % "1.4.14",
+      "org.typelevel" %% "log4cats-slf4j" % "2.7.1",
+      "ch.qos.logback" % "logback-classic" % "1.5.18",
       "com.rometools" % "rome" % "2.1.0",
       "org.scalameta" %% "munit" % "1.1.1" % Test,
       "org.typelevel" %% "munit-cats-effect" % "2.1.0" % Test

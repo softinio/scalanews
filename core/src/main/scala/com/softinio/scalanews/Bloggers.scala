@@ -180,7 +180,11 @@ object Bloggers {
       createBlogListFromBloggers(conf.bloggers, startDate, endDate)
     }
 
-  def createBlogListFromBloggers(bloggers: List[Blog], startDate: Date, endDate: Date): IO[List[Article]] =
+  def createBlogListFromBloggers(
+      bloggers: List[Blog],
+      startDate: Date,
+      endDate: Date
+  ): IO[List[Article]] =
     bloggers.foldLeft(IO.pure(List[Article]()))((acc, blog) =>
       acc.flatMap { articleList =>
         getArticlesForBlogger(blog, startDate, endDate).map {

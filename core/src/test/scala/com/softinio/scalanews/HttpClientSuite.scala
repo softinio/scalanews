@@ -22,10 +22,12 @@ import munit.CatsEffectSuite
 
 import cats.effect.unsafe.IORuntime
 
+import com.softinio.scalanews.TestTags.*
+
 class HttpClientSuite extends CatsEffectSuite {
 
   implicit val runtime: IORuntime = cats.effect.unsafe.IORuntime.global
-  test("Fetch Rss") {
+  test("Fetch Rss".tag(IntegrationTest)) {
     val result = HttpClient.fetchRss("https://www.softinio.com/atom.xml")
     val obtained = result.use { res =>
       val resultStr = fromInputStream(res).mkString

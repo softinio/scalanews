@@ -22,6 +22,8 @@ import munit.CatsEffectSuite
 import java.net.URI
 import java.text.SimpleDateFormat
 
+import com.softinio.scalanews.TestTags.*
+
 class BloggersSuite extends CatsEffectSuite {
   test("generateDirectory - test the new blogger directory is generated") {
     val blog = Blog(
@@ -39,6 +41,7 @@ class BloggersSuite extends CatsEffectSuite {
 
   test(
     "getArticlesForBlogger - test getting articles for a blog list for a blogger for a given date range"
+      .tag(IntegrationTest)
   ) {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val blog = Blog(
@@ -63,6 +66,7 @@ class BloggersSuite extends CatsEffectSuite {
 
   test(
     "createBlogList - test getting articles for a blog list for all bloggers for a given date range"
+      .tag(IntegrationTest)
   ) {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
 

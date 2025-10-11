@@ -16,25 +16,9 @@
 
 package com.softinio.scalanews
 
-import cats.effect.*
+import munit.Tag
 
-import munit.CatsEffectSuite
-
-import com.softinio.scalanews.TestTags.*
-
-class RomeSuite extends CatsEffectSuite {
-
-  test("Fetch Feed".tag(IntegrationTest)) {
-    val obtained: IO[Boolean] = for {
-      result <- Rome.fetchFeed("https://www.softinio.com/atom.xml")
-    } yield {
-      result match {
-        case Right(feed) =>
-          val title = feed.getTitle
-          title == "Salar Rahmanian"
-        case _ => false
-      }
-    }
-    assertIO(obtained, true)
-  }
+object TestTags {
+  val IntegrationTest = Tag("IntegrationTest")
+  val ServiceTest = Tag("ServiceTest")
 }

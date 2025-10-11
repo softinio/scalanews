@@ -24,16 +24,16 @@ import org.http4s.implicits.*
 import io.circe.*
 import io.circe.parser.*
 
-object IntegrationTest extends munit.Tag("IntegrationTest")
+import com.softinio.scalanews.TestTags.*
 
 class BlogServiceSuite extends CatsEffectSuite {
 
   private val service = BlogService.routes
 
   test(
-    "GET /blog should return 200 with JSON array of articles".tag(
-      IntegrationTest
-    )
+    "GET /blog should return 200 with JSON array of articles"
+      .tag(IntegrationTest)
+      .tag(ServiceTest)
   ) {
     val request = Request[IO](Method.GET, uri"/blog")
     val response = service.orNotFound.run(request)
@@ -49,9 +49,9 @@ class BlogServiceSuite extends CatsEffectSuite {
   }
 
   test(
-    "GET /blog with custom startDate and endDate parameters".tag(
-      IntegrationTest
-    )
+    "GET /blog with custom startDate and endDate parameters"
+      .tag(IntegrationTest)
+      .tag(ServiceTest)
   ) {
     val request = Request[IO](
       Method.GET,
@@ -68,7 +68,11 @@ class BlogServiceSuite extends CatsEffectSuite {
       }
   }
 
-  test("GET /blog with only startDate parameter".tag(IntegrationTest)) {
+  test(
+    "GET /blog with only startDate parameter"
+      .tag(IntegrationTest)
+      .tag(ServiceTest)
+  ) {
     val request = Request[IO](Method.GET, uri"/blog?startDate=2024-01-01")
     val response = service.orNotFound.run(request)
 
@@ -81,7 +85,11 @@ class BlogServiceSuite extends CatsEffectSuite {
       }
   }
 
-  test("GET /blog with only endDate parameter".tag(IntegrationTest)) {
+  test(
+    "GET /blog with only endDate parameter"
+      .tag(IntegrationTest)
+      .tag(ServiceTest)
+  ) {
     val request = Request[IO](Method.GET, uri"/blog?endDate=2024-01-07")
     val response = service.orNotFound.run(request)
 

@@ -26,7 +26,7 @@ ThisBuild / tlSitePublishBranch := Some("main")
 
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("21"))
 
-val Scala3 = "3.7.0"
+val Scala3 = "3.7.3"
 ThisBuild / crossScalaVersions := Seq(Scala3)
 ThisBuild / scalaVersion := Scala3 // the default Scala
 
@@ -37,9 +37,30 @@ Test / envVars := Map(
 )
 
 // Define aliases for test commands
-addCommandAlias("testQuick", "testOnly * -- -l IntegrationTest")
-addCommandAlias("testIntegration", "testOnly * -- -n IntegrationTest")
+addCommandAlias(
+  "testUnit",
+  "testOnly * -- --exclude-tags=IntegrationTest,ServiceTest"
+)
+addCommandAlias(
+  "testIntegration",
+  "testOnly * -- --include-tags=IntegrationTest"
+)
+addCommandAlias("testService", "testOnly * -- --include-tags=ServiceTest")
 addCommandAlias("testAll", "test")
+
+// Dependency versions
+val catsVersion = "2.13.0"
+val catsEffectVersion = "3.6.3"
+val declineVersion = "2.5.0"
+val pureconfigVersion = "0.17.9"
+val http4sVersion = "0.23.32"
+val fs2Version = "3.12.2"
+val circeVersion = "0.14.14"
+val log4catsVersion = "2.7.1"
+val logbackVersion = "1.5.19"
+val romeVersion = "2.1.0"
+val munitVersion = "1.2.0"
+val munitCatsEffectVersion = "2.1.0"
 
 lazy val root = tlCrossRootProject.aggregate(core)
 
@@ -49,30 +70,30 @@ lazy val core = crossProject(JVMPlatform)
   .settings(
     name := "scalanews",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.13.0",
-      "org.typelevel" %% "cats-effect" % "3.6.1",
-      "com.monovore" %% "decline-effect" % "2.5.0",
-      "com.github.pureconfig" %% "pureconfig-generic-scala3" % "0.17.9",
-      "com.github.pureconfig" %% "pureconfig-cats-effect" % "0.17.9",
-      "com.github.pureconfig" %% "pureconfig-http4s" % "0.17.9",
-      "org.http4s" %% "http4s-circe" % "0.23.30",
-      "org.http4s" %% "http4s-ember-client" % "0.23.30",
-      "org.http4s" %% "http4s-ember-server" % "0.23.30",
-      "org.http4s" %% "http4s-dsl" % "0.23.30",
-      "co.fs2" %% "fs2-core" % "3.12.0",
-      "co.fs2" %% "fs2-io" % "3.12.0",
-      "io.circe" %% "circe-core" % "0.14.13",
-      "io.circe" %% "circe-generic" % "0.14.13",
-      "io.circe" %% "circe-parser" % "0.14.13",
-      "org.typelevel" %% "log4cats-slf4j" % "2.7.1",
-      "ch.qos.logback" % "logback-classic" % "1.5.18",
-      "com.rometools" % "rome" % "2.1.0",
-      "org.scalameta" %% "munit" % "1.1.1" % Test,
-      "org.typelevel" %% "munit-cats-effect" % "2.1.0" % Test
+      "org.typelevel" %% "cats-core" % catsVersion,
+      "org.typelevel" %% "cats-effect" % catsEffectVersion,
+      "com.monovore" %% "decline-effect" % declineVersion,
+      "com.github.pureconfig" %% "pureconfig-generic-scala3" % pureconfigVersion,
+      "com.github.pureconfig" %% "pureconfig-cats-effect" % pureconfigVersion,
+      "com.github.pureconfig" %% "pureconfig-http4s" % pureconfigVersion,
+      "org.http4s" %% "http4s-circe" % http4sVersion,
+      "org.http4s" %% "http4s-ember-client" % http4sVersion,
+      "org.http4s" %% "http4s-ember-server" % http4sVersion,
+      "org.http4s" %% "http4s-dsl" % http4sVersion,
+      "co.fs2" %% "fs2-core" % fs2Version,
+      "co.fs2" %% "fs2-io" % fs2Version,
+      "io.circe" %% "circe-core" % circeVersion,
+      "io.circe" %% "circe-generic" % circeVersion,
+      "io.circe" %% "circe-parser" % circeVersion,
+      "org.typelevel" %% "log4cats-slf4j" % log4catsVersion,
+      "ch.qos.logback" % "logback-classic" % logbackVersion,
+      "com.rometools" % "rome" % romeVersion,
+      "org.scalameta" %% "munit" % munitVersion % Test,
+      "org.typelevel" %% "munit-cats-effect" % munitCatsEffectVersion % Test
     ),
     Compile / mainClass := Some("com.softinio.scalanews.Main"),
-    nativeImageVersion := "21.0.1",
-    nativeImageJvm := "graalvm-java21",
+    nativeImageVersion := "25.0.0",
+    nativeImageJvm := "graalvm-java25",
     nativeImageOptions += "--no-fallback",
     nativeImageOptions += "--enable-url-protocols=http",
     nativeImageOptions += "--enable-url-protocols=https",

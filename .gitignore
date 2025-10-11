@@ -32,6 +32,8 @@ metals.sbt
 
 # npm
 node_modules/
+<<<<<<< Conflict 1 of 1
++++++++ Contents of side #1
 
 # binary
 scalanews

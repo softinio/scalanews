@@ -21,6 +21,7 @@ import pureconfig.module.catseffect.syntax.*
 import cats.effect.IO
 import com.softinio.scalanews.algebra.Configuration
 import com.softinio.scalanews.algebra.EventConfig
+import com.softinio.scalanews.algebra.Config.given
 
 object ConfigLoader {
   def load(filePath: String = "config.json"): IO[Configuration] = {

@@ -1,4 +1,12 @@
 next/next.md
+site/
+
+# Mill
+out/
+.mill/
+mill-build/
+*.mill.scala.swp
+.mill-version.bak
 
 # sbt
 target/
@@ -7,18 +15,15 @@ boot/
 lib_managed/
 src_managed/
 
-# Mill
-out/
-
 # Scala CLI
 .scala-build/
-
 
 # vim
 *.sw?
 
 # intellij
 .idea/
+*.iml
 
 # ignore [ce]tags files
 tags
@@ -32,8 +37,10 @@ metals.sbt
 
 # npm
 node_modules/
-<<<<<<< Conflict 1 of 1
-+++++++ Contents of side #1
 
 # binary
 scalanews
+
+# Nix
+result
+result-*

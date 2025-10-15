@@ -1,8 +1,9 @@
 {
+  description = "Scala News";
+
   inputs = {
-    typelevel-nix.url = "github:typelevel/typelevel-nix";
-    nixpkgs.follows = "typelevel-nix/nixpkgs";
-    flake-utils.follows = "typelevel-nix/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs =
@@ -10,37 +11,40 @@
       self,
       nixpkgs,
       flake-utils,
-      typelevel-nix,
     }:
-    flake-utils.lib.eachDefaultSystem (
-      system:
+    flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ typelevel-nix.overlays.default ];
         };
       in
       {
-        devShell = pkgs.devshell.mkShell {
-          imports = [ typelevel-nix.typelevelShell ];
-          name = "scalanews-shell";
-          typelevelShell = {
-            jdk.package = pkgs.graalvm-ce;
-            nodejs.enable = true;
-          };
-          commands = [
-            {
-              name = "ni";
-              category = "development";
-              help = "Create new scalanews executable";
-              command = ''
-                sbt coreJVM/nativeImage
-                chmod +x target/scalanews
-                ./target/scalanews --help
-              '';
-            }
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            graalvm-ce
+            metals
+            mill
+            nodejs_22
+            scalafmt
+            scala-cli
           ];
+
+          JAVA_HOME = "${pkgs.graalvm-ce}";
+          SCALA_NEWS_CONFIG = "config.json";
+
+          shellHook = ''
+            echo "Scala News Development Environment"
+            echo "===================================="
+            echo ""
+            echo "Common commands:"
+            echo "  mill scalanews.compile          - Compile the project"
+            echo "  mill scalanews.tests.testCached  - Run all tests"
+            echo "  mill scalanews.reformat          - Format all code"
+            echo "  mill scalanews.run               - Run the application"
+            echo ""
+            echo "See CLAUDE.md for more commands and project documentation"
+            echo ""
+          '';
         };
-      }
-    );
+      });
 }

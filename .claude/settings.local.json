@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(sbt:*)"
+      "Bash(mill resolve _)",
+      "Bash(mill scalanews.tests.testOnly \"com.softinio.scalanews.ConfigLoaderSuite\")",
+      "WebFetch(domain:github.com)",
+      "Bash(mill --version)",
+      "WebFetch(domain:mill-build.org)",
+      "Bash(mill scalanews.nativeImage)",
+      "Bash(mill clean scalanews.nativeImage)"
     ],
     "deny": [],
     "ask": []

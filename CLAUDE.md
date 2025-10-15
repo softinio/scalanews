@@ -6,63 +6,105 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Scala News is a CLI tool that generates curated Scala newsletters by aggregating RSS feeds from Scala community bloggers and managing events. The application is built with Scala 3, Cats Effect, and uses functional programming patterns throughout.
 
+## Build Tool
+
+This project uses **Mill** as its build tool (migrated from SBT). Mill provides faster builds, simpler configuration, and better caching. The build is managed through Nix for reproducible development environments.
+
+## Development Environment
+
+```bash
+# Enter the Nix development shell (recommended)
+nix develop
+
+# Or with direnv
+direnv allow
+```
+
 ## Build and Development Commands
+
+### Mill Commands (Current Build Tool)
 
 ```bash
 # Compile the project
-sbt compile
+mill scalanews.compile
 
 # Run tests
-sbt test
+mill scalanews.tests.testCached     # All tests (cached)
+mill scalanews.tests.testLocal      # Tests without forking
+mill scalanews.tests.testOnly       # Run specific test class
 
-# Run fast tests (excluding integration tests)
-sbt testQuick
-
-# Run only integration tests (slow, real RSS fetching)
-sbt testIntegration
-
-# Run all tests (including integration tests)
-sbt testAll
-
-# Run Before creating a pull request
-sbt prePR
+# Run before creating a pull request
+mill scalanews.compile && mill scalanews.checkFormat && mill scalanews.tests.testCached
 
 # Run a specific test suite
-sbt "testOnly com.softinio.scalanews.BloggersSuite"
-
-# Create native binary (GraalVM)
-sbt nativeImage
-# Binary created at: target/scalanews
-
-# Build documentation site
-sbt docs/tlSitePreview
+mill scalanews.tests.testOnly "com.softinio.scalanews.BloggersSuite"
 
 # Format code
-sbt scalafmtAll
+mill scalanews.reformat             # Format all code
+mill scalanews.checkFormat          # Check formatting
+
+# Additional Mill commands
+mill clean                          # Clean build artifacts
+mill show scalanews.mvnDeps         # Show dependencies
+mill mill.bsp.BSP/install           # Generate Bloop config for IDE
+mill mill.idea                      # Generate IntelliJ config
+
+# Development
+mill scalanews.console              # Start Scala REPL
+mill -w scalanews.compile           # Watch for changes and recompile
+mill scalanews.run <args>           # Run the application
+
+# Native Image
+mill scalanews.nativeImage          # Build GraalVM native image executable
+
+# Documentation Site
+mill docs.build                     # Build documentation site
+mill docs.preview                   # Build and serve documentation at http://localhost:4242
 ```
+
+**Alternative**: The documentation can also be built/previewed directly with scala-cli:
+
+```bash
+# Build documentation directly
+scala-cli run scripts/LaikaBuild.scala
+
+# Build and preview documentation directly
+scala-cli run scripts/LaikaPreview.scala  # Serves at http://localhost:4242
+```
+
+The documentation site is built using [Laika](https://typelevel.org/Laika/) with the Helium theme:
+- Source files: `docs/`
+- Build output: `site/target/docs/site/`
+- Preview output: `site/target/docs/preview/` (used by preview server)
 
 ## Application Commands
 
 The CLI supports these main commands:
 
+**Note**: After building the native image with `mill scalanews.nativeImage`, the executable is located at:
+`./out/scalanews/nativeImagePath.dest/target/scalanews`
+
 ```bash
 # Generate newsletter from RSS feeds for date range
-./target/scalanews generate 2024-01-01 2024-01-07
+./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07
 
 # Create new newsletter draft (saves to next/next.md)
-./target/scalanews create
+./out/scalanews/nativeImagePath.dest/target/scalanews create
 
 # To start the http4s server
-./target/scalanews server
+./out/scalanews/nativeImagePath.dest/target/scalanews server
 
 # Publish current draft and archive
-./target/scalanews publish 2024-01-07
+./out/scalanews/nativeImagePath.dest/target/scalanews publish 2024-01-07
 
 # Generate blogger directory page
-./target/scalanews blogger --directory
+./out/scalanews/nativeImagePath.dest/target/scalanews blogger --directory
 
 # Generate events directory page
-./target/scalanews event --directory
+./out/scalanews/nativeImagePath.dest/target/scalanews event --directory
+
+# Alternative: Run with mill directly (JVM, slower startup)
+mill scalanews.run generate 2024-01-01 2024-01-07
 ```
 
 ## Architecture
@@ -93,7 +135,7 @@ The CLI supports these main commands:
 
 ## Testing
 
-Tests use MUnit with Cats Effect integration. Test files mirror the main source structure in `core/src/test/scala/`.
+Tests use MUnit with Cats Effect integration. Test files are located in `scalanews/tests/src/`.
 
 ## Dependencies
 
@@ -105,3 +147,4 @@ Key libraries used:
 - PureConfig for configuration
 - Decline for CLI parsing
 - FS2 for streaming
+- Laika for documentation site generation

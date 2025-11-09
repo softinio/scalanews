@@ -10,6 +10,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MILL_INTERACTIVE: true  # Disable Mill daemon in CI for reliability
 
 concurrency:
   group: ${{ github.workflow }} @ ${{ github.ref }}

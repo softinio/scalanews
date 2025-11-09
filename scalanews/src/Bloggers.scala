@@ -1,13 +1,13 @@
 /*
  * Copyright 2024 Salar Rahmanian
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -37,67 +37,78 @@ object Bloggers {
   def generateDirectory(bloggerList: List[Blog]): IO[String] = {
     IO.blocking {
       val header = """
-      |# Blog Directory
+       |# Blog Directory
 
-      |A Directory of bloggers producing Scala related content with links to their rss feed when available.
+       |A Directory of bloggers producing Scala related content with links to their rss feed when available.
 
-      || Blog        | URL           | RSS Feed  |
-      || ------------- |:-------------:| -----:|"""
+       || Blog        | URL           | RSS Feed  |
+       || ------------- |:-------------:| -----:|"""
 
       val footer = """
-      |###### Got a Scala related blog? Add it to this Blog Directory!
+       |###### Got a Scala related blog? Add it to this Blog Directory!
 
-      |See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details."""
+       |See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details."""
 
       val directory = bloggerList.map { blog =>
         s"|| ${blog.name} | <${blog.url}> | [rss feed](${blog.rss}) |"
       }
 
       s"""
-      $header
-      ${directory.mkString("\n")}
-      $footer\n""".stripMargin
+       $header
+       ${directory.mkString("\n")}
+       $footer\n""".stripMargin
     }
   }
 
   private def generateNews(articleList: List[Article]): IO[String] = {
     IO.blocking {
       val header = """
-      |# Scala News
+       |# Scala News
 
-      |A curated list of Scala related news from the community.
+       |A curated list of Scala related news from the community.
 
-      |## Articles
+       |## Articles
 
-      || Article       | Author  |
-      || ------------- | -----:|"""
+       || Article       | Author  |
+       || ------------- | -----:|"""
 
-      val news = articleList.map { article =>
-        s"|| [${article.title}](${article.url}) | ${article.author} |"
+      val news = articleList.sortBy(_.title).map { article =>
+        s"|| [${article.title}](${article.url.getOrElse("URL Missing")}) | ${article.author} |"
       }
 
       s"""
-      $header
-      ${news.mkString("\n")}
-      """.stripMargin
+       $header
+       ${news.mkString("\n")}
+       """.stripMargin
     }
   }
 
   private def isAboutScala(entry: SyndEntry): Boolean = {
-    val hasScalaCategory = Option(entry.getCategories)
+    val hasRelevantCategory = Option(entry.getCategories)
       .map(_.asScala.toList)
       .getOrElse(List())
-      .exists(_.getName.toLowerCase.contains("scala"))
+      .exists(category => {
+        val name = category.getName.toLowerCase
+        name.contains("scala") || name.contains("sbt")
+      })
 
-    val hasScalaInTitle =
-      Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("scala")
+    val hasRelevantTitle =
+      Option(entry.getTitle)
+        .map(_.toLowerCase)
+        .getOrElse("")
+        .contains("scala") ||
+        Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("sbt")
 
-    val hasScalaInDescription = Option(entry.getDescription)
+    val hasRelevantDescription = Option(entry.getDescription)
       .map(_.getValue.toLowerCase)
       .getOrElse("")
-      .contains("scala")
+      .contains("scala") ||
+      Option(entry.getDescription)
+        .map(_.getValue.toLowerCase)
+        .getOrElse("")
+        .contains("sbt")
 
-    hasScalaCategory || hasScalaInTitle || hasScalaInDescription
+    hasRelevantCategory || hasRelevantTitle || hasRelevantDescription
   }
 
   private def getBlogAuthor(entry: SyndEntry, blog: Blog): String =
@@ -147,16 +158,22 @@ object Bloggers {
   ): IO[Option[List[Article]]] =
     for {
       feedResult <- Rome.fetchFeed(blog.rss.toURL.toString)
-    } yield {
-      getArticlesFromEntries(
-        blog,
-        feedResult
-          .map(_.getEntries.asScala.toList)
-          .getOrElse(List[SyndEntry]()),
-        startDate,
-        endDate
-      )
-    }
+      result <- feedResult match {
+        case Left(exception) =>
+          IO.println(
+            s"Error fetching feed for blog ${blog.name}: ${exception.getMessage}"
+          ) *> IO.pure(None)
+        case Right(feed) =>
+          IO.pure(
+            getArticlesFromEntries(
+              blog,
+              feed.getEntries.asScala.toList,
+              startDate,
+              endDate
+            )
+          )
+      }
+    } yield result
 
   def createBlogList(startDate: Date, endDate: Date): IO[List[Article]] =
     ConfigLoader.load().flatMap { conf =>

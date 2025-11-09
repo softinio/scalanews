@@ -10,7 +10,6 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  MILL_INTERACTIVE: true  # Disable Mill daemon in CI for reliability
 
 concurrency:
   group: ${{ github.workflow }} @ ${{ github.ref }}
@@ -47,7 +46,6 @@ jobs:
           path: |
             ~/.cache/mill
             ~/.cache/coursier
-            out/
           key: ${{ runner.os }}-mill-${{ hashFiles('build.sc') }}
           restore-keys: |
             ${{ runner.os }}-mill-
@@ -55,17 +53,17 @@ jobs:
       # Compile
       - name: Compile
         run: |
-          nix develop --command mill scalanews.compile
+          nix develop --command mill --no-server scalanews.compile
 
       # Check code formatting
       - name: Check code formatting
         run: |
-          nix develop --command mill scalanews.checkFormat
+          nix develop --command mill --no-server scalanews.checkFormat
 
       # Run tests
       - name: Run tests for Scala ${{ matrix.scala-version }}
         run: |
-          nix develop --command mill scalanews.tests.testCached
+          nix develop --command mill --no-server scalanews.tests.testCached
 
       # Upload test results
       - name: Upload test results
@@ -99,7 +97,6 @@ jobs:
           path: |
             ~/.cache/mill
             ~/.cache/coursier
-            out/
           key: ${{ runner.os }}-mill-docs-${{ hashFiles('build.sc') }}
           restore-keys: |
             ${{ runner.os }}-mill-docs-
@@ -107,7 +104,7 @@ jobs:
       # Generate site
       - name: Generate site
         run: |
-          nix develop --command mill docs.build
+          nix develop --command mill --no-server docs.build
 
       # Publish site
       - name: Publish site

@@ -7,7 +7,7 @@ object versions {
   val catsEffect = "3.6.3"
   val decline = "2.5.0"
   val pureconfig = "0.17.9"
-  val http4s = "0.23.32"
+  val http4s = "0.23.33"
   val fs2 = "3.12.2"
   val circe = "0.14.14"
   val log4cats = "2.7.1"

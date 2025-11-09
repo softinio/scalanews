@@ -2,8 +2,8 @@
 //> using dep org.typelevel::laika-core:1.3.2
 //> using dep org.typelevel::laika-io:1.3.2
 //> using dep org.typelevel::laika-preview:1.3.2
-//> using dep org.http4s::http4s-ember-server:0.23.32
-//> using dep org.http4s::http4s-dsl:0.23.32
+//> using dep org.http4s::http4s-ember-server:0.23.33
+//> using dep org.http4s::http4s-dsl:0.23.33
 
 import laika.preview.*
 import laika.api.*

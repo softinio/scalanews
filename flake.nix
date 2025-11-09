@@ -12,7 +12,8 @@
       nixpkgs,
       flake-utils,
     }:
-    flake-utils.lib.eachDefaultSystem (system:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs {
           inherit system;
@@ -31,8 +32,11 @@
 
           JAVA_HOME = "${pkgs.graalvm-ce}";
           SCALA_NEWS_CONFIG = "config.json";
+          TOOLCHAINS = "swift";
 
           shellHook = ''
+            export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
+
             echo "Scala News Development Environment"
             echo "===================================="
             echo ""
@@ -46,5 +50,6 @@
             echo ""
           '';
         };
-      });
+      }
+    );
 }

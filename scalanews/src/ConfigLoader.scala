@@ -1,0 +1,36 @@
+/*
+ * Copyright 2024 Salar Rahmanian
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.softinio.scalanews
+
+import pureconfig.*
+import pureconfig.module.catseffect.syntax.*
+import cats.effect.IO
+import com.softinio.scalanews.algebra.Configuration
+import com.softinio.scalanews.algebra.EventConfig
+import com.softinio.scalanews.algebra.Config.given
+
+object ConfigLoader {
+  def load(filePath: String = "config.json"): IO[Configuration] = {
+    val configPath = sys.env.getOrElse("SCALA_NEWS_CONFIG", filePath)
+    ConfigSource.file(configPath).loadF[IO, Configuration]()
+  }
+
+  def loadEventsConfig(filePath: String = "events.json"): IO[EventConfig] = {
+    val configPath = sys.env.getOrElse("SCALA_NEWS_EVENTS_CONFIG", filePath)
+    ConfigSource.file(configPath).loadF[IO, EventConfig]()
+  }
+}

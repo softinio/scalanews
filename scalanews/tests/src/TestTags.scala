@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package com.softinio.scalanews.algebra
+package com.softinio.scalanews
 
-import pureconfig.*
-import pureconfig.generic.derivation.default.*
+import munit.Tag
 
-import java.net.URI
-
-final case class Blog(name: String, url: URI, rss: URI) derives ConfigReader
-final case class Configuration(bloggers: List[Blog]) derives ConfigReader
-final case class EventConfig(meetups: List[Event], conferences: List[Event])
-    derives ConfigReader
-
-object Config {
-  given ConfigReader[URI] = ConfigReader[String].map(URI.create)
+object TestTags {
+  val IntegrationTest = Tag("IntegrationTest")
+  val ServiceTest = Tag("ServiceTest")
 }

@@ -16,18 +16,23 @@
 
 package com.softinio.scalanews
 
-import pureconfig.*
-import pureconfig.module.catseffect.syntax.*
-import cats.effect.IO
-import com.softinio.scalanews.algebra.Configuration
-import com.softinio.scalanews.algebra.EventConfig
+import scala.io.Source.fromInputStream
+import cats.effect.*
+import munit.CatsEffectSuite
 
-object ConfigLoader {
-  def load(filePath: String = "config.json"): IO[Configuration] = {
-    ConfigSource.file(filePath).loadF[IO, Configuration]()
-  }
+import cats.effect.unsafe.IORuntime
 
-  def loadEventsConfig(filePath: String = "events.json"): IO[EventConfig] = {
-    ConfigSource.file(filePath).loadF[IO, EventConfig]()
+import com.softinio.scalanews.TestTags.*
+
+class HttpClientSuite extends CatsEffectSuite {
+
+  implicit val runtime: IORuntime = cats.effect.unsafe.IORuntime.global
+  test("Fetch Rss".tag(IntegrationTest)) {
+    val result = HttpClient.fetchRss("https://www.softinio.com/atom.xml")
+    val obtained = result.use { res =>
+      val resultStr = fromInputStream(res).mkString
+      IO(resultStr.contains("lightening-talks-at-pybay-2018"))
+    }
+    assertIO(obtained, true)
   }
 }

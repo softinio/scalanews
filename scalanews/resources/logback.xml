@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <!-- Console appender for development -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- File appender for production logs -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/var/log/scalanews/scalanews.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>/var/log/scalanews/scalanews.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Logger for HTTP4s (can be noisy, set to WARN) -->
+  <logger name="org.http4s" level="WARN"/>
+
+  <!-- Logger for Circe (can be noisy) -->
+  <logger name="io.circe" level="WARN"/>
+
+  <!-- Logger for FS2 -->
+  <logger name="fs2" level="WARN"/>
+
+  <!-- Application loggers -->
+  <logger name="com.softinio.scalanews" level="INFO"/>
+
+  <!-- Root logger: STDOUT only by default (for tests/dev) -->
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+  
+  <!-- Production profile: log to both STDOUT and file -->
+  <springProfile name="production">
+    <root level="INFO">
+      <appender-ref ref="STDOUT" />
+      <appender-ref ref="FILE" />
+    </root>
+  </springProfile>
+
+</configuration>

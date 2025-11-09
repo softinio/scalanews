@@ -16,27 +16,19 @@
 
 package com.softinio.scalanews.algebra
 
-import org.http4s.Uri
 import pureconfig.*
-import pureconfig.generic.derivation.default.*
 
-enum EventType:
-  case Meetup, Conference
+import java.net.URI
 
-case class Location(city: String, state: Option[String], country: String)
+final case class Blog(name: String, url: URI, rss: URI) derives ConfigReader
+final case class ServerConfig(port: Int = 8080) derives ConfigReader
+final case class Configuration(
+    bloggers: List[Blog],
+    server: Option[ServerConfig] = None
+) derives ConfigReader
+final case class EventConfig(meetups: List[Event], conferences: List[Event])
     derives ConfigReader
 
-case class Event(
-    name: String,
-    description: String,
-    meetupUrl: Option[Uri],
-    lumaUrl: Option[Uri],
-    socialMediaUrl: Option[Uri],
-    otherUrl: Option[Uri],
-    locations: List[Location]
-) derives ConfigReader
-
-object Event {
-  given ConfigReader[Option[Uri]] =
-    ConfigReader[Option[String]].map(_.flatMap(Uri.fromString(_).toOption))
+object Config {
+  given ConfigReader[URI] = ConfigReader[String].map(URI.create)
 }

@@ -24,7 +24,7 @@ import cats.implicits.*
 import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
-import com.softinio.scalanews.algebra.EventType
+import com.softinio.scalanews.algebra.{EventType, ServerConfig}
 
 object Main
     extends CommandIOApp(
@@ -48,6 +48,8 @@ object Main
       startDate: String,
       endDate: String
   )
+
+  private case class ServerCmd(port: Int)
 
   private val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
 
@@ -115,8 +117,16 @@ object Main
       (startDateOps, endDateOps).mapN(GenerateNextBlog.apply)
     }
 
+  private val serverOpts: Opts[ServerCmd] =
+    Opts.subcommand("server", "Start HTTP server") {
+      Opts
+        .option[Int]("port", "Port to bind server to", short = "p")
+        .withDefault(8080)
+        .map(ServerCmd.apply)
+    }
+
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts orElse eventOpts)
+    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts orElse eventOpts orElse serverOpts)
       .map {
         case Publish(publishDate, archiveDate, archiveFolder) =>
           FileHandler.publish(publishDate, archiveDate, archiveFolder)
@@ -149,5 +159,11 @@ object Main
               _ <- Events.addFooter()
             } yield ExitCode.Success
           } else IO(ExitCode.Success)
+        case ServerCmd(port) =>
+          for {
+            config <- ConfigLoader.load()
+            serverConfig = config.server.getOrElse(ServerConfig(port))
+            result <- Server.run(serverConfig)
+          } yield result
       }
 }

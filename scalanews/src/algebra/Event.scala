@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package com.softinio.scalanews
+package com.softinio.scalanews.algebra
 
-import cats.effect.*
+import org.http4s.Uri
+import pureconfig.*
 
-import munit.CatsEffectSuite
+enum EventType:
+  case Meetup, Conference
 
-class RomeSuite extends CatsEffectSuite {
+case class Location(city: String, state: Option[String], country: String)
+    derives ConfigReader
 
-  test("Fetch Feed") {
-    val obtained: IO[Boolean] = for {
-      result <- Rome.fetchFeed("https://www.softinio.com/atom.xml")
-    } yield {
-      result match {
-        case Right(feed) =>
-          val title = feed.getTitle
-          title == "Salar Rahmanian"
-        case _ => false
-      }
-    }
-    assertIO(obtained, true)
-  }
+case class Event(
+    name: String,
+    description: String,
+    meetupUrl: Option[Uri],
+    lumaUrl: Option[Uri],
+    socialMediaUrl: Option[Uri],
+    otherUrl: Option[Uri],
+    locations: List[Location]
+) derives ConfigReader
+
+object Event {
+  given ConfigReader[Option[Uri]] =
+    ConfigReader[Option[String]].map(_.flatMap(Uri.fromString(_).toOption))
 }

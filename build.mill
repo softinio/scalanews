@@ -1,22 +1,28 @@
-import mill.*, mill.scalalib.*, mill.scalalib.scalafmt.*, mill.scalalib.publish.*
+package build
+
+import mill.*, mill.scalalib.*, mill.scalalib.scalafmt.*,
+  mill.scalalib.publish.*
 
 // Version management
 object versions {
-  val scala3 = "3.7.3"
   val cats = "2.13.0"
   val catsEffect = "3.6.3"
-  val decline = "2.5.0"
-  val pureconfig = "0.17.9"
-  val http4s = "0.23.33"
-  val fs2 = "3.12.2"
   val circe = "0.14.14"
+  val decline = "2.5.0"
+  val duck4s = "0.1.4"
+  val flexmark = "0.64.8"
+  val fs2 = "3.12.2"
+  val graalvm = "java25"
+  val http4s = "0.23.33"
+  val laika = "1.3.2"
   val log4cats = "2.7.1"
   val logback = "1.5.19"
-  val rome = "2.1.0"
   val munit = "1.2.0"
   val munitCatsEffect = "2.1.0"
-  val laika = "1.3.2"
-  val graalvm = "java25"
+  val pureconfig = "0.17.9"
+  val rome = "2.1.0"
+  val scala3 = "3.8.2"
+  val sttpAI = "0.4.8"
 }
 
 // Note: In Mill, top-level modules are automatically aggregated
@@ -27,24 +33,29 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
   def scalaVersion = versions.scala3
 
   def mvnDeps = Seq(
-    mvn"org.typelevel::cats-core:${versions.cats}",
-    mvn"org.typelevel::cats-effect:${versions.catsEffect}",
-    mvn"com.monovore::decline-effect:${versions.decline}",
-    mvn"com.github.pureconfig::pureconfig-generic-scala3:${versions.pureconfig}",
-    mvn"com.github.pureconfig::pureconfig-cats-effect:${versions.pureconfig}",
-    mvn"com.github.pureconfig::pureconfig-http4s:${versions.pureconfig}",
-    mvn"org.http4s::http4s-circe:${versions.http4s}",
-    mvn"org.http4s::http4s-ember-client:${versions.http4s}",
-    mvn"org.http4s::http4s-ember-server:${versions.http4s}",
-    mvn"org.http4s::http4s-dsl:${versions.http4s}",
+    mvn"ch.qos.logback:logback-classic:${versions.logback}",
     mvn"co.fs2::fs2-core:${versions.fs2}",
     mvn"co.fs2::fs2-io:${versions.fs2}",
+    mvn"com.github.pureconfig::pureconfig-cats-effect:${versions.pureconfig}",
+    mvn"com.github.pureconfig::pureconfig-generic-scala3:${versions.pureconfig}",
+    mvn"com.github.pureconfig::pureconfig-http4s:${versions.pureconfig}",
+    mvn"com.monovore::decline-effect:${versions.decline}",
+    mvn"com.rometools:rome:${versions.rome}",
+    mvn"com.softinio::duck4s-cats-effect::${versions.duck4s}",
+    mvn"com.softinio::duck4s::${versions.duck4s}",
+    mvn"com.softwaremill.sttp.ai::claude::${versions.sttpAI}",
+    mvn"com.softwaremill.sttp.ai::claude-streaming-fs2::${versions.sttpAI}",
+    mvn"com.vladsch.flexmark:flexmark-html2md-converter:${versions.flexmark}",
     mvn"io.circe::circe-core:${versions.circe}",
     mvn"io.circe::circe-generic:${versions.circe}",
     mvn"io.circe::circe-parser:${versions.circe}",
-    mvn"org.typelevel::log4cats-slf4j:${versions.log4cats}",
-    mvn"ch.qos.logback:logback-classic:${versions.logback}",
-    mvn"com.rometools:rome:${versions.rome}"
+    mvn"org.http4s::http4s-circe:${versions.http4s}",
+    mvn"org.http4s::http4s-dsl:${versions.http4s}",
+    mvn"org.http4s::http4s-ember-client:${versions.http4s}",
+    mvn"org.http4s::http4s-ember-server:${versions.http4s}",
+    mvn"org.typelevel::cats-core:${versions.cats}",
+    mvn"org.typelevel::cats-effect:${versions.catsEffect}",
+    mvn"org.typelevel::log4cats-slf4j:${versions.log4cats}"
   )
 
   def mainClass = Some("com.softinio.scalanews.Main")
@@ -112,7 +123,8 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     os.makeDir.all(outputPath / os.up)
 
     // Find zlib in Nix store
-    val zlibPath = os.proc("nix", "eval", "--raw", "nixpkgs#zlib.outPath")
+    val zlibPath = os
+      .proc("nix", "eval", "--raw", "nixpkgs#zlib.outPath")
       .call(cwd = os.pwd)
       .out
       .text()
@@ -124,14 +136,16 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
       Seq(
         s"-H:NativeLinkerOption=-L${zlibPath}/lib",
         "-H:DynamicProxyConfigurationResources=META-INF/native-image/com.softinio/scalanews/proxy-config.json",
-        "-jar", assemblyPath.toString,
+        "-jar",
+        assemblyPath.toString,
         "-H:Name=" + nativeImageName,
         "-H:Class=" + mainClassValue,
         outputPath.toString
       )
 
     // Execute native-image
-    os.proc(command).call(cwd = os.pwd, stdout = os.Inherit, stderr = os.Inherit)
+    os.proc(command)
+      .call(cwd = os.pwd, stdout = os.Inherit, stderr = os.Inherit)
 
     println(s"Native image created at: $outputPath")
 

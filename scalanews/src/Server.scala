@@ -36,7 +36,7 @@ object Server {
   }
 
   private val httpApp = Router(
-    "/" -> (scalaNewsService <+> BlogService.routes)
+    "/" -> (scalaNewsService <+> BlogService.routes())
   ).orNotFound
 
   def run(serverConfig: ServerConfig): IO[ExitCode] = {

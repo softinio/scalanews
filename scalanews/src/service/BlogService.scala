@@ -54,37 +54,41 @@ object BlogService {
   }
   implicit val articleEncoder: Encoder[Article] = deriveEncoder[Article]
 
-  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> Root / "blog" :? StartDateQueryParamMatcher(
-          startDateOpt
-        ) +& EndDateQueryParamMatcher(endDateOpt) =>
-      val today = LocalDate.now()
-      val endLocalDate =
-        endDateOpt.map(LocalDate.parse(_, dateFormatter)).getOrElse(today)
-      val startLocalDate = startDateOpt
-        .map(LocalDate.parse(_, dateFormatter))
-        .getOrElse(today.minusDays(7))
+  def routes(configFilePath: String = "config.json"): HttpRoutes[IO] =
+    HttpRoutes.of[IO] {
+      case GET -> Root / "blog" :? StartDateQueryParamMatcher(
+            startDateOpt
+          ) +& EndDateQueryParamMatcher(endDateOpt) =>
+        val today = LocalDate.now()
+        val endLocalDate =
+          endDateOpt.map(LocalDate.parse(_, dateFormatter)).getOrElse(today)
+        val startLocalDate = startDateOpt
+          .map(LocalDate.parse(_, dateFormatter))
+          .getOrElse(today.minusDays(7))
 
-      // Convert LocalDate to java.util.Date for Bloggers API
-      val startDate = Date.from(
-        startLocalDate
-          .atStartOfDay()
-          .atZone(java.time.ZoneId.systemDefault())
-          .toInstant
-      )
-      val endDate = Date.from(
-        endLocalDate
-          .atTime(23, 59, 59)
-          .atZone(java.time.ZoneId.systemDefault())
-          .toInstant
-      )
+        val startDate = Date.from(
+          startLocalDate
+            .atStartOfDay()
+            .atZone(java.time.ZoneId.systemDefault())
+            .toInstant
+        )
+        val endDate = Date.from(
+          endLocalDate
+            .atTime(23, 59, 59)
+            .atZone(java.time.ZoneId.systemDefault())
+            .toInstant
+        )
 
-      for {
-        _ <- logger.info(s"Fetching blog articles from ${startLocalDate
-            .format(dateFormatter)} to ${endLocalDate.format(dateFormatter)}")
-        articles <- Bloggers.createBlogList(startDate, endDate)
-        _ <- logger.info(s"Found ${articles.size} articles")
-        response <- Ok(articles.asJson)
-      } yield response
-  }
+        for {
+          _ <- logger.info(s"Fetching blog articles from ${startLocalDate
+              .format(dateFormatter)} to ${endLocalDate.format(dateFormatter)}")
+          articles <- Bloggers.createBlogList(
+            startDate,
+            endDate,
+            configFilePath
+          )
+          _ <- logger.info(s"Found ${articles.size} articles")
+          response <- Ok(articles.asJson)
+        } yield response
+    }
 }

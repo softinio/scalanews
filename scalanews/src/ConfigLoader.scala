@@ -19,13 +19,17 @@ package com.softinio.scalanews
 import pureconfig.*
 import pureconfig.module.catseffect.syntax.*
 import cats.effect.IO
+import com.softinio.scalanews.algebra.AnthropicConfig
 import com.softinio.scalanews.algebra.Configuration
 import com.softinio.scalanews.algebra.EventConfig
 import com.softinio.scalanews.algebra.Config.given
 
 object ConfigLoader {
   def load(filePath: String = "config.json"): IO[Configuration] = {
-    val configPath = sys.env.getOrElse("SCALA_NEWS_CONFIG", filePath)
+    val configPath = sys.props.getOrElse(
+      "SCALA_NEWS_CONFIG",
+      sys.env.getOrElse("SCALA_NEWS_CONFIG", filePath)
+    )
     ConfigSource.file(configPath).loadF[IO, Configuration]()
   }
 
@@ -33,4 +37,9 @@ object ConfigLoader {
     val configPath = sys.env.getOrElse("SCALA_NEWS_EVENTS_CONFIG", filePath)
     ConfigSource.file(configPath).loadF[IO, EventConfig]()
   }
+
+  def loadAnthropicConfig(): IO[AnthropicConfig] =
+    IO.fromOption(sys.env.get("ANTHROPIC_API_KEY"))(
+      new RuntimeException("ANTHROPIC_API_KEY environment variable is not set")
+    ).map(AnthropicConfig(_))
 }

@@ -17,9 +17,12 @@
 package com.softinio.scalanews
 
 import com.softinio.scalanews.algebra.Blog
+import com.softinio.scalanews.db.Database
+import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
 import munit.CatsEffectSuite
 
 import java.net.URI
+import java.nio.file.Files as JFiles
 import java.text.SimpleDateFormat
 
 import com.softinio.scalanews.TestTags.*
@@ -71,13 +74,39 @@ class BloggersSuite extends CatsEffectSuite {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
 
     val obtained = for {
+      testConfigPath = getClass.getResource("/test-config.json").getPath
       result <- Bloggers.createBlogList(
         formatter.parse("2021-01-01"),
-        formatter.parse("2021-12-31")
+        formatter.parse("2021-12-31"),
+        testConfigPath
       )
     } yield {
       result.nonEmpty
     }
     assertIO(obtained, true)
+  }
+
+  test(
+    "ingestBlogsToDB - returns ExitCode.Success and persists articles to DB"
+      .tag(IntegrationTest)
+  ) {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")
+    val testConfigPath = getClass.getResource("/test-config.json").getPath
+    for {
+      _ <- cats.effect.IO.blocking(System.setProperty("SCALA_NEWS_CONFIG", testConfigPath))
+      dbDir <- cats.effect.IO.blocking(JFiles.createTempDirectory("scalanews-ingest-test"))
+      dbPath = dbDir.resolve("test.db").toString
+      exitCode <- Bloggers.ingestBlogsToDB(
+        formatter.parse("2021-01-01"),
+        formatter.parse("2021-12-31"),
+        dbPath
+      ).guarantee(cats.effect.IO.blocking(System.clearProperty("SCALA_NEWS_CONFIG")).void)
+      count <- Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
+        ArticleRepository.findAll(conn).compile.toList.map(_.length)
+      }
+    } yield {
+      assertEquals(exitCode, cats.effect.ExitCode.Success)
+      assert(count > 0, s"Expected articles in DB but found $count")
+    }
   }
 }

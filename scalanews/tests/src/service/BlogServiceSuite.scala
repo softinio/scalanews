@@ -28,7 +28,8 @@ import com.softinio.scalanews.TestTags.*
 
 class BlogServiceSuite extends CatsEffectSuite {
 
-  private val service = BlogService.routes
+  private val testConfigPath = getClass.getResource("/test-config.json").getPath
+  private val service = BlogService.routes(testConfigPath)
 
   test(
     "GET /blog should return 200 with JSON array of articles"

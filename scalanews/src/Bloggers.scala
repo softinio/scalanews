@@ -18,12 +18,15 @@ package com.softinio.scalanews
 
 import java.util.Date
 import cats.effect.*
+import cats.syntax.all.*
 import fs2.io.file.*
 import com.rometools.rome.feed.synd.SyndEntry
 
 import scala.jdk.CollectionConverters.*
 import com.softinio.scalanews.algebra.Article
 import com.softinio.scalanews.algebra.Blog
+import com.softinio.scalanews.db.Database
+import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
 
 object Bloggers {
   private val nextMarkdownFilePath =
@@ -136,12 +139,13 @@ object Bloggers {
       .map(entry =>
         Article(
           entry.getTitle,
+          entry.getContents.asScala.toList,
           entry.getLink,
           getBlogAuthor(entry, blog),
           entry.getPublishedDate
         )
       )
-      .filter { case Article(_, _, _, publishedDate) =>
+      .filter { case Article(_, _, _, _, publishedDate) =>
         publishedDate.after(startDate) && publishedDate.before(endDate)
       }
       .distinct
@@ -175,8 +179,12 @@ object Bloggers {
       }
     } yield result
 
-  def createBlogList(startDate: Date, endDate: Date): IO[List[Article]] =
-    ConfigLoader.load().flatMap { conf =>
+  def createBlogList(
+      startDate: Date,
+      endDate: Date,
+      configFilePath: String = "config.json"
+  ): IO[List[Article]] =
+    ConfigLoader.load(configFilePath).flatMap { conf =>
       createBlogListFromBloggers(conf.bloggers, startDate, endDate)
     }
 
@@ -209,6 +217,58 @@ object Bloggers {
         .drain
     } yield ExitCode.Success
   }
+
+  def ingestBlogsToDB(
+      startDate: Date,
+      endDate: Date,
+      dbPath: String = "data/scalanews.db"
+  ): IO[ExitCode] =
+    Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
+      for {
+        articleList <- createBlogList(startDate, endDate)
+        _ <- articleList
+          .traverse_(article => ArticleRepository.insert(conn, article))
+      } yield ExitCode.Success
+    }
+
+  def generateNextBlogUsingDB(
+      startDate: Date,
+      endDate: Date,
+      dbPath: String = "data/scalanews.db"
+  ): IO[ExitCode] =
+    Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
+      for {
+        articleList <- ArticleRepository
+          .findAll(conn)
+          .filter(row =>
+            row.publishedDate.after(startDate) && row.publishedDate.before(
+              endDate
+            )
+          )
+          .map(row =>
+            Article(
+              row.title,
+              row.content,
+              row.url.flatMap(u => org.http4s.Uri.fromString(u).toOption),
+              row.author,
+              row.publishedDate
+            )
+          )
+          .compile
+          .toList
+        exists <- Files[IO].exists(nextMarkdownFilePath)
+        _ <- if (exists) Files[IO].delete(nextMarkdownFilePath) else IO.unit
+        news <- generateNews(articleList)
+        _ <- fs2.Stream
+          .emits(List(news))
+          .through(fs2.text.utf8.encode)
+          .through(
+            Files[IO].writeAll(nextMarkdownFilePath, Flags(Flag.CreateNew))
+          )
+          .compile
+          .drain
+      } yield ExitCode.Success
+    }
 
   def generateNextBlog(
       startDate: Date,

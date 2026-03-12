@@ -38,9 +38,16 @@ metals.sbt
 # npm
 node_modules/
 
-# binary
-scalanews
+# binary (only the root-level compiled binary, not the source directory)
+/scalanews
+!scalanews/
 
 # Nix
 result
 result-*
+
+# PostgreSQL local dev data
+.postgres/
+
+# DuckDB database files
+data/*.duckdb

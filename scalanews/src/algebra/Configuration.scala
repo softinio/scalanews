@@ -29,6 +29,12 @@ final case class Configuration(
 final case class EventConfig(meetups: List[Event], conferences: List[Event])
     derives ConfigReader
 
+final case class AnthropicConfig(
+    apiKey: String,
+    model: String = "claude-haiku-4-5-20251001",
+    maxTokens: Int = 1024
+)
+
 object Config {
   given ConfigReader[URI] = ConfigReader[String].map(URI.create)
 }

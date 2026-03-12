@@ -30,7 +30,7 @@ object Main
     extends CommandIOApp(
       name = "scalanews",
       header = "scalanews cli",
-      version = "0.1"
+      version = "0.2"
     ) {
 
   private case class Publish(
@@ -45,6 +45,11 @@ object Main
   private case class Event(directory: Boolean)
 
   private case class GenerateNextBlog(
+      startDate: String,
+      endDate: String
+  )
+
+  private case class IngestBlogs(
       startDate: String,
       endDate: String
   )
@@ -117,6 +122,11 @@ object Main
       (startDateOps, endDateOps).mapN(GenerateNextBlog.apply)
     }
 
+  private val ingestBlogsOpts: Opts[IngestBlogs] =
+    Opts.subcommand("ingest", "Ingest blogs into DB") {
+      (startDateOps, endDateOps).mapN(IngestBlogs.apply)
+    }
+
   private val serverOpts: Opts[ServerCmd] =
     Opts.subcommand("server", "Start HTTP server") {
       Opts
@@ -126,13 +136,18 @@ object Main
     }
 
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts orElse eventOpts orElse serverOpts)
+    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts orElse serverOpts)
       .map {
         case Publish(publishDate, archiveDate, archiveFolder) =>
           FileHandler.publish(publishDate, archiveDate, archiveFolder)
         case Create(overwrite) => FileHandler.create(overwrite)
         case GenerateNextBlog(startDate, endDate) =>
           Bloggers.generateNextBlog(
+            dateFormatter.parse(startDate),
+            dateFormatter.parse(endDate)
+          )
+        case IngestBlogs(startDate, endDate) =>
+          Bloggers.ingestBlogsToDB(
             dateFormatter.parse(startDate),
             dateFormatter.parse(endDate)
           )

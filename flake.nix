@@ -26,6 +26,7 @@
             metals
             mill
             nodejs_22
+            postgresql
             scalafmt
             scala-cli
           ];
@@ -37,6 +38,23 @@
           shellHook = ''
             export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
 
+            export PGDATA="$PWD/.postgres/data"
+            export PGHOST="$PWD/.postgres"
+            export PGPORT=5432
+
+            pg_start() {
+              if [ ! -d "$PGDATA" ]; then
+                echo "Initializing PostgreSQL database..."
+                mkdir -p "$PGHOST"
+                initdb --username=postgres --auth=trust
+              fi
+              pg_ctl start -l "$PGHOST/postgres.log"
+            }
+
+            pg_stop() {
+              pg_ctl stop
+            }
+
             echo "Scala News Development Environment"
             echo "===================================="
             echo ""
@@ -45,6 +63,10 @@
             echo "  mill scalanews.tests.testCached  - Run all tests"
             echo "  mill scalanews.reformat          - Format all code"
             echo "  mill scalanews.run               - Run the application"
+            echo ""
+            echo "PostgreSQL commands:"
+            echo "  pg_start                         - Start local PostgreSQL"
+            echo "  pg_stop                          - Stop local PostgreSQL"
             echo ""
             echo "See CLAUDE.md for more commands and project documentation"
             echo ""

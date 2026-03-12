@@ -7,11 +7,14 @@
       "Bash(mill --version)",
       "WebFetch(domain:mill-build.org)",
       "Bash(mill scalanews.nativeImage)",
-      "Bash(mill clean scalanews.nativeImage)"
+      "Bash(mill clean scalanews.nativeImage)",
+      "mcp__metals__compile-file",
+      "mcp__metals__compile-module"
     ],
     "deny": [],
     "ask": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "metals"
   ]

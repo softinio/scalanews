@@ -18,22 +18,45 @@ package com.softinio.scalanews.algebra
 
 import java.util.Date
 import org.http4s.Uri
+import com.rometools.rome.feed.synd.SyndContent
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
 
 case class Article(
     title: String,
+    content: String,
     url: Option[Uri],
     author: String,
     publishedDate: Date
 )
 
 object Article {
+  private val htmlToMd = FlexmarkHtmlConverter.builder().build()
+
+  private def syndContentsToMarkdown(contents: List[SyndContent]): String =
+    contents
+      .map(c => htmlToMd.convert(c.getValue))
+      .mkString("\n\n")
+
   def apply(
       title: String,
+      content: List[SyndContent],
       url: String,
       author: String,
       publishedDate: Date
   ): Article = {
-    val parsedUrl = Uri.fromString(url).toOption
-    Article(title, parsedUrl, author, publishedDate)
+    val parsedUrl = Uri
+      .fromString(url)
+      .toOption
+      .filter(u =>
+        u.scheme.contains(Uri.Scheme.http) || u.scheme
+          .contains(Uri.Scheme.https)
+      )
+    Article(
+      title,
+      syndContentsToMarkdown(content),
+      parsedUrl,
+      author,
+      publishedDate
+    )
   }
 }

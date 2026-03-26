@@ -44,7 +44,7 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     mvn"com.softinio::duck4s-cats-effect::${versions.duck4s}",
     mvn"com.softinio::duck4s::${versions.duck4s}",
     mvn"com.softwaremill.sttp.ai::claude::${versions.sttpAI}",
-    mvn"com.softwaremill.sttp.ai::claude-streaming-fs2::${versions.sttpAI}",
+    mvn"com.softwaremill.sttp.ai::fs2::${versions.sttpAI}",
     mvn"com.vladsch.flexmark:flexmark-html2md-converter:${versions.flexmark}",
     mvn"io.circe::circe-core:${versions.circe}",
     mvn"io.circe::circe-generic:${versions.circe}",

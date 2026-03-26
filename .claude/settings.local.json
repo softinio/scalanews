@@ -9,7 +9,8 @@
       "Bash(mill scalanews.nativeImage)",
       "Bash(mill clean scalanews.nativeImage)",
       "mcp__metals__compile-file",
-      "mcp__metals__compile-module"
+      "mcp__metals__compile-module",
+      "mcp__metals__inspect"
     ],
     "deny": [],
     "ask": []

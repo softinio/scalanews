@@ -17,12 +17,15 @@
 package com.softinio.scalanews
 
 import cats.effect.IO
+import cats.syntax.functorFilter.*
 import fs2.Stream
 import sttp.ai.claude.ClaudeClient
 import sttp.ai.claude.config.ClaudeConfig
 import sttp.ai.claude.models.{ContentBlock, Message}
 import sttp.ai.claude.requests.MessageRequest
-import sttp.ai.claude.streaming.fs2.*
+import sttp.ai.claude.responses.MessageStreamResponse
+import sttp.ai.claude.responses.MessageStreamResponse.ContentDelta.TextDelta
+import sttp.ai.claude.streaming.fs2.ClaudeFs2Streaming.*
 import sttp.client4.httpclient.fs2.HttpClientFs2Backend
 
 import com.softinio.scalanews.algebra.AnthropicConfig
@@ -39,19 +42,27 @@ object AnthropicClient {
     )
 
     HttpClientFs2Backend.resource[IO]().use { backend =>
-      val streamRequest =
-        client.createMessageAsBinaryStream(backend.capabilities.streams, request)
+      val streamRequest = client.createStreamedMessage[IO](request)
       streamRequest
         .send(backend)
-        .map(_.map(_.parseSSE.parseClaudeStreamResponse))
+        .map(_.body)
         .flatMap {
           case Right(stream) =>
             stream
-              .mapFilter(_.delta.text)
+              .mapFilter {
+                case MessageStreamResponse.ContentBlockDelta(
+                      _,
+                      TextDelta(text)
+                    ) =>
+                  Some(text)
+                case _ => None
+              }
               .compile
               .string
           case Left(error) =>
-            IO.raiseError(new RuntimeException(s"Anthropic stream error: $error"))
+            IO.raiseError(
+              new RuntimeException(s"Anthropic stream error: $error")
+            )
         }
     }
   }
@@ -71,12 +82,19 @@ object AnthropicClient {
     Stream
       .resource(HttpClientFs2Backend.resource[IO]())
       .flatMap { backend =>
-        val streamRequest =
-          client.createMessageAsBinaryStream(backend.capabilities.streams, request)
+        val streamRequest = client.createStreamedMessage[IO](request)
         Stream
-          .eval(streamRequest.send(backend).map(_.map(_.parseSSE.parseClaudeStreamResponse)))
+          .eval(streamRequest.send(backend).map(_.body))
           .flatMap {
-            case Right(stream) => stream.mapFilter(_.delta.text)
+            case Right(stream) =>
+              stream.mapFilter {
+                case MessageStreamResponse.ContentBlockDelta(
+                      _,
+                      TextDelta(text)
+                    ) =>
+                  Some(text)
+                case _ => None
+              }
             case Left(error) =>
               Stream.raiseError[IO](
                 new RuntimeException(s"Anthropic stream error: $error")

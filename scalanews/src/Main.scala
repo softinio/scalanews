@@ -49,6 +49,13 @@ object Main
       endDate: String
   )
 
+  private case class GenerateNextBlogUsingDB(
+      startDate: String,
+      endDate: String,
+      dbPath: String,
+      aI: Boolean = false
+  )
+
   private case class IngestBlogs(
       startDate: String,
       endDate: String
@@ -122,6 +129,19 @@ object Main
       (startDateOps, endDateOps).mapN(GenerateNextBlog.apply)
     }
 
+  private val generateNextBlogUsingDBOpts: Opts[GenerateNextBlogUsingDB] =
+    Opts.subcommand("dbgenerate", "Generate next blog using DB") {
+      (
+        startDateOps,
+        endDateOps,
+        Opts
+          .option[String]("dbpath", "Database file path", short = "d")
+          .withDefault("data/scalanews.duckdb"),
+        Opts.flag("ai", "Use AI to generate blog", short = "a").orFalse
+      )
+        .mapN(GenerateNextBlogUsingDB.apply)
+    }
+
   private val ingestBlogsOpts: Opts[IngestBlogs] =
     Opts.subcommand("ingest", "Ingest blogs into DB") {
       (startDateOps, endDateOps).mapN(IngestBlogs.apply)
@@ -136,7 +156,7 @@ object Main
     }
 
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts orElse serverOpts)
+    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse generateNextBlogUsingDBOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts orElse serverOpts)
       .map {
         case Publish(publishDate, archiveDate, archiveFolder) =>
           FileHandler.publish(publishDate, archiveDate, archiveFolder)
@@ -145,6 +165,13 @@ object Main
           Bloggers.generateNextBlog(
             dateFormatter.parse(startDate),
             dateFormatter.parse(endDate)
+          )
+        case GenerateNextBlogUsingDB(startDate, endDate, dbPath, aI) =>
+          Bloggers.generateNextBlogUsingDB(
+            dateFormatter.parse(startDate),
+            dateFormatter.parse(endDate),
+            dbPath,
+            aI
           )
         case IngestBlogs(startDate, endDate) =>
           Bloggers.ingestBlogsToDB(

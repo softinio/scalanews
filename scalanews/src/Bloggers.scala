@@ -234,7 +234,8 @@ object Bloggers {
   def generateNextBlogUsingDB(
       startDate: Date,
       endDate: Date,
-      dbPath: String = "data/scalanews.db"
+      dbPath: String,
+      aI: Boolean
   ): IO[ExitCode] =
     Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
       for {

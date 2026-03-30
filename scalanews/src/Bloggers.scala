@@ -27,6 +27,7 @@ import com.softinio.scalanews.algebra.Article
 import com.softinio.scalanews.algebra.Blog
 import com.softinio.scalanews.db.Database
 import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
+import com.softinio.scalanews.algebra.AnthropicConfig
 
 object Bloggers {
   private val nextMarkdownFilePath =
@@ -63,26 +64,41 @@ object Bloggers {
     }
   }
 
-  private def generateNews(articleList: List[Article]): IO[String] = {
+  private def simpleSummary(content: String): String = {
+    val flat = content.linesIterator
+      .map(_.trim)
+      .filterNot(l => l.startsWith("#") || l.isEmpty)
+      .mkString(" ")
+    if (flat.length <= 200) flat
+    else flat.take(200).reverse.dropWhile(_ != ' ').reverse
+  }
+
+  private def generateNews(articles: List[(Article, String)]): IO[String] = {
     IO.blocking {
-      val header = """
-       |# Scala News
+      val header =
+        """|# Scala News
+           |
+           |A curated list of Scala related news from the community.
+           |
+           |## Articles""".stripMargin
 
-       |A curated list of Scala related news from the community.
-
-       |## Articles
-
-       || Article       | Author  |
-       || ------------- | -----:|"""
-
-      val news = articleList.sortBy(_.title).map { article =>
-        s"|| [${article.title}](${article.url.getOrElse("URL Missing")}) | ${article.author} |"
+      def card(article: Article, summary: String): String = {
+        val url = article.url.map(_.toString).getOrElse("#")
+        s"""|<div class="article-card">
+            |  <h3><a href="$url">${article.title}</a></h3>
+            |  <span class="article-author">${article.author}</span>
+            |  <p class="article-summary">$summary</p>
+            |</div>""".stripMargin
       }
 
-      s"""
-       $header
-       ${news.mkString("\n")}
-       """.stripMargin
+      val cards = articles.sortBy(_._1.title).map(card.tupled).mkString("\n")
+
+      s"""|$header
+          |
+          |<div class="article-cards">
+          |$cards
+          |</div>
+          |""".stripMargin
     }
   }
 
@@ -257,9 +273,20 @@ object Bloggers {
           )
           .compile
           .toList
+        articles <-
+          if (aI)
+            ConfigLoader
+              .loadAnthropicConfig()
+              .flatMap(config =>
+                articleList.traverseFilter(a =>
+                  ArticleEnricher.enrich(a, config).map(_.map(a -> _))
+                )
+              )
+          else
+            IO.pure(articleList.map(a => a -> simpleSummary(a.content)))
         exists <- Files[IO].exists(nextMarkdownFilePath)
         _ <- if (exists) Files[IO].delete(nextMarkdownFilePath) else IO.unit
-        news <- generateNews(articleList)
+        news <- generateNews(articles)
         _ <- fs2.Stream
           .emits(List(news))
           .through(fs2.text.utf8.encode)
@@ -279,7 +306,7 @@ object Bloggers {
       exists <- Files[IO].exists(nextMarkdownFilePath)
       _ <- if (exists) Files[IO].delete(nextMarkdownFilePath) else IO.unit
       articleList <- createBlogList(startDate, endDate)
-      news <- generateNews(articleList)
+      news <- generateNews(articleList.map(a => a -> simpleSummary(a.content)))
       _ <- fs2.Stream
         .emits(List(news))
         .through(fs2.text.utf8.encode)

@@ -44,6 +44,7 @@ object LaikaBuild extends IOApp.Simple {
         Favicon.internal(Root / "img" / "favicon-32x32.png", sizes = "32x32")
       )
       .site.mainNavigation(depth = 3)
+      .site.internalCSS(Root / "css" / "scalanews.css")
       .site.footer(
         """<br/>
           |Created by <a href="https://www.softinio.com">Salar Rahmanian</a> and Contributors.

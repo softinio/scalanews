@@ -41,7 +41,8 @@ object Database:
       tables: Seq[TableSchema]
   ): Resource[IO, DuckDBConnection] =
     Resource.eval(
-      IO.blocking(Files.createDirectories(Paths.get(path).getParent))
+      IO.blocking(Class.forName("org.duckdb.DuckDBDriver")) >>
+        IO.blocking(Files.createDirectories(Paths.get(path).getParent))
     ) >>
       DuckDBIO
         .connect(DuckDBConfig.persistent(path))

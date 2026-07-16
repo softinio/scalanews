@@ -36,6 +36,9 @@ trait Repository[Entity, Row]:
 
 object Database:
 
+  /** Default path for the DuckDB database file, shared by all subcommands. */
+  val defaultPath: String = "data/scalanews.duckdb"
+
   def connect(
       path: String,
       tables: Seq[TableSchema]

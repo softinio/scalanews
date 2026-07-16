@@ -237,7 +237,7 @@ object Bloggers {
   def ingestBlogsToDB(
       startDate: Date,
       endDate: Date,
-      dbPath: String = "data/scalanews.db"
+      dbPath: String = Database.defaultPath
   ): IO[ExitCode] =
     Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
       for {

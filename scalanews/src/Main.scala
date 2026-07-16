@@ -25,6 +25,7 @@ import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
 import com.softinio.scalanews.algebra.{EventType, ServerConfig}
+import com.softinio.scalanews.db.Database
 
 object Main
     extends CommandIOApp(
@@ -58,7 +59,8 @@ object Main
 
   private case class IngestBlogs(
       startDate: String,
-      endDate: String
+      endDate: String,
+      dbPath: String
   )
 
   private case class ServerCmd(port: Int)
@@ -76,6 +78,11 @@ object Main
   private val endDateOps: Opts[String] =
     Opts
       .argument[String](metavar = "endDate")
+
+  private val dbPathOps: Opts[String] =
+    Opts
+      .option[String]("dbpath", "Database file path", short = "d")
+      .withDefault(Database.defaultPath)
 
   private val publishDateOps: Opts[Option[String]] =
     Opts
@@ -134,9 +141,7 @@ object Main
       (
         startDateOps,
         endDateOps,
-        Opts
-          .option[String]("dbpath", "Database file path", short = "d")
-          .withDefault("data/scalanews.duckdb"),
+        dbPathOps,
         Opts.flag("ai", "Use AI to generate blog", short = "a").orFalse
       )
         .mapN(GenerateNextBlogUsingDB.apply)
@@ -144,7 +149,7 @@ object Main
 
   private val ingestBlogsOpts: Opts[IngestBlogs] =
     Opts.subcommand("ingest", "Ingest blogs into DB") {
-      (startDateOps, endDateOps).mapN(IngestBlogs.apply)
+      (startDateOps, endDateOps, dbPathOps).mapN(IngestBlogs.apply)
     }
 
   private val serverOpts: Opts[ServerCmd] =
@@ -173,10 +178,11 @@ object Main
             dbPath,
             aI
           )
-        case IngestBlogs(startDate, endDate) =>
+        case IngestBlogs(startDate, endDate, dbPath) =>
           Bloggers.ingestBlogsToDB(
             dateFormatter.parse(startDate),
-            dateFormatter.parse(endDate)
+            dateFormatter.parse(endDate),
+            dbPath
           )
         case Blogger(directory) =>
           if (directory) {

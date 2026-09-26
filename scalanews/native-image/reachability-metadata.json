@@ -1,6 +1,13 @@
 {
   "reflection": [
     {
+      "type": {
+        "proxy": [
+          "sun.misc.SignalHandler"
+        ]
+      }
+    },
+    {
       "type": "com.rometools.rome.feed.CopyFrom",
       "methods": [
         {

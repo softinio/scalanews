@@ -91,6 +91,12 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     // DuckDB loads its JNI library in a static initialiser; that must happen
     // at runtime or the native binary can't find the library's symbols.
     "--initialize-at-run-time=org.duckdb",
+    // cats-effect still ships its SignalHandler proxy config in the deprecated
+    // proxy-config format; ignore it and register the proxy in our own
+    // reachability-metadata.json instead.
+    "--exclude-config",
+    ".*/cats-effect_3-[^/]*\\.jar",
+    "META-INF/native-image/org\\.typelevel/cats-effect/.*",
     // Nix's clang isn't a toolchain GraalVM recognises on macOS
     "-H:-CheckToolchain"
   )

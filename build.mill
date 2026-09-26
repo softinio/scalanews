@@ -19,6 +19,7 @@ object versions {
   val rome = "2.1.0"
   val scala3 = "3.9.0"
   val sttpAI = "0.11.3"
+  val tapir = "1.13.31"
 }
 
 // Note: In Mill, top-level modules are automatically aggregated
@@ -39,7 +40,9 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     mvn"com.softinio::duck4s-cats-effect::${versions.duck4s}",
     mvn"com.softinio::duck4s::${versions.duck4s}",
     mvn"com.softwaremill.sttp.ai::claude::${versions.sttpAI}",
+    mvn"com.softwaremill.sttp.ai::core::${versions.sttpAI}",
     mvn"com.softwaremill.sttp.ai::fs2::${versions.sttpAI}",
+    mvn"com.softwaremill.sttp.tapir::tapir-core:${versions.tapir}",
     mvn"com.vladsch.flexmark:flexmark-html2md-converter:${versions.flexmark}",
     mvn"io.circe::circe-core:${versions.circe}",
     mvn"io.circe::circe-generic:${versions.circe}",

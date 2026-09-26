@@ -16,7 +16,7 @@
 
 package com.softinio.scalanews
 
-import com.softinio.scalanews.algebra.Blog
+import com.softinio.scalanews.algebra.{Article, ArticleSummary, Blog}
 import com.softinio.scalanews.db.Database
 import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
 import munit.CatsEffectSuite
@@ -108,5 +108,30 @@ class BloggersSuite extends CatsEffectSuite {
       assertEquals(exitCode, cats.effect.ExitCode.Success)
       assert(count > 0, s"Expected articles in DB but found $count")
     }
+  }
+
+  private val cardArticle = Article(
+    "Match Types",
+    "",
+    org.http4s.Uri.fromString("https://example.com/match-types").toOption,
+    "Author",
+    new java.util.Date(0)
+  )
+
+  test("generateNews - renders a card's summary when there is one") {
+    Bloggers
+      .generateNews(List(cardArticle -> ArticleSummary.from("About types.")))
+      .map(page =>
+        assert(page.contains("""<p class="article-summary">About types.</p>"""))
+      )
+  }
+
+  test("generateNews - omits the summary line when there is none") {
+    Bloggers
+      .generateNews(List(cardArticle -> None))
+      .map { page =>
+        assert(page.contains("Match Types"))
+        assert(!page.contains("article-summary"))
+      }
   }
 }

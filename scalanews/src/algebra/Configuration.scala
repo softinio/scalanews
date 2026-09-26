@@ -17,6 +17,7 @@
 package com.softinio.scalanews.algebra
 
 import pureconfig.*
+import sttp.ai.claude.models.ClaudeModel
 
 import java.net.URI
 
@@ -25,11 +26,30 @@ final case class Configuration(bloggers: List[Blog]) derives ConfigReader
 final case class EventConfig(meetups: List[Event], conferences: List[Event])
     derives ConfigReader
 
+/** An Anthropic API key. Its `toString` is redacted so it can't leak into logs.
+  */
+final case class ApiKey(value: String) {
+  override def toString: String = "ApiKey(<redacted>)"
+}
+
 final case class AnthropicConfig(
-    apiKey: String,
-    model: String = "claude-haiku-4-5-20251001",
+    apiKey: ApiKey,
+    model: ClaudeModel = ClaudeModel.ClaudeSonnet5,
     maxTokens: Int = 1024
 )
+
+object AnthropicConfig {
+
+  /** Summaries are requested with structured outputs, so the model must support
+    * them.
+    */
+  def validate(config: AnthropicConfig): Either[String, AnthropicConfig] =
+    Either.cond(
+      ClaudeModel.modelSupportsStructuredOutput(config.model.value),
+      config,
+      s"Model ${config.model.value} does not support structured outputs"
+    )
+}
 
 object Config {
   given ConfigReader[URI] = ConfigReader[String].map(URI.create)

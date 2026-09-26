@@ -19,10 +19,13 @@ package com.softinio.scalanews
 import cats.effect.IO
 import cats.syntax.functorFilter.*
 import fs2.Stream
+import io.circe.{Encoder, parser}
+import io.circe.syntax.*
 import sttp.ai.claude.ClaudeClient
 import sttp.ai.claude.config.ClaudeConfig
-import sttp.ai.claude.models.{ContentBlock, Message}
+import sttp.ai.claude.models.{ContentBlock, Message, OutputConfig, OutputFormat}
 import sttp.ai.claude.requests.MessageRequest
+import sttp.ai.core.agent.ResponseSchema
 import sttp.ai.claude.responses.MessageStreamResponse
 import sttp.ai.claude.responses.MessageStreamResponse.ContentDelta.TextDelta
 import sttp.ai.claude.streaming.fs2.ClaudeFs2Streaming.*
@@ -32,14 +35,40 @@ import com.softinio.scalanews.algebra.AnthropicConfig
 
 object AnthropicClient {
 
-  def sendMessage(prompt: String, config: AnthropicConfig): IO[String] = {
-    val claudeConfig = ClaudeConfig(apiKey = config.apiKey)
-    val client = ClaudeClient(claudeConfig)
-    val request = MessageRequest.simple(
-      model = config.model,
-      messages = List(Message.user(List(ContentBlock.text(prompt)))),
-      maxTokens = config.maxTokens
+  /** Sends `input` as JSON and constrains the reply to `responseSchema` using
+    * structured outputs, decoding it into `A`.
+    */
+  def structured[I: Encoder, A](
+      systemPrompt: String,
+      input: I,
+      responseSchema: ResponseSchema[A],
+      config: AnthropicConfig
+  ): IO[A] = {
+    val request = MessageRequest
+      .simple(
+        model = config.model.value,
+        messages =
+          List(Message.user(List(ContentBlock.text(input.asJson.noSpaces)))),
+        maxTokens = config.maxTokens,
+        outputConfig = Some(
+          OutputConfig(
+            format = Some(OutputFormat.JsonSchema(responseSchema.schema)),
+            effort = None
+          )
+        )
+      )
+      .copy(system = Some(systemPrompt))
+
+    send(request, config).flatMap(reply =>
+      IO.fromEither(parser.decode(reply)(using responseSchema.codec))
     )
+  }
+
+  private def send(
+      request: MessageRequest,
+      config: AnthropicConfig
+  ): IO[String] = {
+    val client = ClaudeClient(ClaudeConfig(apiKey = config.apiKey.value))
 
     HttpClientFs2Backend.resource[IO]().use { backend =>
       val streamRequest = client.createStreamedMessage[IO](request)
@@ -71,10 +100,10 @@ object AnthropicClient {
       prompt: String,
       config: AnthropicConfig
   ): Stream[IO, String] = {
-    val claudeConfig = ClaudeConfig(apiKey = config.apiKey)
+    val claudeConfig = ClaudeConfig(apiKey = config.apiKey.value)
     val client = ClaudeClient(claudeConfig)
     val request = MessageRequest.simple(
-      model = config.model,
+      model = config.model.value,
       messages = List(Message.user(List(ContentBlock.text(prompt)))),
       maxTokens = config.maxTokens
     )

@@ -19,7 +19,7 @@ package com.softinio.scalanews
 import pureconfig.*
 import pureconfig.module.catseffect.syntax.*
 import cats.effect.IO
-import com.softinio.scalanews.algebra.AnthropicConfig
+import com.softinio.scalanews.algebra.{AnthropicConfig, ApiKey}
 import com.softinio.scalanews.algebra.Configuration
 import com.softinio.scalanews.algebra.EventConfig
 import com.softinio.scalanews.algebra.Config.given
@@ -39,7 +39,14 @@ object ConfigLoader {
   }
 
   def loadAnthropicConfig(): IO[AnthropicConfig] =
-    IO.fromOption(sys.env.get("ANTHROPIC_API_KEY"))(
+    IO.fromOption(sys.env.get("ANTHROPIC_API_KEY").filter(_.nonEmpty))(
       new RuntimeException("ANTHROPIC_API_KEY environment variable is not set")
-    ).map(AnthropicConfig(_))
+    ).flatMap { key =>
+      IO.fromEither(
+        AnthropicConfig
+          .validate(AnthropicConfig(ApiKey(key)))
+          .left
+          .map(new RuntimeException(_))
+      )
+    }
 }

@@ -24,10 +24,10 @@ import com.rometools.rome.feed.synd.{SyndContent, SyndEntry}
 
 import scala.jdk.CollectionConverters.*
 import com.softinio.scalanews.algebra.Article
+import com.softinio.scalanews.algebra.ArticleSummary
 import com.softinio.scalanews.algebra.Blog
 import com.softinio.scalanews.db.Database
 import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
-import com.softinio.scalanews.algebra.AnthropicConfig
 
 object Bloggers {
   private val nextMarkdownFilePath =
@@ -64,16 +64,19 @@ object Bloggers {
     }
   }
 
-  private def simpleSummary(content: String): String = {
-    val flat = content.linesIterator
-      .map(_.trim)
-      .filterNot(l => l.startsWith("#") || l.isEmpty)
-      .mkString(" ")
-    if (flat.length <= 200) flat
-    else flat.take(200).reverse.dropWhile(_ != ' ').reverse
-  }
+  private[scalanews] def simpleSummary(
+      content: String
+  ): Option[ArticleSummary] =
+    ArticleSummary.from(
+      content.linesIterator
+        .map(_.trim)
+        .filterNot(l => l.startsWith("#") || l.isEmpty)
+        .mkString(" ")
+    )
 
-  private def generateNews(articles: List[(Article, String)]): IO[String] = {
+  private[scalanews] def generateNews(
+      articles: List[(Article, Option[ArticleSummary])]
+  ): IO[String] = {
     IO.blocking {
       val header =
         """|# Scala News
@@ -82,12 +85,14 @@ object Bloggers {
            |
            |## Articles""".stripMargin
 
-      def card(article: Article, summary: String): String = {
+      def card(article: Article, summary: Option[ArticleSummary]): String = {
         val url = article.url.map(_.toString).getOrElse("#")
+        val summaryLine = summary.fold("")(s =>
+          s"""\n  <p class="article-summary">${s.value}</p>"""
+        )
         s"""|<div class="article-card">
             |  <h3><a href="$url">${article.title}</a></h3>
-            |  <span class="article-author">${article.author}</span>
-            |  <p class="article-summary">$summary</p>
+            |  <span class="article-author">${article.author}</span>$summaryLine
             |</div>""".stripMargin
       }
 
@@ -255,6 +260,30 @@ object Bloggers {
       } yield ExitCode.Success
     }
 
+  /** Picks the summary to show for an AI summarisation outcome, logging why an
+    * article didn't get a Claude summary.
+    */
+  private[scalanews] def summaryFor(
+      article: Article,
+      outcome: ArticleSummariser.Summarisation
+  ): IO[Option[ArticleSummary]] = {
+    import ArticleSummariser.{NoSummaryReason, Summarisation}
+    outcome match {
+      case Summarisation.Summarised(summary) => IO.pure(Some(summary))
+      case Summarisation.NoSummary(NoSummaryReason.NoText) =>
+        IO.println(s"No summary for '${article.title}': article has no text")
+          .as(None)
+      case Summarisation.NoSummary(
+            NoSummaryReason.InsufficientContent(reason)
+          ) =>
+        IO.println(s"No summary for '${article.title}': $reason").as(None)
+      case Summarisation.Failed(error) =>
+        IO.println(
+          s"Summarisation failed for '${article.title}', using plain summary: ${error.getMessage}"
+        ).as(simpleSummary(article.content))
+    }
+  }
+
   def generateNextBlogUsingDB(
       startDate: Date,
       endDate: Date,
@@ -286,8 +315,11 @@ object Bloggers {
             ConfigLoader
               .loadAnthropicConfig()
               .flatMap(config =>
-                articleList.traverseFilter(a =>
-                  ArticleEnricher.enrich(a, config).map(_.map(a -> _))
+                articleList.traverse(a =>
+                  ArticleSummariser
+                    .summarise(a, config)
+                    .flatMap(outcome => summaryFor(a, outcome))
+                    .map(a -> _)
                 )
               )
           else

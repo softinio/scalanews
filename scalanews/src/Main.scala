@@ -140,7 +140,7 @@ object Main
         startDateOps,
         endDateOps,
         dbPathOps,
-        Opts.flag("ai", "Use AI to generate blog", short = "a").orFalse
+        Opts.flag("ai", "Summarise articles with Claude", short = "a").orFalse
       )
         .mapN(GenerateNextBlogUsingDB.apply)
     }

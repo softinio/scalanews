@@ -45,8 +45,17 @@ object ArticleEnricher {
         |$truncated""".stripMargin
   }
 
+  // Claude often wraps its JSON in a ```json fence despite being asked not to,
+  // so decode just the outermost {...} object.
+  private def extractJson(response: String): String = {
+    val start = response.indexOf('{')
+    val end = response.lastIndexOf('}')
+    if (start >= 0 && end > start) response.substring(start, end + 1)
+    else response
+  }
+
   private[scalanews] def parseResponse(response: String): Option[String] =
-    decode[EnrichResult](response) match {
+    decode[EnrichResult](extractJson(response)) match {
       case Right(EnrichResult(true, summary)) => Some(summary)
       case _                                  => None
     }

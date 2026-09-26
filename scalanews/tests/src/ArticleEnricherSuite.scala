@@ -47,4 +47,19 @@ class ArticleEnricherSuite extends FunSuite {
     val response = """{"relevant": false, "summary": "should be ignored"}"""
     assertEquals(ArticleEnricher.parseResponse(response), None)
   }
+
+  test("parseResponse - JSON wrapped in a markdown code fence") {
+    val response =
+      "```json\n{\"relevant\": true, \"summary\": \"Scala 3 match types.\"}\n```"
+    assertEquals(
+      ArticleEnricher.parseResponse(response),
+      Some("Scala 3 match types.")
+    )
+  }
+
+  test("parseResponse - JSON surrounded by extra text") {
+    val response =
+      """Here you go: {"relevant": true, "summary": "About sbt."} Hope that helps."""
+    assertEquals(ArticleEnricher.parseResponse(response), Some("About sbt."))
+  }
 }

@@ -19,13 +19,10 @@ jobs:
   tests:
     name: Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        scala-version: ["3.7.3"]
     timeout-minutes: 60
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -41,7 +38,7 @@ jobs:
 
       # Cache Mill dependencies
       - name: Cache Mill
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/mill
@@ -61,18 +58,17 @@ jobs:
           nix develop --command mill --no-server scalanews.checkFormat
 
       # Run tests
-      - name: Run tests for Scala ${{ matrix.scala-version }}
+      - name: Run tests
         run: |
           nix develop --command mill --no-server scalanews.tests.testCached
 
       # Upload test results
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: test-results-${{ matrix.scala-version }}
-          path: |
-            out/scalanews/tests/test/
+          name: test-results
+          path: out/scalanews/tests/testCached.dest/test-report.xml
           retention-days: 7
 
   site:
@@ -81,7 +77,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -92,7 +88,7 @@ jobs:
 
       # Cache Mill dependencies
       - name: Cache Mill
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/mill
@@ -109,7 +105,7 @@ jobs:
       # Publish site
       - name: Publish site
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4.0.0
+        uses: peaceiris/actions-gh-pages@v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: site/target/docs/site

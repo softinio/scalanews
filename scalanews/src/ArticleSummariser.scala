@@ -23,7 +23,7 @@ import io.circe.syntax.*
 import sttp.ai.core.agent.{ResponseSchema, Variant}
 import sttp.tapir.Schema
 
-import com.softinio.scalanews.algebra.{AnthropicConfig, Article, ArticleSummary}
+import com.softinio.scalanews.algebra.{Article, ArticleSummary}
 
 /** Summarises articles with Claude, using structured outputs for both the
   * request and the reply.
@@ -120,7 +120,14 @@ object ArticleSummariser {
         Summarisation.NoSummary(NoSummaryReason.InsufficientContent(reason))
     }
 
-  def summarise(article: Article, config: AnthropicConfig): IO[Summarisation] =
+  /** Summarises `article`. Fatal client errors (see
+    * [[AnthropicClient.isFatal]]) are raised; any other failure becomes
+    * [[Summarisation.Failed]].
+    */
+  def summarise(
+      article: Article,
+      client: AnthropicClient
+  ): IO[Summarisation] =
     ArticleText.from(article.content) match {
       case None => IO.pure(Summarisation.NoSummary(NoSummaryReason.NoText))
       case Some(text) =>
@@ -130,14 +137,18 @@ object ArticleSummariser {
           article.url.map(_.toString),
           text
         )
-        AnthropicClient
-          .structured(
-            systemPrompt,
-            input,
-            SummaryResponse.responseSchema,
-            config
-          )
+        client
+          .structured(systemPrompt, input, SummaryResponse.responseSchema)
           .map(interpret)
-          .handleError(Summarisation.Failed(_))
+          .handleErrorWith {
+            case fatal if AnthropicClient.isFatal(fatal) =>
+              IO.raiseError(
+                new RuntimeException(
+                  "Anthropic rejected the request; check ANTHROPIC_API_KEY and its permissions",
+                  fatal
+                )
+              )
+            case error => IO.pure(Summarisation.Failed(error))
+          }
     }
 }

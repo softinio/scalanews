@@ -18,6 +18,7 @@ package com.softinio.scalanews
 
 import java.util.Date
 import cats.effect.*
+import cats.effect.syntax.all.*
 import cats.syntax.all.*
 import fs2.io.file.*
 import com.rometools.rome.feed.synd.{SyndContent, SyndEntry}
@@ -34,6 +35,9 @@ object Bloggers {
     Path("next/next.md")
   private val directoryMarkdownFilePath =
     Path("docs/Resources/Blog_Directory.md")
+  // Claude calls made at once when summarising; failed calls (e.g. rate
+  // limits) fall back to the plain summary.
+  private val summaryConcurrency = 4
   private val blogsToSkipByUrl = List(
     "petr-zapletal.medium.com",
     "sudarshankasar.medium.com"
@@ -315,12 +319,16 @@ object Bloggers {
             ConfigLoader
               .loadAnthropicConfig()
               .flatMap(config =>
-                articleList.traverse(a =>
-                  ArticleSummariser
-                    .summarise(a, config)
-                    .flatMap(outcome => summaryFor(a, outcome))
-                    .map(a -> _)
-                )
+                AnthropicClient
+                  .resource(config)
+                  .use(client =>
+                    articleList.parTraverseN(summaryConcurrency)(a =>
+                      ArticleSummariser
+                        .summarise(a, client)
+                        .flatMap(outcome => summaryFor(a, outcome))
+                        .map(a -> _)
+                    )
+                  )
               )
           else
             IO.pure(articleList.map(a => a -> simpleSummary(a.content)))

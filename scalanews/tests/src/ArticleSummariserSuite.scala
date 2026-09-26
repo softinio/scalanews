@@ -19,6 +19,7 @@ package com.softinio.scalanews
 import io.circe.parser.decode
 import io.circe.syntax.*
 import munit.FunSuite
+import sttp.ai.claude.ClaudeExceptions.ClaudeException
 import sttp.ai.claude.models.ClaudeModel
 
 import com.softinio.scalanews.ArticleSummariser.*
@@ -151,5 +152,44 @@ class ArticleSummariserSuite extends FunSuite {
   test("AnthropicConfig.validate - rejects a model without structured outputs") {
     val config = AnthropicConfig(ApiKey("key"), model = ClaudeModel.Claude3Haiku)
     assert(AnthropicConfig.validate(config).isLeft)
+  }
+
+  // The wrapped HTTP response isn't needed to check the exception's type.
+  private def claudeError(
+      make: (
+          Option[String],
+          Option[String],
+          Option[String],
+          Option[String],
+          Null
+      ) => Throwable
+  ): Throwable = make(None, None, None, None, null)
+
+  test("AnthropicClient.isFatal - authentication errors stop the run") {
+    assert(
+      AnthropicClient.isFatal(
+        claudeError(new ClaudeException.AuthenticationException(_, _, _, _, _))
+      )
+    )
+  }
+
+  test("AnthropicClient.isFatal - permission errors stop the run") {
+    assert(
+      AnthropicClient.isFatal(
+        claudeError(new ClaudeException.PermissionException(_, _, _, _, _))
+      )
+    )
+  }
+
+  test("AnthropicClient.isFatal - rate limits fall back per article") {
+    assert(
+      !AnthropicClient.isFatal(
+        claudeError(new ClaudeException.RateLimitException(_, _, _, _, _))
+      )
+    )
+  }
+
+  test("AnthropicClient.isFatal - other errors fall back per article") {
+    assert(!AnthropicClient.isFatal(new RuntimeException("timeout")))
   }
 }

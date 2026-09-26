@@ -17,11 +17,8 @@
 package com.softinio.scalanews
 
 import cats.effect.IO
-import io.circe.{Codec, Encoder, Json}
-import io.circe.generic.semiauto.deriveCodec
+import io.circe.{Decoder, Encoder, Json}
 import io.circe.syntax.*
-import sttp.ai.core.agent.{ResponseSchema, Variant}
-import sttp.tapir.Schema
 
 import com.softinio.scalanews.algebra.{Article, ArticleSummary}
 
@@ -69,15 +66,14 @@ object ArticleSummariser {
   sealed trait SummaryResponse
   object SummaryResponse {
     final case class Summary(text: String) extends SummaryResponse
+        derives JsonSchema,
+          Decoder
     final case class InsufficientContent(reason: String) extends SummaryResponse
+        derives JsonSchema,
+          Decoder
 
-    given Schema[Summary] = Schema.derived
-    given Schema[InsufficientContent] = Schema.derived
-    given Codec[Summary] = deriveCodec
-    given Codec[InsufficientContent] = deriveCodec
-
-    val responseSchema: ResponseSchema[SummaryResponse] =
-      ResponseSchema.oneOf(Variant[Summary], Variant[InsufficientContent])
+    val structuredOutput: StructuredOutput[SummaryResponse] =
+      StructuredOutput.oneOf[SummaryResponse]
   }
 
   enum NoSummaryReason {
@@ -138,7 +134,7 @@ object ArticleSummariser {
           text
         )
         client
-          .structured(systemPrompt, input, SummaryResponse.responseSchema)
+          .structured(systemPrompt, input, SummaryResponse.structuredOutput)
           .map(interpret)
           .handleErrorWith {
             case fatal if AnthropicClient.isFatal(fatal) =>

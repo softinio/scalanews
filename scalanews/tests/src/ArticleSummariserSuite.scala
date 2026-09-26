@@ -19,8 +19,14 @@ package com.softinio.scalanews
 import io.circe.parser.decode
 import io.circe.syntax.*
 import munit.FunSuite
-import sttp.ai.claude.ClaudeExceptions.ClaudeException
-import sttp.ai.claude.models.ClaudeModel
+import com.anthropic.core.JsonValue
+import com.anthropic.core.http.Headers
+import com.anthropic.errors.{
+  PermissionDeniedException,
+  RateLimitException,
+  UnauthorizedException
+}
+import com.anthropic.models.messages.Model
 
 import com.softinio.scalanews.ArticleSummariser.*
 import com.softinio.scalanews.algebra.{AnthropicConfig, ApiKey, ArticleSummary}
@@ -64,7 +70,7 @@ class ArticleSummariserSuite extends FunSuite {
     )
   }
 
-  private val codec = SummaryResponse.responseSchema.codec
+  private val codec = SummaryResponse.structuredOutput.decoder
 
   test("SummaryResponse - decodes a summary") {
     assertEquals(
@@ -140,7 +146,7 @@ class ArticleSummariserSuite extends FunSuite {
   test("AnthropicConfig - defaults to Sonnet 5") {
     assertEquals(
       AnthropicConfig(ApiKey("key")).model,
-      ClaudeModel.ClaudeSonnet5
+      Model.CLAUDE_SONNET_5
     )
   }
 
@@ -150,25 +156,17 @@ class ArticleSummariserSuite extends FunSuite {
   }
 
   test("AnthropicConfig.validate - rejects a model without structured outputs") {
-    val config = AnthropicConfig(ApiKey("key"), model = ClaudeModel.Claude3Haiku)
+    val config = AnthropicConfig(ApiKey("key"), model = Model.of("claude-3-haiku-20240307"))
     assert(AnthropicConfig.validate(config).isLeft)
   }
 
-  // The wrapped HTTP response isn't needed to check the exception's type.
-  private def claudeError(
-      make: (
-          Option[String],
-          Option[String],
-          Option[String],
-          Option[String],
-          Null
-      ) => Throwable
-  ): Throwable = make(None, None, None, None, null)
+  private val noHeaders = Headers.builder().build()
+  private val noBody = JsonValue.from(null)
 
   test("AnthropicClient.isFatal - authentication errors stop the run") {
     assert(
       AnthropicClient.isFatal(
-        claudeError(new ClaudeException.AuthenticationException(_, _, _, _, _))
+        UnauthorizedException.builder().headers(noHeaders).body(noBody).build()
       )
     )
   }
@@ -176,15 +174,26 @@ class ArticleSummariserSuite extends FunSuite {
   test("AnthropicClient.isFatal - permission errors stop the run") {
     assert(
       AnthropicClient.isFatal(
-        claudeError(new ClaudeException.PermissionException(_, _, _, _, _))
+        PermissionDeniedException
+          .builder()
+          .headers(noHeaders)
+          .body(noBody)
+          .build()
       )
     )
+  }
+
+  test("AnthropicClient.isFatal - wrapped fatal errors stop the run") {
+    val wrapped = new java.util.concurrent.CompletionException(
+      UnauthorizedException.builder().headers(noHeaders).body(noBody).build()
+    )
+    assert(AnthropicClient.isFatal(wrapped))
   }
 
   test("AnthropicClient.isFatal - rate limits fall back per article") {
     assert(
       !AnthropicClient.isFatal(
-        claudeError(new ClaudeException.RateLimitException(_, _, _, _, _))
+        RateLimitException.builder().headers(noHeaders).body(noBody).build()
       )
     )
   }

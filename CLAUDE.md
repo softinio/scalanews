@@ -84,11 +84,18 @@ The CLI supports these main commands:
 **Note**: After building the native image with `mill scalanews.nativeImage`, the executable is located at:
 `./out/scalanews/nativeImagePath.dest/target/scalanews`
 
-Native-image metadata that libraries don't ship themselves (Rome, DuckDB JNI) lives in
+Native-image metadata that libraries don't ship themselves (Rome, DuckDB JNI, and the
+Anthropic Java SDK's Jackson/Kotlin serialisation) lives in
 `scalanews/native-image/reachability-metadata.json`. If a native run fails where the JVM run
 works, record what's missing with the tracing agent
 (`java -agentlib:native-image-agent=config-output-dir=<dir> -cp <runClasspath> com.softinio.scalanews.Main <cmd>`)
 and merge the relevant entries.
+
+After upgrading the Anthropic Java SDK, build the native image and run
+`scalanews self-check`: it round-trips a Claude request and reply through the SDK offline (no
+API key), which fails if the SDK needs new metadata. If it fails,
+record `self-check` and a real `dbgenerate --ai` run with the tracing agent and merge the
+`com.anthropic`, `com.fasterxml.jackson` and `kotlin` entries.
 
 ```bash
 # Generate newsletter from RSS feeds for date range
@@ -143,7 +150,9 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - `Events`: Community event directory management
 - `ConfigLoader`: JSON configuration handling (also loads the Anthropic config)
 - `Database` / `ArticleRepository`: DuckDB persistence layer for articles
-- `AnthropicClient` / `ArticleSummariser`: Claude client (structured outputs) and typed article summarisation
+- `AnthropicClient`: cats-effect wrapper around Anthropic's official Java SDK (structured outputs)
+- `StructuredOutput` / `JsonSchema`: derive a structured-output JSON schema and matching decoder from a case class or sealed trait
+- `ArticleSummariser`: typed article summarisation (request `ArticleInput`, reply `Summary | InsufficientContent`)
 
 **Configuration**:
 - Blogger RSS feeds: `config.json`
@@ -172,3 +181,5 @@ Key libraries used:
 - Decline for CLI parsing
 - FS2 for streaming
 - Laika for documentation site generation
+- Anthropic Java SDK (`anthropic-java`) for Claude summaries
+- DuckDB (via duck4s) for article storage

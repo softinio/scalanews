@@ -17,7 +17,7 @@
 package com.softinio.scalanews.algebra
 
 import pureconfig.*
-import sttp.ai.claude.models.ClaudeModel
+import com.anthropic.models.messages.Model
 
 import java.net.URI
 
@@ -34,20 +34,28 @@ final case class ApiKey(value: String) {
 
 final case class AnthropicConfig(
     apiKey: ApiKey,
-    model: ClaudeModel = ClaudeModel.ClaudeSonnet5,
+    model: Model = Model.CLAUDE_SONNET_5,
     maxTokens: Int = 1024
 )
 
 object AnthropicConfig {
+
+  /** Models known to support structured outputs, which summaries rely on. */
+  val structuredOutputModels: Set[Model] = Set(
+    Model.CLAUDE_SONNET_5,
+    Model.CLAUDE_HAIKU_4_5,
+    Model.CLAUDE_OPUS_5,
+    Model.CLAUDE_OPUS_5_5
+  )
 
   /** Summaries are requested with structured outputs, so the model must support
     * them.
     */
   def validate(config: AnthropicConfig): Either[String, AnthropicConfig] =
     Either.cond(
-      ClaudeModel.modelSupportsStructuredOutput(config.model.value),
+      structuredOutputModels.contains(config.model),
       config,
-      s"Model ${config.model.value} does not support structured outputs"
+      s"Model ${config.model.asString} does not support structured outputs"
     )
 }
 

@@ -45,6 +45,8 @@ object Main
 
   private case class Event(directory: Boolean)
 
+  private case object SelfCheckCmd
+
   private case class GenerateNextBlog(
       startDate: String,
       endDate: String
@@ -150,9 +152,16 @@ object Main
       (startDateOps, endDateOps, dbPathOps).mapN(IngestBlogs.apply)
     }
 
+  private val selfCheckOpts: Opts[SelfCheckCmd.type] =
+    Opts.subcommand(
+      "self-check",
+      "Check Claude request/reply JSON handling offline"
+    )(Opts.unit.as(SelfCheckCmd))
+
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse generateNextBlogUsingDBOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts)
+    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse generateNextBlogUsingDBOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts orElse selfCheckOpts)
       .map {
+        case SelfCheckCmd                                     => SelfCheck.run
         case Publish(publishDate, archiveDate, archiveFolder) =>
           FileHandler.publish(publishDate, archiveDate, archiveFolder)
         case Create(overwrite) => FileHandler.create(overwrite)

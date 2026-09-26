@@ -6,21 +6,19 @@ import mill.*, mill.scalalib.*, mill.scalalib.scalafmt.*,
 // Version management
 object versions {
   val cats = "2.13.0"
-  val catsEffect = "3.6.3"
-  val circe = "0.14.14"
-  val decline = "2.5.0"
+  val catsEffect = "3.7.1"
+  val circe = "0.14.16"
+  val decline = "2.6.2"
   val duck4s = "0.1.4"
   val flexmark = "0.64.8"
-  val fs2 = "3.12.2"
-  val graalvm = "java25"
-  val http4s = "0.23.33"
-  val laika = "1.3.2"
-  val munit = "1.2.0"
-  val munitCatsEffect = "2.1.0"
-  val pureconfig = "0.17.9"
+  val fs2 = "3.14.0"
+  val http4s = "0.23.37"
+  val munit = "1.3.6"
+  val munitCatsEffect = "2.2.1"
+  val pureconfig = "0.17.10"
   val rome = "2.1.0"
-  val scala3 = "3.8.2"
-  val sttpAI = "0.4.8"
+  val scala3 = "3.9.0"
+  val sttpAI = "0.11.3"
 }
 
 // Note: In Mill, top-level modules are automatically aggregated

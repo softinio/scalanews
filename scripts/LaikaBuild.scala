@@ -1,4 +1,4 @@
-//> using scala 3.7.3
+//> using scala 3.9.0
 //> using dep org.typelevel::laika-core:1.3.2
 //> using dep org.typelevel::laika-io:1.3.2
 

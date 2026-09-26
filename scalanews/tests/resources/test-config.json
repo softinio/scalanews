@@ -5,8 +5,5 @@
             "url": "https://www.softinio.com",
             "rss": "https://www.softinio.com/atom.xml"
         }
-    ],
-    "server": {
-        "port": 8080
-    }
+    ]
 }

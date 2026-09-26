@@ -103,9 +103,6 @@ The CLI supports these main commands:
 # Create new newsletter draft (saves to next/next.md)
 ./out/scalanews/nativeImagePath.dest/target/scalanews create
 
-# To start the http4s server
-./out/scalanews/nativeImagePath.dest/target/scalanews server
-
 # Publish current draft and archive
 ./out/scalanews/nativeImagePath.dest/target/scalanews publish 2024-01-07
 
@@ -165,7 +162,6 @@ Key libraries used:
 - Cats Effect for functional effects
 - Rome Tools for RSS parsing
 - HTTP4s for HTTP clients
-- HTTP4s for HTTP server
 - PureConfig for configuration
 - Decline for CLI parsing
 - FS2 for streaming

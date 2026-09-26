@@ -1,0 +1,9 @@
+{
+  "reflection": [
+    {
+      "type": {
+        "proxy": ["sun.misc.SignalHandler"]
+      }
+    }
+  ]
+}

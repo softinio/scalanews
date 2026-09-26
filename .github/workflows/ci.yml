@@ -46,7 +46,7 @@ jobs:
           path: |
             ~/.cache/mill
             ~/.cache/coursier
-          key: ${{ runner.os }}-mill-${{ hashFiles('build.sc') }}
+          key: ${{ runner.os }}-mill-${{ hashFiles('build.mill', '.mill-version') }}
           restore-keys: |
             ${{ runner.os }}-mill-
 
@@ -97,7 +97,7 @@ jobs:
           path: |
             ~/.cache/mill
             ~/.cache/coursier
-          key: ${{ runner.os }}-mill-docs-${{ hashFiles('build.sc') }}
+          key: ${{ runner.os }}-mill-docs-${{ hashFiles('build.mill', '.mill-version') }}
           restore-keys: |
             ${{ runner.os }}-mill-docs-
 

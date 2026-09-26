@@ -34,6 +34,7 @@ tags
 .bloop/
 metals.sbt
 .vscode
+.mcp.json
 
 # npm
 node_modules/
@@ -45,9 +46,6 @@ node_modules/
 # Nix
 result
 result-*
-
-# PostgreSQL local dev data
-.postgres/
 
 # DuckDB database files
 data/*.duckdb

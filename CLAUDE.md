@@ -84,6 +84,12 @@ The CLI supports these main commands:
 **Note**: After building the native image with `mill scalanews.nativeImage`, the executable is located at:
 `./out/scalanews/nativeImagePath.dest/target/scalanews`
 
+Native-image metadata that libraries don't ship themselves (Rome, DuckDB JNI) lives in
+`scalanews/native-image/reachability-metadata.json`. If a native run fails where the JVM run
+works, record what's missing with the tracing agent
+(`java -agentlib:native-image-agent=config-output-dir=<dir> -cp <runClasspath> com.softinio.scalanews.Main <cmd>`)
+and merge the relevant entries.
+
 ```bash
 # Generate newsletter from RSS feeds for date range
 ./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07

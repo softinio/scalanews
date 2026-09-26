@@ -1,9 +1,924 @@
 {
   "reflection": [
     {
-      "type": {
-        "proxy": ["sun.misc.SignalHandler"]
-      }
+      "type": "com.rometools.rome.feed.CopyFrom",
+      "methods": [
+        {
+          "name": "getInterface",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.module.DCModuleImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getContributors",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCoverages",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCreators",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDates",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDescriptions",
+          "parameterTypes": []
+        },
+        {
+          "name": "getFormats",
+          "parameterTypes": []
+        },
+        {
+          "name": "getIdentifiers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getLanguages",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPublishers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRelations",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRightsList",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSources",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSubjects",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTitles",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTypes",
+          "parameterTypes": []
+        },
+        {
+          "name": "setContributors",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setCoverages",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setCreators",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDates",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDescriptions",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setFormats",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setIdentifiers",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setLanguages",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setPublishers",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setRelations",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setRightsList",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSources",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSubjects",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setTitles",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setTypes",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.SyndCategory",
+      "methods": [
+        {
+          "name": "getLabel",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTaxonomyUri",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForAtom03",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForAtom10",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS090",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS091Netscape",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS091Userland",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS092",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS093",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS094",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS10",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS20",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.Atom03Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.Atom10Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.DCModuleParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS090Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS091NetscapeParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS091UserlandParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS092Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS093Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS094Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS10Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS20Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS20wNSParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.SyModuleParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBArray",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.duckdb.DuckDBVector",
+            "int",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBDate",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getDaysSinceEpoch",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBDriver"
+    },
+    {
+      "type": "org.duckdb.DuckDBHugeInt",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "lower"
+        },
+        {
+          "name": "upper"
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBResultSetMetaData",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int",
+            "int",
+            "java.lang.String[]",
+            "java.lang.String[]",
+            "java.lang.String[]",
+            "java.lang.String",
+            "java.lang.String[]",
+            "java.lang.String[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBStruct",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String[]",
+            "org.duckdb.DuckDBVector[]",
+            "int",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBTime",
+      "jniAccessible": true
+    },
+    {
+      "type": "org.duckdb.DuckDBTimestamp",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getMicrosEpoch",
+          "parameterTypes": []
+        },
+        {
+          "name": "valueOf",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBTimestampTZ",
+      "jniAccessible": true
+    },
+    {
+      "type": "org.duckdb.DuckDBVector",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "constlen_data"
+        },
+        {
+          "name": "varlen_data"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "int",
+            "boolean[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBVector[]"
+    },
+    {
+      "type": "org.duckdb.ProfilerPrintFormat",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "GRAPHVIZ"
+        },
+        {
+          "name": "HTML"
+        },
+        {
+          "name": "JSON"
+        },
+        {
+          "name": "NO_OUTPUT"
+        },
+        {
+          "name": "QUERY_TREE"
+        },
+        {
+          "name": "QUERY_TREE_OPTIMIZER"
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.QueryProgress",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "double",
+            "long",
+            "long"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.user.DuckDBMap",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getSQLTypeName",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "byte[]",
+      "jniAccessible": true
+    },
+    {
+      "type": "java.lang.Boolean",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "booleanValue",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBoolean",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Byte",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "byteValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Double",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "doubleValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Float",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "floatValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Integer",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "intValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Long",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "longValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Object",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "toString",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Short",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "shortValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.String",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getBytes",
+          "parameterTypes": [
+            "java.nio.charset.Charset"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Throwable",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getMessage",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.math.BigDecimal",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "longValue",
+          "parameterTypes": []
+        },
+        {
+          "name": "precision",
+          "parameterTypes": []
+        },
+        {
+          "name": "scale",
+          "parameterTypes": []
+        },
+        {
+          "name": "scaleByPowerOfTen",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "toPlainString",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.nio.ByteBuffer",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "order",
+          "parameterTypes": [
+            "java.nio.ByteOrder"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.nio.ByteOrder",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "LITTLE_ENDIAN"
+        }
+      ]
+    },
+    {
+      "type": "java.nio.CharBuffer",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "toString",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.nio.charset.Charset",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "decode",
+          "parameterTypes": [
+            "java.nio.ByteBuffer"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.nio.charset.StandardCharsets",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "UTF_8"
+        }
+      ]
+    },
+    {
+      "type": "java.sql.Array",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getArray",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBaseTypeName",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.sql.SQLException",
+      "jniAccessible": true
+    },
+    {
+      "type": "java.sql.SQLTimeoutException",
+      "jniAccessible": true
+    },
+    {
+      "type": "java.sql.Struct",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getAttributes",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSQLTypeName",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.Arrays",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "asList",
+          "parameterTypes": [
+            "java.lang.Object[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.util.Iterator",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "hasNext",
+          "parameterTypes": []
+        },
+        {
+          "name": "next",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.List",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "iterator",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.Map",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "entrySet",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.Map$Entry",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.Set",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "iterator",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.UUID",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getLeastSignificantBits",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMostSignificantBits",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "glob": "com/rometools/rome/rome.properties"
+    },
+    {
+      "glob": "rome.properties"
+    },
+    {
+      "glob": "libduckdb_java.so_osx_universal"
     }
   ]
 }

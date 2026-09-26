@@ -61,8 +61,7 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     )
 
     override def forkEnv = super.forkEnv() ++ Map(
-      // Dynamically resolve project root (where build.sc is located)
-      "SCALA_NEWS_CONFIG" -> s"${os.pwd.toString.replaceAll("/out/.*$", "")}/test-config.json"
+      "SCALA_NEWS_CONFIG" -> (moduleDir / "resources" / "test-config.json").toString
     )
 
     def forkArgs = Seq("-Xmx2G")
@@ -94,8 +93,13 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     "--enable-url-protocols=https",
     "-H:+ReportExceptionStackTraces",
     "--initialize-at-build-time",
-    "--no-server",
-    "-H:-CheckToolchain"
+    // DuckDB loads its JNI library in a static initialiser; that must happen
+    // at runtime or the native binary can't find the library's symbols.
+    "--initialize-at-run-time=org.duckdb",
+    // Nix's clang isn't a toolchain GraalVM recognises on macOS
+    "-H:+UnlockExperimentalVMOptions",
+    "-H:-CheckToolchain",
+    "-H:-UnlockExperimentalVMOptions"
   )
 
   def nativeImageName = "scalanews"
@@ -105,7 +109,11 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
   }
 
   def nativeImage() = Task.Command {
-    val assemblyPath = assembly().path
+    // Build from the plain classpath rather than the assembly jar: native-image
+    // ignores libraries' bundled META-INF/native-image metadata in Mill's
+    // assembly (it has a launcher script prepended).
+    val classpath =
+      runClasspath().map(_.path.toString).mkString(java.io.File.pathSeparator)
     val outputPath = nativeImagePath()
     val options = nativeImageOptions
     val mainClassValue = mainClass().getOrElse(
@@ -129,10 +137,10 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
       Seq(
         s"-H:NativeLinkerOption=-L${zlibPath}/lib",
         s"-H:ConfigurationFileDirectories=${moduleDir / "native-image"}",
-        "-jar",
-        assemblyPath.toString,
-        "-H:Name=" + nativeImageName,
-        "-H:Class=" + mainClassValue,
+        "-cp",
+        classpath,
+        mainClassValue,
+        "-o",
         outputPath.toString
       )
 

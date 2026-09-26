@@ -56,14 +56,14 @@
       {
         devShells.default = pkgs.mkShell {
           packages = [ mill ] ++ (with pkgs; [
-            graalvm-ce
+            graalvmPackages.graalvm-ce
             metals
             nodejs_22
             scalafmt
             scala-cli
           ]);
 
-          JAVA_HOME = "${pkgs.graalvm-ce}";
+          JAVA_HOME = "${pkgs.graalvmPackages.graalvm-ce}";
           SCALA_NEWS_CONFIG = "config.json";
 
           shellHook = ''

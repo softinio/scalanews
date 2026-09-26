@@ -86,18 +86,13 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
 
   // Native image support
   def nativeImageOptions = Seq(
-    "--no-fallback",
-    "--enable-url-protocols=http",
-    "--enable-url-protocols=https",
     "-H:+ReportExceptionStackTraces",
     "--initialize-at-build-time",
     // DuckDB loads its JNI library in a static initialiser; that must happen
     // at runtime or the native binary can't find the library's symbols.
     "--initialize-at-run-time=org.duckdb",
     // Nix's clang isn't a toolchain GraalVM recognises on macOS
-    "-H:+UnlockExperimentalVMOptions",
-    "-H:-CheckToolchain",
-    "-H:-UnlockExperimentalVMOptions"
+    "-H:-CheckToolchain"
   )
 
   def nativeImageName = "scalanews"

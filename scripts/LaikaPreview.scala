@@ -71,6 +71,8 @@ object LaikaPreview extends IOApp.Simple {
       .from(Markdown)
       .to(HTML)
       .using(Markdown.GitHubFlavor)
+      // Newsletter pages embed HTML (the article cards); render it rather than escape it.
+      .withRawContent
       .parallel[IO]
       .withTheme(heliumTheme)
       .build

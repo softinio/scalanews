@@ -6,7 +6,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 
 | Blog        | URL           | RSS Feed  |
 | ------------- |:-------------:| -----:|
-| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/atom.xml) |
+| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |
 | Scala Lang | <https://www.scala-lang.org/blog/> | [rss feed](https://www.scala-lang.org/feed/blog.xml) |
 | Typelevel | <https://typelevel.org/blog/> | [rss feed](https://typelevel.org/blog/feed.rss) |
 | Michael Pilquist | <https://mpilquist.github.io/> | [rss feed](https://mpilquist.github.io/index.xml) |

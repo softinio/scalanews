@@ -26,12 +26,12 @@ class RomeSuite extends CatsEffectSuite {
 
   test("Fetch Feed".tag(IntegrationTest)) {
     val obtained: IO[Boolean] = for {
-      result <- Rome.fetchFeed("https://www.softinio.com/atom.xml")
+      result <- Rome.fetchFeed("https://www.softinio.com/index.xml")
     } yield {
       result match {
         case Right(feed) =>
-          val title = feed.getTitle
-          title == "Salar Rahmanian"
+          feed.getTitle.contains("Salar Rahmanian") &&
+          !feed.getEntries.isEmpty
         case _ => false
       }
     }

@@ -50,7 +50,7 @@ class BloggersSuite extends CatsEffectSuite {
     val blog = Blog(
       "Salar Rahmanian",
       new URI("https://www.softinio.com"),
-      new URI("https://www.softinio.com/atom.xml")
+      new URI("https://www.softinio.com/index.xml")
     )
     val obtained = for {
       result <- Bloggers.getArticlesForBlogger(

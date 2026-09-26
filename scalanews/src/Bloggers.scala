@@ -20,7 +20,7 @@ import java.util.Date
 import cats.effect.*
 import cats.syntax.all.*
 import fs2.io.file.*
-import com.rometools.rome.feed.synd.SyndEntry
+import com.rometools.rome.feed.synd.{SyndContent, SyndEntry}
 
 import scala.jdk.CollectionConverters.*
 import com.softinio.scalanews.algebra.Article
@@ -130,6 +130,14 @@ object Bloggers {
     hasRelevantCategory || hasRelevantTitle || hasRelevantDescription
   }
 
+  // Many feeds (plain RSS) only carry a <description> summary, not full
+  // <content>; fall back to it so the article isn't stored empty.
+  private def entryContent(entry: SyndEntry): List[SyndContent] =
+    entry.getContents.asScala.toList match {
+      case Nil      => Option(entry.getDescription).toList
+      case contents => contents
+    }
+
   private def getBlogAuthor(entry: SyndEntry, blog: Blog): String =
     Option(entry.getAuthor)
       .filter(_.nonEmpty)
@@ -155,7 +163,7 @@ object Bloggers {
       .map(entry =>
         Article(
           entry.getTitle,
-          entry.getContents.asScala.toList,
+          entryContent(entry),
           entry.getLink,
           getBlogAuthor(entry, blog),
           entry.getPublishedDate

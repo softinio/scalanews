@@ -134,4 +134,67 @@ class BloggersSuite extends CatsEffectSuite {
         assert(!page.contains("article-summary"))
       }
   }
+
+  private def articleTitled(title: String) =
+    cardArticle.copy(title = title)
+
+  private def cardCount(page: String) =
+    "class=\"article-card\"".r.findAllMatchIn(page).size
+
+  test("generateNews - small editions have only cards") {
+    val articles = (1 to Bloggers.highlightCount).toList.map(i =>
+      articleTitled(f"Article $i%02d") -> ArticleSummary.from("Summary.")
+    )
+    Bloggers
+      .generateNews(articles)
+      .map { page =>
+        assertEquals(cardCount(page), Bloggers.highlightCount)
+        assert(!page.contains("More articles"))
+      }
+  }
+
+  test("generateNews - extra articles are listed under More articles") {
+    val articles = (1 to Bloggers.highlightCount + 3).toList.map(i =>
+      articleTitled(f"Article $i%02d") -> ArticleSummary.from("Summary.")
+    )
+    Bloggers
+      .generateNews(articles)
+      .map { page =>
+        assertEquals(cardCount(page), Bloggers.highlightCount)
+        assert(page.contains("### More articles"))
+        assertEquals("<li>".r.findAllMatchIn(page).size, 3)
+      }
+  }
+
+  test("generateNews - articles with a summary get the cards first") {
+    val withoutSummary =
+      (1 to Bloggers.highlightCount).toList.map(i =>
+        articleTitled(f"A no summary $i%02d") -> None
+      )
+    val withSummary = articleTitled("Z has summary") -> ArticleSummary.from(
+      "Summary."
+    )
+    Bloggers
+      .generateNews(withSummary :: withoutSummary)
+      .map { page =>
+        val cardsPart = page.split("More articles").head
+        assert(cardsPart.contains("Z has summary"))
+        assert(page.split("More articles").last.contains("A no summary"))
+      }
+  }
+
+  test("generateNews - escapes HTML in titles, authors and summaries") {
+    val article = cardArticle.copy(
+      title = "Either[A, B] & <friends>",
+      author = "O'Brien"
+    )
+    Bloggers
+      .generateNews(List(article -> ArticleSummary.from("Uses \"quotes\" & <tags>")))
+      .map { page =>
+        assert(page.contains("Either[A, B] &amp; &lt;friends&gt;"))
+        assert(page.contains("O&#39;Brien"))
+        assert(page.contains("Uses &quot;quotes&quot; &amp; &lt;tags&gt;"))
+        assert(!page.contains("<friends>"))
+      }
+  }
 }

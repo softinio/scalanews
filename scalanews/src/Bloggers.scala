@@ -78,6 +78,19 @@ object Bloggers {
         .mkString(" ")
     )
 
+  // Articles shown as cards; the rest are listed compactly under "More articles".
+  private[scalanews] val highlightCount = 18
+
+  private def escapeHtml(text: String): String =
+    text.flatMap {
+      case '&'  => "&amp;"
+      case '<'  => "&lt;"
+      case '>'  => "&gt;"
+      case '"'  => "&quot;"
+      case '\'' => "&#39;"
+      case c    => c.toString
+    }
+
   private[scalanews] def generateNews(
       articles: List[(Article, Option[ArticleSummary])]
   ): IO[String] = {
@@ -89,24 +102,53 @@ object Bloggers {
            |
            |## Articles""".stripMargin
 
+      def link(article: Article): String = {
+        val url = escapeHtml(article.url.map(_.toString).getOrElse("#"))
+        s"""<a href="$url">${escapeHtml(article.title)}</a>"""
+      }
+
       def card(article: Article, summary: Option[ArticleSummary]): String = {
-        val url = article.url.map(_.toString).getOrElse("#")
         val summaryLine = summary.fold("")(s =>
-          s"""\n  <p class="article-summary">${s.value}</p>"""
+          s"""\n  <p class="article-summary">${escapeHtml(s.value)}</p>"""
         )
         s"""|<div class="article-card">
-            |  <h3><a href="$url">${article.title}</a></h3>
-            |  <span class="article-author">${article.author}</span>$summaryLine
+            |  <h3>${link(article)}</h3>
+            |  <span class="article-author">${escapeHtml(
+             article.author
+           )}</span>$summaryLine
             |</div>""".stripMargin
       }
 
-      val cards = articles.sortBy(_._1.title).map(card.tupled).mkString("\n")
+      def listItem(article: Article): String =
+        s"""  <li>${link(article)} <span class="article-author">${escapeHtml(
+            article.author
+          )}</span></li>"""
+
+      // Articles with a summary get the cards first; order within each part is by title.
+      val (summarised, unsummarised) =
+        articles.sortBy(_._1.title).partition(_._2.isDefined)
+      val (highlights, rest) =
+        (summarised ++ unsummarised).splitAt(highlightCount)
+
+      val cards =
+        s"""|<div class="article-cards">
+            |${highlights.map(card.tupled).mkString("\n")}
+            |</div>""".stripMargin
+
+      val moreArticles =
+        if (rest.isEmpty) ""
+        else
+          s"""|
+              |
+              |### More articles
+              |
+              |<ul class="more-articles">
+              |${rest.map(_._1).sortBy(_.title).map(listItem).mkString("\n")}
+              |</ul>""".stripMargin
 
       s"""|$header
           |
-          |<div class="article-cards">
-          |$cards
-          |</div>
+          |$cards$moreArticles
           |""".stripMargin
     }
   }

@@ -39,7 +39,7 @@ pre-pr
 mill scalanews.compile + scalanews.checkFormat + checkDependencyOrder + scalanews.tests.testForked
 
 # Run a specific test suite
-mill scalanews.tests.testOnly "com.softinio.scalanews.BloggersSuite"
+mill scalanews.tests.testOnly "com.softinio.scalanews.FeedsSuite"
 
 # Format code
 mill scalanews.reformat             # Format all code
@@ -147,13 +147,18 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 **Database-backed Workflow** (the default for `generate`):
 1. `generate` fetches the RSS feeds and stores the articles in a DuckDB database; an article whose URL is already stored is skipped, so overlapping date ranges are safe (`ingest` does just this step)
 2. It then reads the articles for the date range back from the database and writes the newsletter
-3. Relevance: articles pass a cheap keyword filter (`isAboutScala`, "scala"/"sbt") before they're stored, in every mode. With AI, jev (Typesafe, via verdict4s, `jev-latest` by default) is then asked two yes/no questions per article in one request: is it about Scala and its ecosystem, and is it just a release announcement. jev's probabilities are stored on the article with the model used, and the keep/drop decision is made from them when read (`aboutScalaThreshold` 0.3, `announcementThreshold` 0.7 in `Bloggers`), so retuning a threshold needs no new jev calls. Articles judged irrelevant are logged with their probabilities and get no summary. A failed check keeps the article and isn't stored, so it's retried; a bad key stops the run
+3. Relevance: articles pass a cheap keyword filter (`isAboutScala`, "scala"/"sbt") before they're stored, in every mode. With AI, jev (Typesafe, via verdict4s, `jev-latest` by default) is then asked two yes/no questions per article in one request: is it about Scala and its ecosystem, and is it just a release announcement. jev's probabilities are stored on the article with the model used, and the keep/drop decision is made from them when read (`aboutScalaThreshold` 0.3, `announcementThreshold` 0.7 in `Relevance`), so retuning a threshold needs no new jev calls. Articles judged irrelevant are logged with their probabilities and get no summary. A failed check keeps the article and isn't stored, so it's retried; a bad key stops the run
 4. Article summaries are written by Claude (Sonnet 5 by default) using structured outputs; articles without enough text get no summary, and failed calls fall back to the built-in `simpleSummary`. Claude only summarises: it never filters articles out. Claude's outcome (a summary, or "not enough content" with its reason) is stored on the article with the model used, and later runs reuse it instead of calling Claude again (no API key needed if every article has one); failed calls aren't stored, so they're retried. `--refresh-ai` asks jev and Claude again; `--no-ai` skips both (plain summaries); `--no-db` skips the database entirely (plain summaries, the original workflow)
 5. `generate` and `ingest` default to `data/scalanews.duckdb` (`Database.defaultPath`) and accept `-d/--dbpath` to override
 6. There are no schema migrations: the table is created with `CREATE TABLE IF NOT EXISTS` (`ArticleSchema`), so after changing the schema delete the database file and re-ingest. Add versioned migrations once the database holds data worth keeping across schema changes
 
 **Key Modules**:
-- `Bloggers`: RSS processing and newsletter generation (including DB-backed variants)
+- `Newsletter`: the pipeline behind `generate` and `ingest` (ingest, relevance, summaries, write the page)
+- `Feeds`: fetching RSS feeds, the `isAboutScala` keyword filter, and turning entries into articles
+- `Relevance`: jev relevance checks and their stored verdicts
+- `Summaries`: plain and Claude summaries, and their stored outcomes
+- `NewsletterPage`: rendering the newsletter page (cards, More articles list) and the run summary
+- `BlogDirectory`: the blog directory page
 - `Rome`: RSS feed parsing using Rome Tools
 - `FileHandler`: Newsletter publishing and archiving
 - `Events`: Community event directory management

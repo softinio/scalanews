@@ -56,7 +56,16 @@ case class ArticleRow(
     summarisedAt: Option[java.sql.Timestamp] = None,
     storedRelevance: Option[StoredRelevance] = None,
     relevanceCheckedAt: Option[java.sql.Timestamp] = None
-)
+) {
+  def toArticle: Article =
+    Article(
+      title,
+      content,
+      url.flatMap(u => org.http4s.Uri.fromString(u).toOption),
+      author,
+      publishedDate
+    )
+}
 
 object ArticleSchema extends TableSchema:
   val createDdl =

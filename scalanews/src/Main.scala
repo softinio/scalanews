@@ -226,13 +226,13 @@ object Main
         FileHandler.publish(publishDate, archiveDate, archiveFolder)
       case Create(overwrite)                  => FileHandler.create(overwrite)
       case Generate(startDate, endDate, mode) =>
-        Bloggers.generate(
+        Newsletter.generate(
           parseDate(startDate),
           parseDate(endDate),
           mode
         )
       case IngestBlogs(startDate, endDate, dbPath) =>
-        Bloggers.ingestBlogsToDB(
+        Newsletter.ingestBlogsToDB(
           parseDate(startDate),
           parseDate(endDate),
           dbPath
@@ -241,7 +241,7 @@ object Main
         if (directory) {
           for {
             config <- ConfigLoader.load()
-            result <- Bloggers.createBloggerDirectory(config.bloggers)
+            result <- BlogDirectory.createBloggerDirectory(config.bloggers)
           } yield result
         } else IO(ExitCode.Success)
       case Event(directory) =>

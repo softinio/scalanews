@@ -97,26 +97,27 @@ and merge the relevant entries.
 After upgrading the Anthropic Java SDK, build the native image and run
 `scalanews self-check`: it round-trips a Claude request and reply through the SDK offline (no
 API key), which fails if the SDK needs new metadata. If it fails,
-record `self-check` and a real `dbgenerate --ai` run with the tracing agent and merge the
+record `self-check` and a real `generate` run (with Claude summaries) with the tracing agent and merge the
 `com.anthropic`, `com.fasterxml.jackson` and `kotlin` entries.
 
 ```bash
-# Generate newsletter from RSS feeds for date range
+# Generate the next newsletter (saves to next/next.md). By default this ingests the feeds
+# into the DuckDB database and summarises articles with Claude (requires ANTHROPIC_API_KEY
+# unless every article already has a stored summary)
 ./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07
+# -r/--resummarise: ask Claude again for articles that already have a stored summary
+./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07 --resummarise
+# --no-ai: keep the database, but use plain summaries (no Claude)
+./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07 --no-ai
+# --no-db: read the feeds directly, without the database (plain summaries)
+./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07 --no-db
 
-# Ingest articles from RSS feeds into the DuckDB database for a date range
+# Ingest articles into the database without generating a newsletter (e.g. a backfill)
 ./out/scalanews/nativeImagePath.dest/target/scalanews ingest 2024-01-01 2024-01-07
 
-# Generate newsletter from articles stored in the DuckDB database
-# Add -a/--ai to summarise articles with Claude (requires ANTHROPIC_API_KEY)
-./out/scalanews/nativeImagePath.dest/target/scalanews dbgenerate 2024-01-01 2024-01-07
-./out/scalanews/nativeImagePath.dest/target/scalanews dbgenerate 2024-01-01 2024-01-07 --ai
-# Add -r/--resummarise (with --ai) to ask Claude again for articles that already have a stored summary
-./out/scalanews/nativeImagePath.dest/target/scalanews dbgenerate 2024-01-01 2024-01-07 --ai --resummarise
-
-# Both ingest and dbgenerate share the same default DB path (data/scalanews.duckdb)
+# generate and ingest share the default DB path (data/scalanews.duckdb)
 # and accept -d/--dbpath to override it
-./out/scalanews/nativeImagePath.dest/target/scalanews ingest 2024-01-01 2024-01-07 -d data/custom.duckdb
+./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07 -d data/custom.duckdb
 
 # Create new newsletter draft (saves to next/next.md)
 ./out/scalanews/nativeImagePath.dest/target/scalanews create
@@ -142,11 +143,11 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 3. Newsletter is generated in markdown format
 4. Files are managed through archive/publish cycle
 
-**Database-backed Workflow** (optional, via `ingest` + `dbgenerate`):
-1. `ingest` fetches RSS feeds and persists articles into a DuckDB database; an article whose URL is already stored is skipped, so overlapping date ranges are safe
-2. `dbgenerate` reads articles from the database for a date range and generates the newsletter
-3. With `--ai`, article summaries are written by Claude (Sonnet 5 by default) using structured outputs; articles without enough text get no summary, and failed calls fall back to the built-in `simpleSummary`. `--ai` only summarises: it never filters articles out. Claude's outcome (a summary, or "not enough content" with its reason) is stored on the article with the model used, and later `--ai` runs reuse it instead of calling Claude again (no API key needed if every article has one); failed calls aren't stored, so they're retried. `--resummarise` asks Claude again
-4. Both commands default to `data/scalanews.duckdb` (`Database.defaultPath`) and accept `-d/--dbpath` to override
+**Database-backed Workflow** (the default for `generate`):
+1. `generate` fetches the RSS feeds and stores the articles in a DuckDB database; an article whose URL is already stored is skipped, so overlapping date ranges are safe (`ingest` does just this step)
+2. It then reads the articles for the date range back from the database and writes the newsletter
+3. Article summaries are written by Claude (Sonnet 5 by default) using structured outputs; articles without enough text get no summary, and failed calls fall back to the built-in `simpleSummary`. Claude only summarises: it never filters articles out. Claude's outcome (a summary, or "not enough content" with its reason) is stored on the article with the model used, and later runs reuse it instead of calling Claude again (no API key needed if every article has one); failed calls aren't stored, so they're retried. `--resummarise` asks Claude again; `--no-ai` uses plain summaries instead; `--no-db` skips the database entirely (plain summaries, the original workflow)
+4. `generate` and `ingest` default to `data/scalanews.duckdb` (`Database.defaultPath`) and accept `-d/--dbpath` to override
 5. There are no schema migrations: the table is created with `CREATE TABLE IF NOT EXISTS` (`ArticleSchema`), so after changing the schema delete the database file and re-ingest. Add versioned migrations once the database holds data worth keeping across schema changes
 
 **Key Modules**:
@@ -164,7 +165,7 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - Blogger RSS feeds: `config.json`
 - Events/meetups: `events.json`
 - Newsletter template: `next/template.md`
-- `ANTHROPIC_API_KEY` environment variable: required for `dbgenerate --ai`
+- `ANTHROPIC_API_KEY` environment variable: required by `generate` for Claude summaries (not needed with `--no-ai`/`--no-db`, or when every article already has a stored summary)
 
 **File Structure**:
 - Draft newsletter: `next/next.md`

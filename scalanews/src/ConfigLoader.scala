@@ -40,7 +40,9 @@ object ConfigLoader {
 
   def loadAnthropicConfig(): IO[AnthropicConfig] =
     IO.fromOption(sys.env.get("ANTHROPIC_API_KEY").filter(_.nonEmpty))(
-      new RuntimeException("ANTHROPIC_API_KEY environment variable is not set")
+      new RuntimeException(
+        "ANTHROPIC_API_KEY is not set: set it for Claude summaries, or use --no-ai for plain summaries"
+      )
     ).flatMap { key =>
       IO.fromEither(
         AnthropicConfig

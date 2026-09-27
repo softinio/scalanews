@@ -24,7 +24,7 @@ import cats.implicits.*
 import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
-import com.softinio.scalanews.algebra.EventType
+import com.softinio.scalanews.algebra.{EventType, GenerateMode, Summaries}
 import com.softinio.scalanews.db.Database
 
 object Main
@@ -47,17 +47,10 @@ object Main
 
   private case object SelfCheckCmd
 
-  private case class GenerateNextBlog(
-      startDate: String,
-      endDate: String
-  )
-
-  private case class GenerateNextBlogUsingDB(
+  private[scalanews] case class Generate(
       startDate: String,
       endDate: String,
-      dbPath: String,
-      aI: Boolean = false,
-      resummarise: Boolean = false
+      mode: GenerateMode
   )
 
   private case class IngestBlogs(
@@ -132,27 +125,53 @@ object Main
         .map(Event.apply)
     }
 
-  private val generateNextBlogOpts: Opts[GenerateNextBlog] =
-    Opts.subcommand("generate", "Generate next blog") {
-      (startDateOps, endDateOps).mapN(GenerateNextBlog.apply)
-    }
-
-  private val generateNextBlogUsingDBOpts: Opts[GenerateNextBlogUsingDB] =
-    Opts.subcommand("dbgenerate", "Generate next blog using DB") {
+  /** `generate`: by default ingests into the database and summarises with
+    * Claude; `--no-ai` keeps the database with plain summaries, `--no-db` reads
+    * the feeds directly. Flag combinations that make no sense are rejected
+    * rather than ignored.
+    */
+  private[scalanews] val generateOpts: Opts[Generate] =
+    Opts.subcommand(
+      "generate",
+      "Generate the next newsletter (database and Claude summaries by default)"
+    ) {
       (
         startDateOps,
         endDateOps,
-        dbPathOps,
-        Opts.flag("ai", "Summarise articles with Claude", short = "a").orFalse,
+        Opts
+          .flag(
+            "no-db",
+            "Read the feeds directly instead of via the database (plain summaries)"
+          )
+          .orFalse,
+        Opts.flag("no-ai", "Use plain summaries instead of Claude").orFalse,
         Opts
           .flag(
             "resummarise",
-            "With --ai, ask Claude again even for articles with a stored summary",
+            "Ask Claude again even for articles with a stored summary",
             short = "r"
           )
-          .orFalse
-      )
-        .mapN(GenerateNextBlogUsingDB.apply)
+          .orFalse,
+        Opts
+          .option[String]("dbpath", "Database file path", short = "d")
+          .orNone
+      ).tupled.mapValidated {
+        case (_, _, true, _, true, _) =>
+          "--resummarise needs the database; it can't be used with --no-db".invalidNel
+        case (_, _, true, _, _, Some(_)) =>
+          "--dbpath can't be used with --no-db".invalidNel
+        case (_, _, false, true, true, _) =>
+          "--resummarise only applies to Claude summaries; it can't be used with --no-ai".invalidNel
+        case (startDate, endDate, noDb, noAi, resummarise, dbPath) =>
+          val mode =
+            if (noDb) GenerateMode.Direct
+            else
+              GenerateMode.Database(
+                dbPath.getOrElse(Database.defaultPath),
+                if (noAi) Summaries.Plain else Summaries.Claude(resummarise)
+              )
+          Generate(startDate, endDate, mode).validNel
+      }
     }
 
   private val ingestBlogsOpts: Opts[IngestBlogs] =
@@ -167,30 +186,17 @@ object Main
     )(Opts.unit.as(SelfCheckCmd))
 
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse generateNextBlogUsingDBOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts orElse selfCheckOpts)
+    (publishOpts orElse createOpts orElse generateOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts orElse selfCheckOpts)
       .map {
         case SelfCheckCmd                                     => SelfCheck.run
         case Publish(publishDate, archiveDate, archiveFolder) =>
           FileHandler.publish(publishDate, archiveDate, archiveFolder)
-        case Create(overwrite) => FileHandler.create(overwrite)
-        case GenerateNextBlog(startDate, endDate) =>
-          Bloggers.generateNextBlog(
-            dateFormatter.parse(startDate),
-            dateFormatter.parse(endDate)
-          )
-        case GenerateNextBlogUsingDB(
-              startDate,
-              endDate,
-              dbPath,
-              aI,
-              resummarise
-            ) =>
-          Bloggers.generateNextBlogUsingDB(
+        case Create(overwrite)                  => FileHandler.create(overwrite)
+        case Generate(startDate, endDate, mode) =>
+          Bloggers.generate(
             dateFormatter.parse(startDate),
             dateFormatter.parse(endDate),
-            dbPath,
-            aI,
-            resummarise
+            mode
           )
         case IngestBlogs(startDate, endDate, dbPath) =>
           Bloggers.ingestBlogsToDB(

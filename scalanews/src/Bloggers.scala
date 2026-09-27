@@ -26,6 +26,7 @@ import com.rometools.rome.feed.synd.{SyndContent, SyndEntry}
 import scala.jdk.CollectionConverters.*
 import com.softinio.scalanews.algebra.Article
 import com.softinio.scalanews.algebra.ArticleSummary
+import com.softinio.scalanews.algebra.{GenerateMode, Summaries}
 import com.softinio.scalanews.algebra.Blog
 import com.softinio.scalanews.db.Database
 import com.softinio.duck4s.DuckDBConnection
@@ -299,21 +300,32 @@ object Bloggers {
     } yield ExitCode.Success
   }
 
+  /** Fetches the feeds for the date range and stores new articles, skipping
+    * ones already stored.
+    */
+  private def ingestInto(
+      conn: DuckDBConnection,
+      startDate: Date,
+      endDate: Date
+  ): IO[Unit] =
+    for {
+      articleList <- createBlogList(startDate, endDate)
+      inserted <- articleList.traverse(ArticleRepository.insert(conn, _))
+      added = inserted.sum
+      _ <- IO.println(
+        s"Ingested $added new articles (${articleList.size - added} already stored)"
+      )
+    } yield ()
+
   def ingestBlogsToDB(
       startDate: Date,
       endDate: Date,
       dbPath: String = Database.defaultPath
   ): IO[ExitCode] =
-    Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
-      for {
-        articleList <- createBlogList(startDate, endDate)
-        inserted <- articleList.traverse(ArticleRepository.insert(conn, _))
-        added = inserted.sum
-        _ <- IO.println(
-          s"Ingested $added new articles (${articleList.size - added} already stored)"
-        )
-      } yield ExitCode.Success
-    }
+    Database
+      .connect(dbPath, Seq(ArticleSchema))
+      .use(ingestInto(_, startDate, endDate))
+      .as(ExitCode.Success)
 
   /** Picks the summary to show for an AI summarisation outcome, logging why an
     * article didn't get a Claude summary.
@@ -423,53 +435,14 @@ object Bloggers {
     )
   }
 
-  def generateNextBlogUsingDB(
-      startDate: Date,
-      endDate: Date,
-      dbPath: String,
-      aI: Boolean,
-      resummarise: Boolean = false
-  ): IO[ExitCode] =
-    Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
-      for {
-        rows <- ArticleRepository
-          .findAll(conn)
-          .filter(row =>
-            row.publishedDate.after(startDate) && row.publishedDate.before(
-              endDate
-            )
-          )
-          .compile
-          .toList
-        articles <-
-          if (aI) summariseWithClaude(conn, rows, resummarise)
-          else
-            IO.pure(
-              rows.map(row => toArticle(row) -> simpleSummary(row.content))
-            )
-        exists <- Files[IO].exists(nextMarkdownFilePath)
-        _ <- if (exists) Files[IO].delete(nextMarkdownFilePath) else IO.unit
-        news <- generateNews(articles)
-        _ <- fs2.Stream
-          .emits(List(news))
-          .through(fs2.text.utf8.encode)
-          .through(
-            Files[IO].writeAll(nextMarkdownFilePath, Flags(Flag.CreateNew))
-          )
-          .compile
-          .drain
-      } yield ExitCode.Success
-    }
-
-  def generateNextBlog(
-      startDate: Date,
-      endDate: Date
-  ): IO[ExitCode] = {
+  /** Writes the next newsletter draft, replacing any existing one. */
+  private def writeNextNewsletter(
+      articles: List[(Article, Option[ArticleSummary])]
+  ): IO[Unit] =
     for {
       exists <- Files[IO].exists(nextMarkdownFilePath)
       _ <- if (exists) Files[IO].delete(nextMarkdownFilePath) else IO.unit
-      articleList <- createBlogList(startDate, endDate)
-      news <- generateNews(articleList.map(a => a -> simpleSummary(a.content)))
+      news <- generateNews(articles)
       _ <- fs2.Stream
         .emits(List(news))
         .through(fs2.text.utf8.encode)
@@ -478,6 +451,43 @@ object Bloggers {
         )
         .compile
         .drain
-    } yield ExitCode.Success
-  }
+    } yield ()
+
+  /** Builds the next newsletter for the date range. */
+  def generate(
+      startDate: Date,
+      endDate: Date,
+      mode: GenerateMode
+  ): IO[ExitCode] =
+    mode match {
+      case GenerateMode.Direct =>
+        createBlogList(startDate, endDate)
+          .map(_.map(a => a -> simpleSummary(a.content)))
+          .flatMap(writeNextNewsletter)
+          .as(ExitCode.Success)
+
+      case GenerateMode.Database(dbPath, summaries) =>
+        Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
+          for {
+            _ <- ingestInto(conn, startDate, endDate)
+            rows <- ArticleRepository
+              .findAll(conn)
+              .filter(row =>
+                row.publishedDate.after(startDate) &&
+                  row.publishedDate.before(endDate)
+              )
+              .compile
+              .toList
+            articles <- summaries match {
+              case Summaries.Claude(resummarise) =>
+                summariseWithClaude(conn, rows, resummarise)
+              case Summaries.Plain =>
+                IO.pure(
+                  rows.map(row => toArticle(row) -> simpleSummary(row.content))
+                )
+            }
+            _ <- writeNextNewsletter(articles)
+          } yield ExitCode.Success
+        }
+    }
 }

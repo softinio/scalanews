@@ -102,6 +102,9 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
 
   def mainClass = Some("com.softinio.scalanews.Main")
 
+  // See nativeImageOptions: lets DuckDB load its JNI library without warnings.
+  def forkArgs = Seq("--enable-native-access=ALL-UNNAMED")
+
   // Test trait for shared test configuration
   trait ScalaNewsTest extends ScalaTests with TestModule.Munit {
     def mvnDeps = Seq(
@@ -113,7 +116,7 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
       "SCALA_NEWS_CONFIG" -> (moduleDir / "resources" / "test-config.json").toString
     )
 
-    def forkArgs = Seq("-Xmx2G")
+    def forkArgs = Seq("-Xmx2G", "--enable-native-access=ALL-UNNAMED")
   }
 
   // Main test module - runs all tests
@@ -142,6 +145,9 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     // DuckDB loads its JNI library in a static initialiser; that must happen
     // at runtime or the native binary can't find the library's symbols.
     "--initialize-at-run-time=org.duckdb",
+    // DuckDB loads its JNI library with System.load; allow it so Java doesn't
+    // print a "restricted method" warning block on every run.
+    "--enable-native-access=ALL-UNNAMED",
     // scala.util.Random's shared generator (used by verdict4s's retry jitter)
     // must be seeded at runtime, not frozen into the image.
     "--initialize-at-run-time=scala.util.Random,scala.util.Random$",

@@ -59,7 +59,14 @@ object Main
       dbPath: String
   )
 
-  private val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
+  /** Parses a `yyyy-MM-dd` date strictly: an impossible date such as 2026-13-45
+    * is an error rather than rolling over into another month.
+    */
+  private[scalanews] def parseDate(text: String): java.util.Date = {
+    val format = new SimpleDateFormat("yyyy-MM-dd")
+    format.setLenient(false)
+    format.parse(text)
+  }
 
   private val archiveDateOps: Opts[String] =
     Opts
@@ -190,47 +197,70 @@ object Main
       "Check Claude request/reply JSON handling offline"
     )(Opts.unit.as(SelfCheckCmd))
 
+  /** Expected, user-fixable failures end the run with one `error:` line and
+    * exit code 1; anything else is unexpected and keeps its stack trace.
+    */
+  private[scalanews] val reportUserErrors
+      : PartialFunction[Throwable, IO[ExitCode]] = {
+    case e: UserError => Output.error(e.getMessage).as(ExitCode.Error)
+    case e: pureconfig.error.ConfigReaderException[?] =>
+      Output
+        .error(s"invalid configuration:\n${e.failures.prettyPrint()}")
+        .as(ExitCode.Error)
+    case e: java.text.ParseException =>
+      Output
+        .error(s"invalid date (expected yyyy-MM-dd): ${e.getMessage}")
+        .as(ExitCode.Error)
+  }
+
   override def main: Opts[IO[ExitCode]] =
     (publishOpts orElse createOpts orElse generateOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts orElse selfCheckOpts)
-      .map {
-        case SelfCheckCmd                                     => SelfCheck.run
-        case Publish(publishDate, archiveDate, archiveFolder) =>
-          FileHandler.publish(publishDate, archiveDate, archiveFolder)
-        case Create(overwrite)                  => FileHandler.create(overwrite)
-        case Generate(startDate, endDate, mode) =>
-          Bloggers.generate(
-            dateFormatter.parse(startDate),
-            dateFormatter.parse(endDate),
-            mode
-          )
-        case IngestBlogs(startDate, endDate, dbPath) =>
-          Bloggers.ingestBlogsToDB(
-            dateFormatter.parse(startDate),
-            dateFormatter.parse(endDate),
-            dbPath
-          )
-        case Blogger(directory) =>
-          if (directory) {
-            for {
-              config <- ConfigLoader.load()
-              result <- Bloggers.createBloggerDirectory(config.bloggers)
-            } yield result
-          } else IO(ExitCode.Success)
-        case Event(directory) =>
-          if (directory) {
-            for {
-              config <- ConfigLoader.loadEventsConfig()
-              _ <- Events.cleanEventDirectory()
-              _ <- Events.addTopHeader()
-              _ <- Events.addHeader(EventType.Meetup)
-              _ <- Events.createEventDirectory(config.meetups, EventType.Meetup)
-              _ <- Events.addHeader(EventType.Conference)
-              _ <- Events.createEventDirectory(
-                config.conferences,
-                EventType.Conference
-              )
-              _ <- Events.addFooter()
-            } yield ExitCode.Success
-          } else IO(ExitCode.Success)
-      }
+      .map(command =>
+        IO.defer(runCommand(command)).recoverWith(reportUserErrors)
+      )
+
+  private def runCommand(command: Product): IO[ExitCode] =
+    command match {
+      case SelfCheckCmd                                     => SelfCheck.run
+      case Publish(publishDate, archiveDate, archiveFolder) =>
+        FileHandler.publish(publishDate, archiveDate, archiveFolder)
+      case Create(overwrite)                  => FileHandler.create(overwrite)
+      case Generate(startDate, endDate, mode) =>
+        Bloggers.generate(
+          parseDate(startDate),
+          parseDate(endDate),
+          mode
+        )
+      case IngestBlogs(startDate, endDate, dbPath) =>
+        Bloggers.ingestBlogsToDB(
+          parseDate(startDate),
+          parseDate(endDate),
+          dbPath
+        )
+      case Blogger(directory) =>
+        if (directory) {
+          for {
+            config <- ConfigLoader.load()
+            result <- Bloggers.createBloggerDirectory(config.bloggers)
+          } yield result
+        } else IO(ExitCode.Success)
+      case Event(directory) =>
+        if (directory) {
+          for {
+            config <- ConfigLoader.loadEventsConfig()
+            _ <- Events.cleanEventDirectory()
+            _ <- Events.addTopHeader()
+            _ <- Events.addHeader(EventType.Meetup)
+            _ <- Events.createEventDirectory(config.meetups, EventType.Meetup)
+            _ <- Events.addHeader(EventType.Conference)
+            _ <- Events.createEventDirectory(
+              config.conferences,
+              EventType.Conference
+            )
+            _ <- Events.addFooter()
+          } yield ExitCode.Success
+        } else IO(ExitCode.Success)
+      case other =>
+        IO.raiseError(new IllegalStateException(s"Unhandled command: $other"))
+    }
 }

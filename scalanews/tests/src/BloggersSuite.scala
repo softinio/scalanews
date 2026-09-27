@@ -315,4 +315,23 @@ class BloggersSuite extends CatsEffectSuite {
     assert(!Bloggers.missingTypesafeKeyHint.isDefinedAt(other))
     assert(!Bloggers.missingTypesafeKeyHint.isDefinedAt(verdictApiError(401)))
   }
+
+  test("runSummary - counts cards, listed articles and summaries") {
+    val articles = (1 to Bloggers.highlightCount + 2).toList.map(i =>
+      articleTitled(f"Article $i%02d") ->
+        (if (i <= 5) ArticleSummary.from("Summary.") else None)
+    )
+    assertEquals(
+      Bloggers.runSummary(articles, Some(3)),
+      s"Wrote next/next.md: ${Bloggers.highlightCount + 2} articles (${Bloggers.highlightCount} as cards, 2 listed), 5 with a summary; 3 not relevant"
+    )
+  }
+
+  test("runSummary - leaves out relevance without AI") {
+    assert(
+      !Bloggers
+        .runSummary(List(cardArticle -> None), None)
+        .contains("not relevant")
+    )
+  }
 }

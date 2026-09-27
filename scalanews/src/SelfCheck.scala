@@ -63,5 +63,5 @@ object SelfCheck {
         case Right(SummaryResponse.Summary("Self-check summary.")) => ()
         case other => sys.error(s"Unexpected decoded reply: $other")
       }
-    }.flatMap(_ => IO.println("Self-check passed").as(ExitCode.Success))
+    }.flatMap(_ => Output.info("Self-check passed").as(ExitCode.Success))
 }

@@ -89,4 +89,42 @@ class MainSuite extends FunSuite {
     assert(parse((dates ++ Seq("--no-db", "--dbpath", "x.duckdb"))*).isLeft)
     assert(parse((dates ++ Seq("--no-ai", "--refresh-ai"))*).isLeft)
   }
+
+  test("reportUserErrors - expected failures exit with an error code") {
+    import cats.effect.unsafe.implicits.global
+    assertEquals(
+      Main
+        .reportUserErrors(new UserError("TYPESAFE_API_KEY is not set"))
+        .unsafeRunSync(),
+      cats.effect.ExitCode.Error
+    )
+    assertEquals(
+      Main
+        .reportUserErrors(new java.text.ParseException("bad date", 0))
+        .unsafeRunSync(),
+      cats.effect.ExitCode.Error
+    )
+  }
+
+  test("reportUserErrors - unexpected errors keep their stack trace") {
+    assert(!Main.reportUserErrors.isDefinedAt(new RuntimeException("boom")))
+  }
+
+  test("parseDate - accepts a real date") {
+    val cal = java.util.Calendar.getInstance()
+    cal.setTime(Main.parseDate("2026-09-26"))
+    assertEquals(
+      (
+        cal.get(java.util.Calendar.YEAR),
+        cal.get(java.util.Calendar.MONTH) + 1,
+        cal.get(java.util.Calendar.DAY_OF_MONTH)
+      ),
+      (2026, 9, 26)
+    )
+  }
+
+  test("parseDate - rejects an impossible date instead of rolling it over") {
+    intercept[java.text.ParseException](Main.parseDate("2026-13-45"))
+    intercept[java.text.ParseException](Main.parseDate("2026-02-30"))
+  }
 }

@@ -35,7 +35,7 @@ object ConfigLoader {
 
   def loadAnthropicConfig(): IO[AnthropicConfig] =
     IO.fromOption(sys.env.get("ANTHROPIC_API_KEY").filter(_.nonEmpty))(
-      new RuntimeException(
+      new UserError(
         "ANTHROPIC_API_KEY is not set: set it for Claude summaries, or use --no-ai for plain summaries"
       )
     ).flatMap { key =>
@@ -43,7 +43,7 @@ object ConfigLoader {
         AnthropicConfig
           .validate(AnthropicConfig(ApiKey(key)))
           .left
-          .map(new RuntimeException(_))
+          .map(new UserError(_))
       )
     }
 

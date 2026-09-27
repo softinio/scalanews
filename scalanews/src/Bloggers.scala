@@ -286,7 +286,7 @@ object Bloggers {
   private[scalanews] val missingTypesafeKeyHint
       : PartialFunction[Throwable, Throwable] = {
     case e: Verdict4sError.Validation if e.field == "TYPESAFE_API_KEY" =>
-      new RuntimeException(
+      new UserError(
         "TYPESAFE_API_KEY is not set: set it for jev relevance checks, or use --no-ai",
         e
       )
@@ -324,7 +324,7 @@ object Bloggers {
               assessRelevance(row, client).attempt.flatMap {
                 case Left(error) if isFatalVerdict(error) =>
                   IO.raiseError(
-                    new RuntimeException(
+                    new UserError(
                       "Typesafe rejected the request; check TYPESAFE_API_KEY and its permissions",
                       error
                     )
@@ -339,25 +339,33 @@ object Bloggers {
                 .saveRelevance(conn, row.id, stored)
                 .as(row.id -> Some(stored))
             case (row, Left(error)) =>
-              IO.println(
-                s"Relevance check failed for '${row.title}', keeping it: ${error.getMessage}"
-              ).as(row.id -> None)
+              Output
+                .warn(
+                  s"Relevance check failed for '${row.title}', keeping it: ${error.getMessage}"
+                )
+                .as(row.id -> None)
           })
           .map(_.toMap)
 
     for {
       checked <- fresh
+      // Only verdicts jev gave on this run are logged one by one; stored
+      // rejections were logged when they were made and are just counted.
       kept <- rows.traverseFilter { row =>
         reusable(row).orElse(checked.getOrElse(row.id, None)) match {
           case Some(stored) if !relevant(stored) =>
-            IO.println(
-              f"Not relevant: '${row.title}' (P(about Scala)=${stored.aboutScala.value: Double}%.2f, P(announcement)=${stored.announcement.value: Double}%.2f)"
-            ).as(None)
+            Output
+              .info(
+                f"Not relevant: '${row.title}' (P(about Scala)=${stored.aboutScala.value: Double}%.2f, P(announcement)=${stored.announcement.value: Double}%.2f)"
+              )
+              .whenA(checked.contains(row.id))
+              .as(None)
           case _ => IO.pure(Some(row))
         }
       }
-      _ <- IO.println(
-        s"Checked ${toCheck.size} articles with jev, reused ${rows.size - toCheck.size} stored; ${rows.size - kept.size} not relevant"
+      notRelevant = rows.size - kept.size
+      _ <- Output.info(
+        s"Checked ${toCheck.size} articles with jev, reused ${rows.size - toCheck.size} stored; $notRelevant not relevant"
       )
     } yield kept
   }
@@ -411,51 +419,81 @@ object Bloggers {
       case list => Some(list)
     }
 
-  def getArticlesForBlogger(
+  /** Articles fetched from the feeds, and the blogs whose feed couldn't be
+    * read.
+    */
+  private[scalanews] final case class FetchedArticles(
+      articles: List[Article],
+      failedFeeds: List[String]
+  )
+
+  /** A blog's articles in the date range, or why its feed couldn't be read
+    * (also reported as a warning).
+    */
+  private def fetchBlog(
       blog: Blog,
       startDate: Date,
       endDate: Date
-  ): IO[Option[List[Article]]] =
-    for {
-      feedResult <- Rome.fetchFeed(blog.rss.toURL.toString)
-      result <- feedResult match {
-        case Left(exception) =>
-          IO.println(
+  ): IO[Either[Throwable, List[Article]]] =
+    Rome.fetchFeed(blog.rss.toURL.toString).flatMap {
+      case Left(exception) =>
+        Output
+          .warn(
             s"Error fetching feed for blog ${blog.name}: ${exception.getMessage}"
-          ) *> IO.pure(None)
-        case Right(feed) =>
-          IO.pure(
+          )
+          .as(Left(exception))
+      case Right(feed) =>
+        IO.pure(
+          Right(
             getArticlesFromEntries(
               blog,
               feed.getEntries.asScala.toList,
               startDate,
               endDate
-            )
+            ).getOrElse(Nil)
           )
-      }
-    } yield result
+        )
+    }
+
+  def getArticlesForBlogger(
+      blog: Blog,
+      startDate: Date,
+      endDate: Date
+  ): IO[Option[List[Article]]] =
+    fetchBlog(blog, startDate, endDate).map(
+      _.toOption.filter(_.nonEmpty)
+    )
+
+  private[scalanews] def fetchArticles(
+      startDate: Date,
+      endDate: Date,
+      configFilePath: String = "config.json"
+  ): IO[FetchedArticles] =
+    ConfigLoader.load(configFilePath).flatMap { conf =>
+      conf.bloggers
+        .traverse(blog => fetchBlog(blog, startDate, endDate).map(blog -> _))
+        .map { results =>
+          FetchedArticles(
+            results.flatMap(_._2.getOrElse(Nil)),
+            results.collect { case (blog, Left(_)) => blog.name }
+          )
+        }
+    }
 
   def createBlogList(
       startDate: Date,
       endDate: Date,
       configFilePath: String = "config.json"
   ): IO[List[Article]] =
-    ConfigLoader.load(configFilePath).flatMap { conf =>
-      createBlogListFromBloggers(conf.bloggers, startDate, endDate)
-    }
+    fetchArticles(startDate, endDate, configFilePath).map(_.articles)
 
   def createBlogListFromBloggers(
       bloggers: List[Blog],
       startDate: Date,
       endDate: Date
   ): IO[List[Article]] =
-    bloggers.foldLeft(IO.pure(List[Article]()))((acc, blog) =>
-      acc.flatMap { articleList =>
-        getArticlesForBlogger(blog, startDate, endDate).map {
-          maybeArticleList =>
-            articleList ++ maybeArticleList.getOrElse(List[Article]())
-        }
-      }
+    bloggers.flatTraverse(blog =>
+      getArticlesForBlogger(blog, startDate, endDate).map(_.getOrElse(Nil))
     )
 
   def createBloggerDirectory(bloggerList: List[Blog]): IO[ExitCode] = {
@@ -481,15 +519,15 @@ object Bloggers {
       conn: DuckDBConnection,
       startDate: Date,
       endDate: Date
-  ): IO[Unit] =
+  ): IO[List[String]] =
     for {
-      articleList <- createBlogList(startDate, endDate)
-      inserted <- articleList.traverse(ArticleRepository.insert(conn, _))
+      fetched <- fetchArticles(startDate, endDate)
+      inserted <- fetched.articles.traverse(ArticleRepository.insert(conn, _))
       added = inserted.sum
-      _ <- IO.println(
-        s"Ingested $added new articles (${articleList.size - added} already stored)"
+      _ <- Output.info(
+        s"Ingested $added new articles (${fetched.articles.size - added} already stored)"
       )
-    } yield ()
+    } yield fetched.failedFeeds
 
   def ingestBlogsToDB(
       startDate: Date,
@@ -499,7 +537,26 @@ object Bloggers {
     Database
       .connect(dbPath, Seq(ArticleSchema))
       .use(ingestInto(_, startDate, endDate))
+      .flatMap(reportFailedFeeds)
       .as(ExitCode.Success)
+
+  private def reportFailedFeeds(failedFeeds: List[String]): IO[Unit] =
+    Output
+      .warn(
+        s"${failedFeeds.size} feed(s) couldn't be read: ${failedFeeds.mkString(", ")}"
+      )
+      .whenA(failedFeeds.nonEmpty)
+
+  /** The closing line of a `generate` run. */
+  private[scalanews] def runSummary(
+      articles: List[(Article, Option[ArticleSummary])],
+      notRelevant: Option[Int]
+  ): String = {
+    val cards = articles.size.min(highlightCount)
+    (List(
+      s"Wrote $nextMarkdownFilePath: ${articles.size} articles ($cards as cards, ${articles.size - cards} listed), ${articles.count(_._2.isDefined)} with a summary"
+    ) ++ notRelevant.map(n => s"$n not relevant")).mkString("; ")
+  }
 
   /** Picks the summary to show for an AI summarisation outcome, logging why an
     * article didn't get a Claude summary.
@@ -512,16 +569,19 @@ object Bloggers {
     outcome match {
       case Summarisation.Summarised(summary) => IO.pure(Some(summary))
       case Summarisation.NoSummary(NoSummaryReason.NoText) =>
-        IO.println(s"No summary for '${article.title}': article has no text")
+        Output
+          .info(s"No summary for '${article.title}': article has no text")
           .as(None)
       case Summarisation.NoSummary(
             NoSummaryReason.InsufficientContent(reason)
           ) =>
-        IO.println(s"No summary for '${article.title}': $reason").as(None)
+        Output.info(s"No summary for '${article.title}': $reason").as(None)
       case Summarisation.Failed(error) =>
-        IO.println(
-          s"Summarisation failed for '${article.title}', using plain summary: ${error.getMessage}"
-        ).as(simpleSummary(article.content))
+        Output
+          .warn(
+            s"Summarisation failed for '${article.title}', using plain summary: ${error.getMessage}"
+          )
+          .as(simpleSummary(article.content))
     }
   }
 
@@ -601,7 +661,7 @@ object Bloggers {
 
     for {
       summaries <- fresh
-      _ <- IO.println(
+      _ <- Output.info(
         s"Summarised ${toSummarise.size} articles with Claude, reused ${rows.size - toSummarise.size} stored"
       )
     } yield rows.map(row =>
@@ -635,15 +695,18 @@ object Bloggers {
   ): IO[ExitCode] =
     mode match {
       case GenerateMode.Direct =>
-        createBlogList(startDate, endDate)
-          .map(_.map(a => a -> simpleSummary(a.content)))
-          .flatMap(writeNextNewsletter)
-          .as(ExitCode.Success)
+        for {
+          fetched <- fetchArticles(startDate, endDate)
+          articles = fetched.articles.map(a => a -> simpleSummary(a.content))
+          _ <- writeNextNewsletter(articles)
+          _ <- Output.info(runSummary(articles, None))
+          _ <- reportFailedFeeds(fetched.failedFeeds)
+        } yield ExitCode.Success
 
       case GenerateMode.Database(dbPath, ai) =>
         Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
           for {
-            _ <- ingestInto(conn, startDate, endDate)
+            failedFeeds <- ingestInto(conn, startDate, endDate)
             rows <- ArticleRepository
               .findAll(conn)
               .filter(row =>
@@ -652,16 +715,25 @@ object Bloggers {
               )
               .compile
               .toList
-            articles <- ai match {
+            result <- ai match {
               case AiMode.Enabled(refresh) =>
-                filterRelevant(conn, rows, refresh)
-                  .flatMap(summariseWithClaude(conn, _, refresh))
+                for {
+                  relevantRows <- filterRelevant(conn, rows, refresh)
+                  articles <- summariseWithClaude(conn, relevantRows, refresh)
+                } yield (articles, Some(rows.size - relevantRows.size))
               case AiMode.Disabled =>
                 IO.pure(
-                  rows.map(row => toArticle(row) -> simpleSummary(row.content))
+                  (
+                    rows
+                      .map(row => toArticle(row) -> simpleSummary(row.content)),
+                    None
+                  )
                 )
             }
+            (articles, notRelevant) = result
             _ <- writeNextNewsletter(articles)
+            _ <- Output.info(runSummary(articles, notRelevant))
+            _ <- reportFailedFeeds(failedFeeds)
           } yield ExitCode.Success
         }
     }

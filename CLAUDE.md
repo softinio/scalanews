@@ -162,6 +162,7 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - `AnthropicClient`: cats-effect wrapper around Anthropic's official Java SDK (structured outputs)
 - `StructuredOutput` / `JsonSchema`: derive a structured-output JSON schema and matching decoder from a case class or sealed trait
 - `ArticleSummariser`: typed article summarisation (request `ArticleInput`, reply `Summary | InsufficientContent`)
+- `Output` / `UserError`: CLI output. Print through `Output.info` (stdout) for progress, `Output.warn`/`Output.error` (stderr) for problems; never `IO.println` directly. Raise `UserError` for expected, user-fixable failures (missing or rejected API keys): `Main` reports it, a bad config file or an invalid date as one `error:` line with exit code 1, while unexpected errors keep their stack trace. A `generate` run ends with a one-line summary; per-article lines ("Not relevant", "No summary") are printed only for results decided on that run
 
 **Configuration**:
 - Blogger RSS feeds: `config.json`

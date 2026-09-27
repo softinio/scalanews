@@ -139,7 +139,7 @@ object ArticleSummariser {
           .handleErrorWith {
             case fatal if AnthropicClient.isFatal(fatal) =>
               IO.raiseError(
-                new RuntimeException(
+                new UserError(
                   "Anthropic rejected the request; check ANTHROPIC_API_KEY and its permissions",
                   fatal
                 )

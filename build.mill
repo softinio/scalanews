@@ -5,6 +5,7 @@ import mill.*, mill.scalalib.*, mill.scalalib.scalafmt.*,
 
 // Version management
 object versions {
+  val anthropicJava = "2.65.0"
   val cats = "2.13.0"
   val catsEffect = "3.7.1"
   val circe = "0.14.16"
@@ -18,7 +19,49 @@ object versions {
   val pureconfig = "0.17.10"
   val rome = "2.1.0"
   val scala3 = "3.9.0"
-  val anthropicJava = "2.65.0"
+}
+
+/** Fails if the `versions` vals or any dependency list in this file isn't in
+  * alphabetical order (dependencies by group, then artifact name).
+  */
+def checkDependencyOrder() = Task.Command {
+  val source = os.read(moduleDir / "build.mill")
+
+  val versionNames = """(?s)object versions \{(.*?)\n\}""".r
+    .findFirstMatchIn(source)
+    .toList
+    .flatMap(m => """val (\w+)""".r.findAllMatchIn(m.group(1)).map(_.group(1)))
+
+  // Each `Seq(...)` of mvn"group:artifact:version" coordinates, as (group, artifact).
+  val dependencyLists = """(?s)Seq\((\s*mvn".*?)\)""".r
+    .findAllMatchIn(source)
+    .map(m =>
+      """mvn"([^"]+)"""".r
+        .findAllMatchIn(m.group(1))
+        .map(_.group(1).split(":").filter(_.nonEmpty).toList)
+        .collect { case group :: artifact :: _ => (group, artifact) }
+        .toList
+    )
+    .toList
+
+  def unsorted[A: Ordering](items: List[A]): Boolean = items != items.sorted
+
+  val problems =
+    Option.when(unsorted(versionNames.map(_.toLowerCase)))(
+      s"versions vals: ${versionNames.mkString(", ")}"
+    ).toList ++
+      dependencyLists.collect {
+        case deps if unsorted(deps.map((g, a) => (g.toLowerCase, a.toLowerCase))) =>
+          s"dependencies: ${deps.map((g, a) => s"$g:$a").mkString(", ")}"
+      }
+
+  if (problems.nonEmpty)
+    throw new Exception(
+      problems.mkString("Not in alphabetical order:\n  ", "\n  ", "")
+    )
+  println(
+    s"${versionNames.size} versions and ${dependencyLists.map(_.size).sum} dependencies are in alphabetical order"
+  )
 }
 
 // Note: In Mill, top-level modules are automatically aggregated
@@ -31,17 +74,14 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
   def mvnDeps = Seq(
     mvn"co.fs2::fs2-core:${versions.fs2}",
     mvn"co.fs2::fs2-io:${versions.fs2}",
+    mvn"com.anthropic:anthropic-java:${versions.anthropicJava}",
     mvn"com.github.pureconfig::pureconfig-cats-effect:${versions.pureconfig}",
-    mvn"com.github.pureconfig::pureconfig-generic-scala3:${versions.pureconfig}",
-    mvn"com.github.pureconfig::pureconfig-http4s:${versions.pureconfig}",
     mvn"com.monovore::decline-effect:${versions.decline}",
     mvn"com.rometools:rome:${versions.rome}",
-    mvn"com.softinio::duck4s-cats-effect::${versions.duck4s}",
     mvn"com.softinio::duck4s::${versions.duck4s}",
-    mvn"com.anthropic:anthropic-java:${versions.anthropicJava}",
+    mvn"com.softinio::duck4s-cats-effect::${versions.duck4s}",
     mvn"com.vladsch.flexmark:flexmark-html2md-converter:${versions.flexmark}",
     mvn"io.circe::circe-core:${versions.circe}",
-    mvn"io.circe::circe-generic:${versions.circe}",
     mvn"io.circe::circe-parser:${versions.circe}",
     mvn"org.http4s::http4s-ember-client:${versions.http4s}",
     mvn"org.typelevel::cats-core:${versions.cats}",
@@ -224,6 +264,7 @@ object docs extends ScalaModule {
 //   mill scalanews.run <args>           - Run the application
 //   mill scalanews.reformat             - Format code
 //   mill scalanews.checkFormat          - Check code formatting
+//   mill checkDependencyOrder           - Check versions/dependencies are alphabetical
 //   mill scalanews.nativeImage          - Build GraalVM native image
 //
 // Documentation commands:

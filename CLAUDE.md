@@ -34,7 +34,7 @@ mill scalanews.tests.testLocal      # Tests without forking
 mill scalanews.tests.testOnly       # Run specific test class
 
 # Run before creating a pull request
-mill scalanews.compile && mill scalanews.checkFormat && mill scalanews.tests.testCached
+mill scalanews.compile && mill scalanews.checkFormat && mill checkDependencyOrder && mill scalanews.tests.testCached
 
 # Run a specific test suite
 mill scalanews.tests.testOnly "com.softinio.scalanews.BloggersSuite"
@@ -42,6 +42,7 @@ mill scalanews.tests.testOnly "com.softinio.scalanews.BloggersSuite"
 # Format code
 mill scalanews.reformat             # Format all code
 mill scalanews.checkFormat          # Check formatting
+mill checkDependencyOrder           # Check versions and dependencies in build.mill are alphabetical
 
 # Additional Mill commands
 mill clean                          # Clean build artifacts

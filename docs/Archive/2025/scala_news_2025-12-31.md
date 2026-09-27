@@ -6,16 +6,6 @@ A curated list of Scala related news from the community.
 
 <div class="article-cards">
 <div class="article-card">
-  <h3><a href="https://rossabaker.com/blog/rust-book-getting-started/">Rust Book, Chapter 1: Getting Started</a></h3>
-  <span class="article-author">Ross A. Baker</span>
-  <p class="article-summary">Contrasts the initial Rust experience for a seasoned Scala developer. Compares Rust&#39;s native, AOT model to Scala&#39;s &quot;write once, run anywhere&quot; JVM experience. Goes into differences in the main entry</p>
-</div>
-<div class="article-card">
-  <h3><a href="https://rossabaker.com/blog/rust-book-programming-a-guessing-game/">Rust Book, Chapter 2: Programming a Guessing Game</a></h3>
-  <span class="article-author">Ross A. Baker</span>
-  <p class="article-summary">Chapter Two introduces a wide range of Rust constructs to build something a little more substantial than Hello, World. In this post, we&#39;ll try to map Rust&#39;s approach to mutability, error handling,</p>
-</div>
-<div class="article-card">
   <h3><a href="https://blog.rhetoricalmusings.com/posts/sanitizer-talk/">The Sanitizer</a></h3>
   <span class="article-author">A Developer&#39;s Experience</span>
   <p class="article-summary">Bahul and I gave a talk about a PII logging library solution in the Bay Area Scala meetup.</p>

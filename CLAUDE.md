@@ -109,6 +109,8 @@ record `self-check` and a real `dbgenerate --ai` run with the tracing agent and 
 # Add -a/--ai to summarise articles with Claude (requires ANTHROPIC_API_KEY)
 ./out/scalanews/nativeImagePath.dest/target/scalanews dbgenerate 2024-01-01 2024-01-07
 ./out/scalanews/nativeImagePath.dest/target/scalanews dbgenerate 2024-01-01 2024-01-07 --ai
+# Add -r/--resummarise (with --ai) to ask Claude again for articles that already have a stored summary
+./out/scalanews/nativeImagePath.dest/target/scalanews dbgenerate 2024-01-01 2024-01-07 --ai --resummarise
 
 # Both ingest and dbgenerate share the same default DB path (data/scalanews.duckdb)
 # and accept -d/--dbpath to override it
@@ -139,10 +141,11 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 4. Files are managed through archive/publish cycle
 
 **Database-backed Workflow** (optional, via `ingest` + `dbgenerate`):
-1. `ingest` fetches RSS feeds and persists articles into a DuckDB database
+1. `ingest` fetches RSS feeds and persists articles into a DuckDB database; an article whose URL is already stored is skipped, so overlapping date ranges are safe
 2. `dbgenerate` reads articles from the database for a date range and generates the newsletter
-3. With `--ai`, article summaries are written by Claude (Sonnet 5 by default) using structured outputs; articles without enough text get no summary, and failed calls fall back to the built-in `simpleSummary`. `--ai` only summarises: it never filters articles out
+3. With `--ai`, article summaries are written by Claude (Sonnet 5 by default) using structured outputs; articles without enough text get no summary, and failed calls fall back to the built-in `simpleSummary`. `--ai` only summarises: it never filters articles out. Claude's outcome (a summary, or "not enough content" with its reason) is stored on the article with the model used, and later `--ai` runs reuse it instead of calling Claude again (no API key needed if every article has one); failed calls aren't stored, so they're retried. `--resummarise` asks Claude again
 4. Both commands default to `data/scalanews.duckdb` (`Database.defaultPath`) and accept `-d/--dbpath` to override
+5. There are no schema migrations: the table is created with `CREATE TABLE IF NOT EXISTS` (`ArticleSchema`), so after changing the schema delete the database file and re-ingest. Add versioned migrations once the database holds data worth keeping across schema changes
 
 **Key Modules**:
 - `Bloggers`: RSS processing and newsletter generation (including DB-backed variants)

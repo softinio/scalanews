@@ -18,6 +18,7 @@ package com.softinio.scalanews
 
 import com.softinio.scalanews.algebra.{Article, ArticleSummary, Blog}
 import com.softinio.scalanews.db.Database
+import com.softinio.scalanews.db.tables.StoredSummary
 import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
 import munit.CatsEffectSuite
 
@@ -196,5 +197,41 @@ class BloggersSuite extends CatsEffectSuite {
         assert(page.contains("Uses &quot;quotes&quot; &amp; &lt;tags&gt;"))
         assert(!page.contains("<friends>"))
       }
+  }
+
+  test("storedFor - stores Claude's decisions only") {
+    import ArticleSummariser.{NoSummaryReason, Summarisation}
+    val summary = ArticleSummary.from("About types.").get
+    assertEquals(
+      Bloggers.storedFor(Summarisation.Summarised(summary), "m"),
+      Some(StoredSummary.Summarised(summary, "m"))
+    )
+    assertEquals(
+      Bloggers.storedFor(
+        Summarisation.NoSummary(NoSummaryReason.InsufficientContent("link")),
+        "m"
+      ),
+      Some(StoredSummary.NoSummary("link", "m"))
+    )
+    assertEquals(
+      Bloggers.storedFor(Summarisation.NoSummary(NoSummaryReason.NoText), "m"),
+      None
+    )
+    assertEquals(
+      Bloggers.storedFor(Summarisation.Failed(new RuntimeException("x")), "m"),
+      None
+    )
+  }
+
+  test("summaryOf - a stored no-summary outcome shows no summary") {
+    val summary = ArticleSummary.from("About types.").get
+    assertEquals(
+      Bloggers.summaryOf(StoredSummary.Summarised(summary, "m")),
+      Some(summary)
+    )
+    assertEquals(
+      Bloggers.summaryOf(StoredSummary.NoSummary("link", "m")),
+      None
+    )
   }
 }

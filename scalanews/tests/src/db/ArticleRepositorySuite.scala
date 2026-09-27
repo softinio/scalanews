@@ -17,14 +17,19 @@
 package com.softinio.scalanews.db
 
 import cats.effect.*
+import cats.syntax.all.*
 import munit.CatsEffectSuite
 import org.http4s.Uri
 
 import java.nio.file.Files as JFiles
 import java.util.Date
 
-import com.softinio.scalanews.algebra.Article
-import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
+import com.softinio.scalanews.algebra.{Article, ArticleSummary}
+import com.softinio.scalanews.db.tables.{
+  ArticleRepository,
+  ArticleSchema,
+  StoredSummary
+}
 
 class ArticleRepositorySuite extends CatsEffectSuite {
 
@@ -67,10 +72,12 @@ class ArticleRepositorySuite extends CatsEffectSuite {
   test("findAll - returns all inserted articles in desc published_date order") {
     val older = testArticle.copy(
       title = "Older Article",
+      url = Uri.fromString("https://example.com/older").toOption,
       publishedDate = new Date(1_600_000_000_000L)
     )
     val newer = testArticle.copy(
       title = "Newer Article",
+      url = Uri.fromString("https://example.com/newer").toOption,
       publishedDate = new Date(1_800_000_000_000L)
     )
     for {
@@ -123,5 +130,87 @@ class ArticleRepositorySuite extends CatsEffectSuite {
         ArticleRepository.findAll(conn).compile.toList.map(_.length)
       }
     } yield assertEquals(count, 1)
+  }
+
+  test("insert - skips an article whose URL is already stored") {
+    for {
+      path <- tempDbPath
+      result <- Database.connect(path, Seq(ArticleSchema)).use { conn =>
+        for {
+          first <- ArticleRepository.insert(conn, testArticle)
+          second <- ArticleRepository.insert(
+            conn,
+            testArticle.copy(title = "Same URL, new title")
+          )
+          all <- ArticleRepository.findAll(conn).compile.toList
+        } yield (first, second, all)
+      }
+    } yield {
+      val (first, second, all) = result
+      assertEquals((first, second), (1, 0))
+      assertEquals(all.map(_.title), List(testArticle.title))
+    }
+  }
+
+  test("insert - articles without a URL are all stored") {
+    val noUrl = testArticle.copy(url = None)
+    for {
+      path <- tempDbPath
+      count <- Database.connect(path, Seq(ArticleSchema)).use { conn =>
+        ArticleRepository.insert(conn, noUrl) >>
+          ArticleRepository.insert(conn, noUrl.copy(title = "Another")) >>
+          ArticleRepository.findAll(conn).compile.toList.map(_.length)
+      }
+    } yield assertEquals(count, 2)
+  }
+
+  private def storeAndReload(
+      stored: StoredSummary*
+  ): IO[(Option[StoredSummary], Boolean)] =
+    for {
+      path <- tempDbPath
+      row <- Database.connect(path, Seq(ArticleSchema)).use { conn =>
+        for {
+          _ <- ArticleRepository.insert(conn, testArticle)
+          id <- ArticleRepository.findAll(conn).compile.lastOrError.map(_.id)
+          _ <- stored.toList.traverse_(ArticleRepository.saveSummary(conn, id, _))
+          row <- ArticleRepository.findById(conn, id)
+        } yield row
+      }
+    } yield (
+      row.flatMap(_.storedSummary),
+      row.exists(_.summarisedAt.isDefined)
+    )
+
+  test("new articles have no stored summary") {
+    storeAndReload().map(result => assertEquals(result, (None, false)))
+  }
+
+  test("saveSummary - stores a summary") {
+    val stored = StoredSummary.Summarised(
+      ArticleSummary.from("About Scala 3.").get,
+      "claude-sonnet-5"
+    )
+    storeAndReload(stored).map(result =>
+      assertEquals(result, (Some(stored), true))
+    )
+  }
+
+  test("saveSummary - stores a no-summary outcome with its reason") {
+    val stored = StoredSummary.NoSummary("Only a link.", "claude-sonnet-5")
+    storeAndReload(stored).map(result =>
+      assertEquals(result, (Some(stored), true))
+    )
+  }
+
+  test("saveSummary - replaces an earlier outcome") {
+    val first = StoredSummary.NoSummary("Only a link.", "claude-sonnet-5")
+    val second = StoredSummary.Summarised(
+      ArticleSummary.from("Now with content.").get,
+      "claude-sonnet-5"
+    )
+    storeAndReload(first, second).map(result =>
+      assertEquals(result, (Some(second), true))
+    )
   }
 }

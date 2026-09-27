@@ -19,11 +19,18 @@ package com.softinio.scalanews.db.tables
 import com.softinio.duck4s.DuckDBConnection
 import com.softinio.duck4s.algebra.DuckDBResultSet
 import com.softinio.duck4s.effect.DuckDBIO
-import com.softinio.scalanews.algebra.Article
+import com.softinio.scalanews.algebra.{Article, ArticleSummary}
 import com.softinio.scalanews.db.{Repository, RowsAffected, TableSchema}
 import cats.effect.IO
 import fs2.Stream
 import java.sql.Timestamp
+
+/** A summarisation outcome Claude decided, stored so reruns reuse it instead of
+  * asking again. Failed calls are never stored, so they're retried.
+  */
+enum StoredSummary:
+  case Summarised(summary: ArticleSummary, model: String)
+  case NoSummary(reason: String, model: String)
 
 case class ArticleRow(
     id: java.util.UUID,
@@ -32,7 +39,9 @@ case class ArticleRow(
     url: Option[String],
     author: String,
     publishedDate: java.util.Date,
-    createdAt: java.sql.Timestamp
+    createdAt: java.sql.Timestamp,
+    storedSummary: Option[StoredSummary] = None,
+    summarisedAt: Option[java.sql.Timestamp] = None
 )
 
 object ArticleSchema extends TableSchema:
@@ -41,19 +50,31 @@ object ArticleSchema extends TableSchema:
        |  id             UUID      PRIMARY KEY DEFAULT gen_random_uuid(),
        |  title          VARCHAR   NOT NULL,
        |  content        VARCHAR   NOT NULL,
-       |  url            VARCHAR,
+       |  url            VARCHAR   UNIQUE,
        |  author         VARCHAR   NOT NULL,
        |  published_date TIMESTAMP NOT NULL,
-       |  created_at     TIMESTAMP NOT NULL DEFAULT now()
+       |  created_at     TIMESTAMP NOT NULL DEFAULT now(),
+       |  summary        VARCHAR,
+       |  summary_status VARCHAR   CHECK (summary_status IN ('summarised', 'no_summary')),
+       |  summary_reason VARCHAR,
+       |  summary_model  VARCHAR,
+       |  summarised_at  TIMESTAMP
        |)""".stripMargin
 
 object ArticleRepository extends Repository[Article, ArticleRow]:
 
+  // An article whose URL is already stored is skipped (0 rows affected).
   private val insertSql =
-    "INSERT INTO articles (title, content, url, author, published_date) VALUES (?, ?, ?, ?, ?)"
+    "INSERT INTO articles (title, content, url, author, published_date) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING"
+
+  private val columns =
+    "id, title, content, url, author, published_date, created_at, summary, summary_status, summary_reason, summary_model, summarised_at"
 
   private val selectAllSql =
-    "SELECT id, title, content, url, author, published_date, created_at FROM articles ORDER BY published_date DESC"
+    s"SELECT $columns FROM articles ORDER BY published_date DESC"
+
+  private val saveSummarySql =
+    "UPDATE articles SET summary = ?, summary_status = ?, summary_reason = ?, summary_model = ?, summarised_at = now() WHERE id = ?"
 
   def insert(conn: DuckDBConnection, article: Article): IO[RowsAffected] =
     for
@@ -91,7 +112,7 @@ object ArticleRepository extends Repository[Article, ArticleRow]:
   ): IO[Option[ArticleRow]] =
     IO.blocking {
       conn.prepareStatement(
-        "SELECT id, title, content, url, author, published_date, created_at FROM articles WHERE id = ?"
+        s"SELECT $columns FROM articles WHERE id = ?"
       ) match
         case Right(stmt) =>
           stmt.setObject(1, id)
@@ -114,7 +135,59 @@ object ArticleRepository extends Repository[Article, ArticleRow]:
       url = Option(rs.getString("url")),
       author = rs.getString("author"),
       publishedDate = rs.getTimestamp("published_date"),
-      createdAt = rs.getTimestamp("created_at")
+      createdAt = rs.getTimestamp("created_at"),
+      storedSummary = storedSummary(
+        Option(rs.getString("summary_status")),
+        Option(rs.getString("summary")),
+        Option(rs.getString("summary_reason")),
+        Option(rs.getString("summary_model"))
+      ),
+      summarisedAt = Option(rs.getTimestamp("summarised_at"))
     )
+
+  private def storedSummary(
+      status: Option[String],
+      summary: Option[String],
+      reason: Option[String],
+      model: Option[String]
+  ): Option[StoredSummary] =
+    (status, model) match
+      case (Some("summarised"), Some(m)) =>
+        summary.flatMap(ArticleSummary.from).map(StoredSummary.Summarised(_, m))
+      case (Some("no_summary"), Some(m)) =>
+        Some(StoredSummary.NoSummary(reason.getOrElse(""), m))
+      case _ => None
+
+  /** Stores a summarisation outcome for an article, replacing any earlier one.
+    */
+  def saveSummary(
+      conn: DuckDBConnection,
+      id: java.util.UUID,
+      stored: StoredSummary
+  ): IO[RowsAffected] =
+    val (summary, status, reason, model) = stored match
+      case StoredSummary.Summarised(s, m) => (s.value, "summarised", null, m)
+      case StoredSummary.NoSummary(r, m)  => (null, "no_summary", r, m)
+    for
+      stmt <- IO.fromEither(
+        conn
+          .prepareStatement(saveSummarySql)
+          .left
+          .map(e => new RuntimeException(e.toString))
+      )
+      _ <- IO.blocking {
+        stmt.setString(1, summary)
+        stmt.setString(2, status)
+        stmt.setString(3, reason)
+        stmt.setString(4, model)
+        stmt.setObject(5, id)
+      }.void
+      rows <- IO
+        .blocking(stmt.executeUpdate())
+        .flatMap(r =>
+          IO.fromEither(r.left.map(e => new RuntimeException(e.toString)))
+        )
+      _ <- IO(stmt.close())
+    yield rows
 
 end ArticleRepository

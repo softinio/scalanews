@@ -56,7 +56,8 @@ object Main
       startDate: String,
       endDate: String,
       dbPath: String,
-      aI: Boolean = false
+      aI: Boolean = false,
+      resummarise: Boolean = false
   )
 
   private case class IngestBlogs(
@@ -142,7 +143,14 @@ object Main
         startDateOps,
         endDateOps,
         dbPathOps,
-        Opts.flag("ai", "Summarise articles with Claude", short = "a").orFalse
+        Opts.flag("ai", "Summarise articles with Claude", short = "a").orFalse,
+        Opts
+          .flag(
+            "resummarise",
+            "With --ai, ask Claude again even for articles with a stored summary",
+            short = "r"
+          )
+          .orFalse
       )
         .mapN(GenerateNextBlogUsingDB.apply)
     }
@@ -170,12 +178,19 @@ object Main
             dateFormatter.parse(startDate),
             dateFormatter.parse(endDate)
           )
-        case GenerateNextBlogUsingDB(startDate, endDate, dbPath, aI) =>
+        case GenerateNextBlogUsingDB(
+              startDate,
+              endDate,
+              dbPath,
+              aI,
+              resummarise
+            ) =>
           Bloggers.generateNextBlogUsingDB(
             dateFormatter.parse(startDate),
             dateFormatter.parse(endDate),
             dbPath,
-            aI
+            aI,
+            resummarise
           )
         case IngestBlogs(startDate, endDate, dbPath) =>
           Bloggers.ingestBlogsToDB(

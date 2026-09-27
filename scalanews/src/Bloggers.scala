@@ -28,7 +28,13 @@ import com.softinio.scalanews.algebra.Article
 import com.softinio.scalanews.algebra.ArticleSummary
 import com.softinio.scalanews.algebra.Blog
 import com.softinio.scalanews.db.Database
-import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
+import com.softinio.duck4s.DuckDBConnection
+import com.softinio.scalanews.db.tables.{
+  ArticleRepository,
+  ArticleRow,
+  ArticleSchema,
+  StoredSummary
+}
 
 object Bloggers {
   private val nextMarkdownFilePath =
@@ -301,8 +307,11 @@ object Bloggers {
     Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
       for {
         articleList <- createBlogList(startDate, endDate)
-        _ <- articleList
-          .traverse_(article => ArticleRepository.insert(conn, article))
+        inserted <- articleList.traverse(ArticleRepository.insert(conn, _))
+        added = inserted.sum
+        _ <- IO.println(
+          s"Ingested $added new articles (${articleList.size - added} already stored)"
+        )
       } yield ExitCode.Success
     }
 
@@ -330,50 +339,114 @@ object Bloggers {
     }
   }
 
+  /** The stored form of a summarisation outcome Claude decided; `None` for
+    * outcomes that shouldn't be stored (no text is decided locally, and
+    * failures should be retried).
+    */
+  private[scalanews] def storedFor(
+      outcome: ArticleSummariser.Summarisation,
+      model: String
+  ): Option[StoredSummary] = {
+    import ArticleSummariser.{NoSummaryReason, Summarisation}
+    outcome match {
+      case Summarisation.Summarised(summary) =>
+        Some(StoredSummary.Summarised(summary, model))
+      case Summarisation.NoSummary(NoSummaryReason.InsufficientContent(r)) =>
+        Some(StoredSummary.NoSummary(r, model))
+      case Summarisation.NoSummary(NoSummaryReason.NoText) |
+          Summarisation.Failed(_) =>
+        None
+    }
+  }
+
+  /** The summary to show for a stored outcome. */
+  private[scalanews] def summaryOf(
+      stored: StoredSummary
+  ): Option[ArticleSummary] =
+    stored match {
+      case StoredSummary.Summarised(summary, _) => Some(summary)
+      case StoredSummary.NoSummary(_, _)        => None
+    }
+
+  private def toArticle(row: ArticleRow): Article =
+    Article(
+      row.title,
+      row.content,
+      row.url.flatMap(u => org.http4s.Uri.fromString(u).toOption),
+      row.author,
+      row.publishedDate
+    )
+
+  /** Summaries for `rows`, reusing stored outcomes unless `resummarise`, and
+    * storing new ones. Claude is only contacted (and the API key only needed)
+    * when some article has no stored outcome.
+    */
+  private def summariseWithClaude(
+      conn: DuckDBConnection,
+      rows: List[ArticleRow],
+      resummarise: Boolean
+  ): IO[List[(Article, Option[ArticleSummary])]] = {
+    val reusable: ArticleRow => Option[StoredSummary] =
+      row => if (resummarise) None else row.storedSummary
+    val toSummarise = rows.filter(reusable(_).isEmpty)
+
+    val fresh: IO[Map[java.util.UUID, Option[ArticleSummary]]] =
+      if (toSummarise.isEmpty) IO.pure(Map.empty)
+      else
+        ConfigLoader.loadAnthropicConfig().flatMap { config =>
+          AnthropicClient
+            .resource(config)
+            .use(client =>
+              // Claude calls run concurrently; database writes below run
+              // one at a time on the shared connection.
+              toSummarise.parTraverseN(summaryConcurrency)(row =>
+                ArticleSummariser
+                  .summarise(toArticle(row), client)
+                  .map(row -> _)
+              )
+            )
+            .flatMap(_.traverse { (row, outcome) =>
+              storedFor(outcome, config.model.asString)
+                .traverse_(ArticleRepository.saveSummary(conn, row.id, _)) >>
+                summaryFor(toArticle(row), outcome).map(row.id -> _)
+            })
+            .map(_.toMap)
+        }
+
+    for {
+      summaries <- fresh
+      _ <- IO.println(
+        s"Summarised ${toSummarise.size} articles with Claude, reused ${rows.size - toSummarise.size} stored"
+      )
+    } yield rows.map(row =>
+      toArticle(row) -> reusable(row).fold(summaries(row.id))(summaryOf)
+    )
+  }
+
   def generateNextBlogUsingDB(
       startDate: Date,
       endDate: Date,
       dbPath: String,
-      aI: Boolean
+      aI: Boolean,
+      resummarise: Boolean = false
   ): IO[ExitCode] =
     Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
       for {
-        articleList <- ArticleRepository
+        rows <- ArticleRepository
           .findAll(conn)
           .filter(row =>
             row.publishedDate.after(startDate) && row.publishedDate.before(
               endDate
             )
           )
-          .map(row =>
-            Article(
-              row.title,
-              row.content,
-              row.url.flatMap(u => org.http4s.Uri.fromString(u).toOption),
-              row.author,
-              row.publishedDate
-            )
-          )
           .compile
           .toList
         articles <-
-          if (aI)
-            ConfigLoader
-              .loadAnthropicConfig()
-              .flatMap(config =>
-                AnthropicClient
-                  .resource(config)
-                  .use(client =>
-                    articleList.parTraverseN(summaryConcurrency)(a =>
-                      ArticleSummariser
-                        .summarise(a, client)
-                        .flatMap(outcome => summaryFor(a, outcome))
-                        .map(a -> _)
-                    )
-                  )
-              )
+          if (aI) summariseWithClaude(conn, rows, resummarise)
           else
-            IO.pure(articleList.map(a => a -> simpleSummary(a.content)))
+            IO.pure(
+              rows.map(row => toArticle(row) -> simpleSummary(row.content))
+            )
         exists <- Files[IO].exists(nextMarkdownFilePath)
         _ <- if (exists) Files[IO].delete(nextMarkdownFilePath) else IO.unit
         news <- generateNews(articles)

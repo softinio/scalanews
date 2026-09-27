@@ -8,7 +8,7 @@
     {
       "name": "Scala Lang",
       "url": "https://www.scala-lang.org/blog/",
-      "rss": "https://www.scala-lang.org/feed/blog.xml"
+      "rss": "https://www.scala-lang.org/feed/index.xml"
     },
     {
       "name": "Typelevel",
@@ -96,11 +96,6 @@
       "rss": "https://rossabaker.com/blog/index.xml"
     },
     {
-      "name": "Xebia",
-      "url": "https://xebia.com/blog/",
-      "rss": "https://xebia.com/blog/category/technology/scala/feed/"
-    },
-    {
       "name": "Chistian Hollinger",
       "url": "https://chollinger.com/blog/",
       "rss": "https://chollinger.com/blog/index.xml"
@@ -116,11 +111,6 @@
       "rss": "https://medium.com/feed/tag/scala"
     },
     {
-      "name": "VirtusLab",
-      "url": "https://virtuslab.com/blog/",
-      "rss": "https://virtuslab.com/feeds/blog/rss.xml"
-    },
-    {
       "name": "Jendrik Poloczek",
       "url": "https://www.madewithtea.com",
       "rss": "https://www.madewithtea.com/rss.xml"
@@ -129,11 +119,6 @@
       "name": "Pierre Ricadat",
       "url": "https://blog.pierre-ricadat.com/",
       "rss": "https://blog.pierre-ricadat.com/rss.xml"
-    },
-    {
-      "name": "Lachlan O'Dea",
-      "url": "https://lachlan.hashnode.dev",
-      "rss": "https://lachlan.hashnode.dev/rss.xml"
     },
     {
       "name": "SoftwareMill",

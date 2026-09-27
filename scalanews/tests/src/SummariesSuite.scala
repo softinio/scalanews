@@ -63,4 +63,69 @@ class SummariesSuite extends CatsEffectSuite {
       None
     )
   }
+
+  private def plain(markdown: String) = Summaries.plainText(markdown).trim
+
+  test("plainText - links keep their text") {
+    assertEquals(
+      plain("I gave a talk. * [slides](https://example.com/slides) here"),
+      "I gave a talk. * slides here"
+    )
+    assertEquals(
+      plain("See [sudori part 4](https://eed3si9n.com/sudori-part4), [part"),
+      "See sudori part 4, [part"
+    )
+  }
+
+  test("plainText - drops images, including linked ones") {
+    assertEquals(
+      plain(
+        "[![](https://alexn.org/a.jpg)](https://alexn.org/post \"Open\") *The* text"
+      ),
+      "The text"
+    )
+  }
+
+  test("plainText - drops headings, including setext ones with anchors") {
+    assertEquals(
+      plain(
+        """Introduction {#heading-introduction}
+          |====================================
+          |
+          |> This blog is a part of the [Data Plumber Series](https://example.com).""".stripMargin
+      ),
+      "This blog is a part of the Data Plumber Series."
+    )
+    assertEquals(plain("# Title\n\nBody text."), "Body text.")
+  }
+
+  test("plainText - drops emphasis and code markers but keeps the words") {
+    assertEquals(
+      plain("**TL;DR** : use `Option[A]` or `A | Null`, not ***this***"),
+      "TL;DR : use Option[A] or A | Null, not this"
+    )
+  }
+
+  test("plainText - drops emphasis markers CommonMark leaves as text") {
+    assertEquals(
+      plain(
+        "This blog is a part of the [***Data Plumber Series***](https://example.com)***.*** In Part 1"
+      ),
+      "This blog is a part of the Data Plumber Series. In Part 1"
+    )
+  }
+
+  test("plainText - drops code blocks and HTML") {
+    assertEquals(
+      plain("Before.\n\n```scala\nval x = 1\n```\n\n<div>raw</div>\n\nAfter."),
+      "Before. After."
+    )
+  }
+
+  test("simpleSummary - is plain text") {
+    assertEquals(
+      Summaries.simpleSummary("## Heading\n\nA [link](https://x.y) and **bold**."),
+      ArticleSummary.from("A link and bold.")
+    )
+  }
 }

@@ -19,6 +19,28 @@ package com.softinio.scalanews
 import cats.effect.*
 import cats.effect.syntax.all.*
 import cats.syntax.all.*
+import com.vladsch.flexmark.ast.{
+  AutoLink,
+  Code,
+  FencedCodeBlock,
+  HardLineBreak,
+  Heading,
+  HtmlBlock,
+  HtmlCommentBlock,
+  HtmlInline,
+  HtmlInlineComment,
+  Image,
+  ImageRef,
+  IndentedCodeBlock,
+  Reference,
+  SoftLineBreak,
+  Text,
+  ThematicBreak
+}
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.ast.{Block, Node}
+
+import scala.jdk.CollectionConverters.*
 
 import com.softinio.duck4s.DuckDBConnection
 import com.softinio.scalanews.algebra.{Article, ArticleSummary, NewsItem}
@@ -34,15 +56,39 @@ object Summaries {
   // limits) fall back to the plain summary.
   private val summaryConcurrency = 4
 
+  /** The start of the article's text, as plain text: summaries are shown inside
+    * HTML cards, where Markdown isn't rendered.
+    */
   private[scalanews] def simpleSummary(
       content: String
   ): Option[ArticleSummary] =
-    ArticleSummary.from(
-      content.linesIterator
-        .map(_.trim)
-        .filterNot(l => l.startsWith("#") || l.isEmpty)
-        .mkString(" ")
-    )
+    ArticleSummary.from(plainText(content))
+
+  /** The text of a Markdown document without its markup: links keep their text,
+    * while headings, images, code blocks and HTML are left out.
+    */
+  private[scalanews] def plainText(markdown: String): String = {
+    val text = new StringBuilder
+    def visit(node: Node): Unit = node match {
+      case _: Heading | _: Image | _: ImageRef | _: FencedCodeBlock |
+          _: IndentedCodeBlock | _: HtmlBlock | _: HtmlCommentBlock |
+          _: HtmlInline | _: HtmlInlineComment | _: Reference |
+          _: ThematicBreak =>
+        ()
+      case t: Text                             => text ++= t.getChars.unescape()
+      case c: Code                             => text ++= c.getText.unescape()
+      case a: AutoLink                         => text ++= a.getText.toString
+      case _: SoftLineBreak | _: HardLineBreak => text += ' '
+      case _                                   =>
+        node.getChildren.asScala.foreach(visit)
+        if (node.isInstanceOf[Block]) text += ' '
+    }
+    // Built per call: the native image initialises objects at build time.
+    visit(Parser.builder().build().parse(markdown))
+    // Emphasis markers CommonMark doesn't accept as emphasis (e.g. around
+    // punctuation) are left as text; a run of them is never meant literally.
+    text.toString.replaceAll("""\*{2,}""", "")
+  }
 
   /** Picks the summary to show for an AI summarisation outcome, logging why an
     * article didn't get a Claude summary.

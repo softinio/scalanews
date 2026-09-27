@@ -33,8 +33,10 @@ mill scalanews.tests.testCached     # All tests (cached)
 mill scalanews.tests.testLocal      # Tests without forking
 mill scalanews.tests.testOnly       # Run specific test class
 
-# Run before creating a pull request
-mill scalanews.compile && mill scalanews.checkFormat && mill checkDependencyOrder && mill scalanews.tests.testCached
+# Run before creating a pull request (pre-pr is on the dev shell's PATH)
+pre-pr
+# which runs:
+mill scalanews.compile + scalanews.checkFormat + checkDependencyOrder + scalanews.tests.testForked
 
 # Run a specific test suite
 mill scalanews.tests.testOnly "com.softinio.scalanews.BloggersSuite"
@@ -47,7 +49,7 @@ mill checkDependencyOrder           # Check versions and dependencies in build.m
 # Additional Mill commands
 mill clean                          # Clean build artifacts
 mill show scalanews.mvnDeps         # Show dependencies
-mill mill.bsp.BSP/install           # Generate Bloop config for IDE
+bsp-install                         # Set up Mill's BSP connection for your IDE (runs mill mill.bsp.BSP/install)
 mill mill.idea                      # Generate IntelliJ config
 
 # Development

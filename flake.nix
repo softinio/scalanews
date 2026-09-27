@@ -52,10 +52,35 @@
               inherit (source) hash;
             };
           });
+
+        # Everything to run before opening a pull request, in one Mill run.
+        # testForked (not testCached) so the tests, some of which fetch live
+        # feeds, always run as a final check.
+        pre-pr = pkgs.writeShellApplication {
+          name = "pre-pr";
+          runtimeInputs = [ mill ];
+          text = ''
+            mill scalanews.compile + scalanews.checkFormat + checkDependencyOrder + scalanews.tests.testForked
+          '';
+        };
+
+        # Regenerate Mill's BSP connection files for IDEs (Metals, IntelliJ).
+        bsp-install = pkgs.writeShellApplication {
+          name = "bsp-install";
+          runtimeInputs = [ mill ];
+          text = ''
+            mill mill.bsp.BSP/install
+          '';
+        };
       in
       {
         devShells.default = pkgs.mkShell {
-          packages = [ mill ] ++ (with pkgs; [
+          packages = [
+            bsp-install
+            mill
+            pre-pr
+          ]
+          ++ (with pkgs; [
             graalvmPackages.graalvm-ce
             metals
             nodejs_22
@@ -75,6 +100,8 @@
             echo "  mill scalanews.tests.testCached  - Run all tests"
             echo "  mill scalanews.reformat          - Format all code"
             echo "  mill scalanews.run               - Run the application"
+            echo "  pre-pr                           - Compile, check formatting and dependency order, run tests"
+            echo "  bsp-install                      - Set up Mill's BSP connection for your IDE"
             echo ""
             echo "See CLAUDE.md for more commands and project documentation"
             echo ""

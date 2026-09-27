@@ -111,11 +111,12 @@ object NewsletterPage {
   /** The closing line of a `generate` run. */
   private[scalanews] def runSummary(
       items: List[NewsItem],
-      notRelevant: Option[Int]
+      notRelevant: Option[Int],
+      path: Path = nextMarkdownFilePath
   ): String = {
     val cards = items.size.min(highlightCount)
     (List(
-      s"Wrote $nextMarkdownFilePath: ${items.size} articles ($cards as cards, ${items.size - cards} listed), ${items.count(_.summary.isDefined)} with a summary"
+      s"Wrote $path: ${items.size} articles ($cards as cards, ${items.size - cards} listed), ${items.count(_.summary.isDefined)} with a summary"
     ) ++ notRelevant.map(n => s"$n not relevant")).mkString("; ")
   }
 }

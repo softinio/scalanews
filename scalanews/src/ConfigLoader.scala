@@ -34,18 +34,24 @@ object ConfigLoader {
   }
 
   def loadAnthropicConfig(): IO[AnthropicConfig] =
-    IO.fromOption(sys.env.get("ANTHROPIC_API_KEY").filter(_.nonEmpty))(
-      new UserError(
-        "ANTHROPIC_API_KEY is not set: set it for Claude summaries, or use --no-ai for plain summaries"
+    // Read the environment when the IO runs, not when it's built, so a value
+    // captured early (e.g. at native-image build time) can't go stale.
+    IO(sys.env.get("ANTHROPIC_API_KEY").filter(_.nonEmpty))
+      .flatMap(
+        IO.fromOption(_)(
+          new UserError(
+            "ANTHROPIC_API_KEY is not set: set it for Claude summaries, or use --no-ai for plain summaries"
+          )
+        )
       )
-    ).flatMap { key =>
-      IO.fromEither(
-        AnthropicConfig
-          .validate(AnthropicConfig(ApiKey(key)))
-          .left
-          .map(new UserError(_))
-      )
-    }
+      .flatMap { key =>
+        IO.fromEither(
+          AnthropicConfig
+            .validate(AnthropicConfig(ApiKey(key)))
+            .left
+            .map(new UserError(_))
+        )
+      }
 
   def loadEventsConfig(filePath: String = "events.json"): IO[EventConfig] = {
     val configPath = sys.env.getOrElse("SCALA_NEWS_EVENTS_CONFIG", filePath)

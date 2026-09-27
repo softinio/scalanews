@@ -139,59 +139,48 @@ object Relevance {
     * TYPESAFE_API_KEY, and optionally TYPESAFE_DEFAULT_MODEL (jev-latest by
     * default) and TYPESAFE_BASE_URL.
     */
-  private def verdictClient: Resource[IO, Verdict4sClient[IO]] =
+  private[scalanews] def verdictClient: Resource[IO, Verdict4sClient[IO]] =
     Verdict4sEnv.default[IO].adaptError(missingTypesafeKeyHint)
 
   /** The rows jev judges relevant, reusing stored answers unless `refresh` and
-    * storing new ones. jev is only contacted (and TYPESAFE_API_KEY only needed)
-    * when some row has no stored answer. A failed check keeps the article and
-    * isn't stored, so it's retried next run.
+    * storing new ones. The checker is only acquired (and TYPESAFE_API_KEY only
+    * needed) when some row has no stored answer. A failed check keeps the
+    * article and isn't stored, so it's retried next run; a bad key stops the
+    * run.
     */
   private[scalanews] def filterRelevant(
       conn: DuckDBConnection,
       rows: List[ArticleRow],
-      refresh: Boolean
+      refresh: Boolean,
+      checker: Resource[IO, RelevanceChecker]
   ): IO[List[ArticleRow]] = {
     val reusable: ArticleRow => Option[StoredRelevance] =
       row => if (refresh) None else row.storedRelevance
     val toCheck = rows.filter(reusable(_).isEmpty)
 
-    val fresh: IO[Map[java.util.UUID, Option[StoredRelevance]]] =
-      if (toCheck.isEmpty) IO.pure(Map.empty)
-      else
-        verdictClient
-          .use(client =>
-            // jev calls run concurrently; database writes below run one at a
-            // time on the shared connection.
-            toCheck.parTraverseN(relevanceConcurrency)(row =>
-              assessRelevance(row, client).attempt.flatMap {
-                case Left(error) if isFatalVerdict(error) =>
-                  IO.raiseError(
-                    new UserError(
-                      "Typesafe rejected the request; check TYPESAFE_API_KEY and its permissions",
-                      error
-                    )
-                  )
-                case result => IO.pure(row -> result)
-              }
-            )
-          )
-          .flatMap(_.traverse {
-            case (row, Right(stored)) =>
-              ArticleRepository
-                .saveRelevance(conn, row.id, stored)
-                .as(row.id -> Some(stored))
-            case (row, Left(error)) =>
-              Output
-                .warn(
-                  s"Relevance check failed for '${row.title}', keeping it: ${error.getMessage}"
-                )
-                .as(row.id -> None)
-          })
-          .map(_.toMap)
-
     for {
-      checked <- fresh
+      checked <- Stored.runMissing(toCheck, checker, relevanceConcurrency)(
+        (c, row) =>
+          c.check(row).attempt.flatMap {
+            case Left(error) if isFatalVerdict(error) =>
+              IO.raiseError(
+                new UserError(
+                  "Typesafe rejected the request; check TYPESAFE_API_KEY and its permissions",
+                  error
+                )
+              )
+            case result => IO.pure(result)
+          }
+      ) {
+        case (row, Right(stored)) =>
+          ArticleRepository.saveRelevance(conn, row.id, stored).as(Some(stored))
+        case (row, Left(error)) =>
+          Output
+            .warn(
+              s"Relevance check failed for '${row.title}', keeping it: ${error.getMessage}"
+            )
+            .as(None)
+      }
       // Only verdicts jev gave on this run are logged one by one; stored
       // rejections were logged when they were made and are just counted.
       kept <- rows.traverseFilter { row =>

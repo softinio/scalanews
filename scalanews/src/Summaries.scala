@@ -101,43 +101,30 @@ object Summaries {
     }
 
   /** Summaries for `rows`, reusing stored outcomes unless `refresh`, and
-    * storing new ones. Claude is only contacted (and the API key only needed)
-    * when some article has no stored outcome.
+    * storing new ones. The summariser is only acquired (and the API key only
+    * needed) when some article has no stored outcome.
     */
   private[scalanews] def summariseWithClaude(
       conn: DuckDBConnection,
       rows: List[ArticleRow],
-      refresh: Boolean
+      refresh: Boolean,
+      summariser: Resource[IO, Summariser]
   ): IO[List[NewsItem]] = {
     val reusable: ArticleRow => Option[StoredSummary] =
       row => if (refresh) None else row.storedSummary
     val toSummarise = rows.filter(reusable(_).isEmpty)
 
-    val fresh: IO[Map[java.util.UUID, Option[ArticleSummary]]] =
-      if (toSummarise.isEmpty) IO.pure(Map.empty)
-      else
-        ConfigLoader.loadAnthropicConfig().flatMap { config =>
-          AnthropicClient
-            .resource(config)
-            .use(client =>
-              // Claude calls run concurrently; database writes below run
-              // one at a time on the shared connection.
-              toSummarise.parTraverseN(summaryConcurrency)(row =>
-                ArticleSummariser
-                  .summarise(row.toArticle, client)
-                  .map(row -> _)
-              )
-            )
-            .flatMap(_.traverse { (row, outcome) =>
-              storedFor(outcome, config.model.asString)
-                .traverse_(ArticleRepository.saveSummary(conn, row.id, _)) >>
-                summaryFor(row.toArticle, outcome).map(row.id -> _)
-            })
-            .map(_.toMap)
-        }
-
     for {
-      summaries <- fresh
+      summaries <- Stored.runMissing(
+        toSummarise,
+        summariser,
+        summaryConcurrency
+      )((s, row) => s.summarise(row.toArticle).tupleRight(s.model)) {
+        case (row, (outcome, model)) =>
+          storedFor(outcome, model)
+            .traverse_(ArticleRepository.saveSummary(conn, row.id, _)) >>
+            summaryFor(row.toArticle, outcome)
+      }
       _ <- Output.info(
         s"Summarised ${toSummarise.size} articles with Claude, reused ${rows.size - toSummarise.size} stored"
       )

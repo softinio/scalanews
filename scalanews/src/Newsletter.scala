@@ -18,6 +18,7 @@ package com.softinio.scalanews
 
 import cats.effect.*
 import cats.syntax.all.*
+import fs2.io.file.Path
 
 import com.softinio.duck4s.DuckDBConnection
 import com.softinio.scalanews.algebra.{
@@ -37,10 +38,11 @@ object Newsletter {
     */
   private def ingestInto(
       conn: DuckDBConnection,
-      range: DateRange
+      range: DateRange,
+      feeds: FeedSource
   ): IO[List[String]] =
     for {
-      fetched <- Feeds.fetchArticles(range)
+      fetched <- feeds.fetch(range)
       inserted <- fetched.articles.traverse(ArticleRepository.insert(conn, _))
       added = inserted.sum
       _ <- Output.info(
@@ -50,11 +52,12 @@ object Newsletter {
 
   def ingestBlogsToDB(
       range: DateRange,
-      dbPath: String = Database.defaultPath
+      dbPath: String = Database.defaultPath,
+      feeds: FeedSource = Services.live.feeds
   ): IO[ExitCode] =
     Database
       .connect(dbPath, Seq(ArticleSchema))
-      .use(ingestInto(_, range))
+      .use(ingestInto(_, range, feeds))
       .flatMap(reportFailedFeeds)
       .as(ExitCode.Success)
 
@@ -68,30 +71,39 @@ object Newsletter {
   /** Writes the next newsletter draft and reports what went into it. */
   private def writeNextNewsletter(
       items: List[NewsItem],
-      notRelevant: Option[Int]
+      notRelevant: Option[Int],
+      pagePath: Path
   ): IO[Unit] =
     NewsletterPage
       .generateNews(items)
-      .flatMap(TextFiles.write(NewsletterPage.nextMarkdownFilePath, _)) >>
-      Output.info(NewsletterPage.runSummary(items, notRelevant))
+      .flatMap(TextFiles.write(pagePath, _)) >>
+      Output.info(NewsletterPage.runSummary(items, notRelevant, pagePath))
 
-  /** Builds the next newsletter for the date range. */
-  def generate(range: DateRange, mode: GenerateMode): IO[ExitCode] =
+  /** Builds the next newsletter for the date range. `services` and `pagePath`
+    * default to the real feeds, jev, Claude and `next/next.md`; tests pass
+    * fakes and a temporary file.
+    */
+  def generate(
+      range: DateRange,
+      mode: GenerateMode,
+      services: Services = Services.live,
+      pagePath: Path = NewsletterPage.nextMarkdownFilePath
+  ): IO[ExitCode] =
     mode match {
       case GenerateMode.Direct =>
         for {
-          fetched <- Feeds.fetchArticles(range)
+          fetched <- services.feeds.fetch(range)
           items = fetched.articles.map(a =>
             NewsItem(a, Summaries.simpleSummary(a.content))
           )
-          _ <- writeNextNewsletter(items, notRelevant = None)
+          _ <- writeNextNewsletter(items, notRelevant = None, pagePath)
           _ <- reportFailedFeeds(fetched.failedFeeds)
         } yield ExitCode.Success
 
       case GenerateMode.Database(dbPath, ai) =>
         Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
           for {
-            failedFeeds <- ingestInto(conn, range)
+            failedFeeds <- ingestInto(conn, range, services.feeds)
             rows <- ArticleRepository
               .findAll(conn)
               .filter(row => range.contains(row.publishedDate))
@@ -100,15 +112,22 @@ object Newsletter {
             _ <- ai match {
               case AiMode.Enabled(refresh) =>
                 for {
-                  relevantRows <- Relevance.filterRelevant(conn, rows, refresh)
+                  relevantRows <- Relevance.filterRelevant(
+                    conn,
+                    rows,
+                    refresh,
+                    services.relevance
+                  )
                   items <- Summaries.summariseWithClaude(
                     conn,
                     relevantRows,
-                    refresh
+                    refresh,
+                    services.summariser
                   )
                   _ <- writeNextNewsletter(
                     items,
-                    notRelevant = Some(rows.size - relevantRows.size)
+                    notRelevant = Some(rows.size - relevantRows.size),
+                    pagePath
                   )
                 } yield ()
               case AiMode.Disabled =>
@@ -119,7 +138,8 @@ object Newsletter {
                       Summaries.simpleSummary(row.content)
                     )
                   ),
-                  notRelevant = None
+                  notRelevant = None,
+                  pagePath
                 )
             }
             _ <- reportFailedFeeds(failedFeeds)

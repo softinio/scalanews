@@ -87,6 +87,11 @@ The CLI supports these main commands:
 **Note**: After building the native image with `mill scalanews.nativeImage`, the executable is located at:
 `./out/scalanews/nativeImagePath.dest/target/scalanews`
 
+The native image initialises classes at build time, so never read the environment or other
+runtime state in a `val` of an `object` (or eagerly when building an `IO`): the value would be
+captured when the binary is built. Read it inside the `IO` (e.g. `IO(sys.env.get(...))`) and make
+anything that does so a `def` (as `Services.live` is).
+
 Native-image metadata that libraries don't ship themselves (Rome, DuckDB JNI, and the
 Anthropic Java SDK's Jackson/Kotlin serialisation) lives in
 `scalanews/native-image/reachability-metadata.json`. If a native run fails where the JVM run
@@ -159,6 +164,8 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - `Summaries`: plain and Claude summaries, and their stored outcomes
 - `NewsletterPage`: rendering the newsletter page (cards, More articles list) and the run summary
 - `BlogDirectory`: the blog directory page
+- `Services` (`FeedSource`, `RelevanceChecker`, `Summariser`): what the pipeline needs from the outside world. `Services.live` wires in the real feeds, jev and Claude; `NewsletterSuite` runs `generate` end to end with fakes and a temporary database and page, no network
+- `Stored.runMissing`: the part the relevance and summary steps share (acquire the service only if some article needs it, call it concurrently, record results one at a time)
 - `Rome`: RSS feed parsing using Rome Tools
 - `FileHandler`: Newsletter publishing and archiving
 - `Events`: Community event directory management

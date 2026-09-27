@@ -8,7 +8,7 @@
 
   @:navigationTree {
     entries = [
-      { target = "/index.md", excludeSections = true }
+      { target = "/index.md", title = "Latest edition", excludeSections = true }
     ]
   }
 
@@ -22,9 +22,7 @@
     <p class="archive-empty">No editions yet</p>
     @:else
     @:navigationTree {
-      entries = [
-        { target = "/Archive/"${_.year}, excludeRoot = true, depth = 1 }
-      ]
+      entries = ${_.entries}
     }
     @:@
   </details>

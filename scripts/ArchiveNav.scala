@@ -19,20 +19,28 @@ import laika.ast.Path.Root
 import laika.io.model.{InputTree, InputTreeBuilder}
 
 import java.io.File
+import java.nio.file.Files
 import java.time.LocalDate
+import scala.jdk.CollectionConverters.*
 
 /** The docs input, with the archive organised by year: `docs/Archive/<year>/`.
   *
-  * Nothing about the layout is kept in the repo; on every build this adds:
-  *   - `scalanews.archiveYears` (root `directory.conf`): every year from the
-  *     first archived one to this year, newest first. The sidebar template
-  *     (`docs/helium/templates/mainNav.template.html`) renders each
-  *     as a `<details>` group, open for the newest year only;
-  *   - a `directory.conf` per year that lists its editions newest first and
-  *     reopens that year's group, so the page being read is never folded away.
+  * Nothing about the layout is kept in the repo; on every build this adds
+  * `scalanews.archiveYears`: every year from the first archived one to this
+  * year, newest first, each with its editions newest first. The sidebar
+  * template (`docs/helium/templates/mainNav.template.html`) renders each year
+  * as a `<details>` group, listing its editions by date alone ("March 3,
+  * 2023", from the page's "# Scala News - March 3, 2023" heading).
+  *
+  * It's set twice: in the root `directory.conf`, with only the newest year
+  * open, and in each year's `directory.conf`, with that year open too, so the
+  * page being read is never folded away.
   */
 object ArchiveNav {
-  private val editionFile = """scala_news_(\d{4})-\d{2}-\d{2}\.md""".r
+  private final case class Edition(path: String, title: String)
+
+  private val editionFile = """scala_news_(\d{4}-\d{2}-\d{2})\.md""".r
+  private val titlePrefix = "Scala News - "
 
   def input(docsDir: String = "docs"): IO[InputTreeBuilder[IO]] =
     IO.blocking(editionsByYear(new File(docsDir, "Archive"))).map { editions =>
@@ -40,44 +48,72 @@ object ArchiveNav {
       val firstYear = editions.keys.minOption.getOrElse(thisYear)
       val years = (firstYear to thisYear).toList.reverse
 
-      // `openAttr` and `count` are written into the HTML as they are.
       def yearsConfig(open: Set[Int]): String =
         years
-          .map { year =>
-            val count = editions.get(year).fold(0)(_.size)
-            val openAttr = if (open(year)) "open" else ""
-            val countText = if (count == 0) "" else s"($count)"
-            s"""  { year = $year, openAttr = "$openAttr", empty = ${count == 0}, count = "$countText" }"""
-          }
+          .map(year => yearConfig(year, editions.getOrElse(year, Nil), open(year)))
           .mkString("scalanews.archiveYears = [\n", "\n", "\n]\n")
 
-      editions.foldLeft(
+      editions.keys.foldLeft(
         InputTree[IO]
           .addDirectory(docsDir)
           .addString(yearsConfig(Set(years.head)), Root / "directory.conf")
-      ) { case (tree, (year, files)) =>
+      ) { (tree, year) =>
         tree.addString(
-          navigationOrder(files.sorted.reverse) +
-            yearsConfig(Set(years.head, year)),
+          yearsConfig(Set(years.head, year)),
           Root / "Archive" / year.toString / "directory.conf"
         )
       }
     }
 
-  /** Edition file names by year, from `Archive/<year>/scala_news_<date>.md`. */
-  private def editionsByYear(archiveDir: File): Map[Int, List[String]] =
+  // `openAttr` and `count` are written into the HTML as they are; `entries`
+  // is passed to `@:navigationTree`, which links each edition and marks the
+  // current page.
+  private def yearConfig(year: Int, editions: List[Edition], open: Boolean) = {
+    val entries = editions
+      .map(edition =>
+        s"""{ target = ${quote(edition.path)}, title = ${quote(edition.title)}, excludeSections = true }"""
+      )
+      .mkString("[", ", ", "]")
+    val openAttr = if (open) "open" else ""
+    val count = if (editions.isEmpty) "" else s"(${editions.size})"
+    s"""  { year = $year, openAttr = "$openAttr", empty = ${editions.isEmpty}, count = "$count", entries = $entries }"""
+  }
+
+  /** Editions by year, newest first, from `Archive/<year>/scala_news_<date>.md`. */
+  private def editionsByYear(archiveDir: File): Map[Int, List[Edition]] =
     Option(archiveDir.listFiles()).toList.flatten
       .filter(dir => dir.isDirectory && dir.getName.matches("""\d{4}"""))
-      .map(dir =>
-        dir.getName.toInt -> Option(dir.list()).toList.flatten.collect {
-          case name @ editionFile(_) => name
-        }
-      )
+      .map { dir =>
+        val editions = Option(dir.listFiles()).toList.flatten
+          .flatMap(file =>
+            file.getName match {
+              case editionFile(date) => Some(file -> date)
+              case _                 => None
+            }
+          )
+          .sortBy(_._2)
+          .reverse
+          .map((file, date) =>
+            Edition(
+              s"/Archive/${dir.getName}/${file.getName}",
+              navigationTitle(file).getOrElse(date)
+            )
+          )
+        dir.getName.toInt -> editions
+      }
       .filter(_._2.nonEmpty)
       .toMap
 
-  private def navigationOrder(entries: List[String]): String =
-    entries
-      .map(entry => s"  \"$entry\"")
-      .mkString("laika.navigationOrder = [\n", "\n", "\n]\n")
+  /** The page's first heading without the "Scala News - " prefix. */
+  private def navigationTitle(file: File): Option[String] =
+    Files
+      .readAllLines(file.toPath)
+      .asScala
+      .map(_.trim)
+      .find(_.startsWith("# "))
+      .map(_.drop(2).trim.stripPrefix(titlePrefix))
+      .filter(_.nonEmpty)
+
+  private def quote(value: String): String =
+    "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 }

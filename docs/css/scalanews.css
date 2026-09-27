@@ -189,3 +189,35 @@
   font-style: italic;
   opacity: 0.7;
 }
+
+/* Top bar: scala-lang.org's dark navy, in light and dark mode. Helium's
+   high-contrast top bar reads its colours from these variables. */
+
+header#top-bar {
+  --component-area-bg: #002b36;
+  --component-color: #a7d4de;
+  --component-hover: #ffffff;
+  --component-border: #002b36;
+}
+
+header#top-bar > a.text-link {
+  color: #ffffff;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+/* Edition headings: "Scala News" as a small label above the date (see
+   SiteTheme.editionTitle); the separator is kept for the page title only. */
+
+h1 .edition-brand {
+  display: block;
+  margin-bottom: 0.2em;
+  color: var(--primary-color);
+  font-size: 0.45em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 .edition-separator {
+  display: none;
+}

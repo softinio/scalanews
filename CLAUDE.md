@@ -188,10 +188,13 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - Draft newsletter: `next/next.md`
 - Published newsletter: `docs/index.md`
 - Archives: `docs/Archive/[year]/` (`publish` files an edition under its year)
+- Site theme: `scripts/SiteTheme.scala` (Helium settings and colours, shared by
+  `LaikaBuild` and `LaikaPreview`) plus `docs/css/scalanews.css`
 - Sidebar: `docs/helium/templates/mainNav.template.html` overrides Helium's
   navigation, rendering each archive year as a `<details>` group (no
-  JavaScript). `scripts/ArchiveNav.scala` supplies the years and the
-  newest-first order at build time, so nothing about it is kept in `docs/`
+  JavaScript). `scripts/ArchiveNav.scala` supplies the years, the
+  newest-first order and the short date labels at build time, so nothing
+  about it is kept in `docs/`
 - Generated directories: `docs/Resources/`
 - DuckDB database (default): `data/scalanews.duckdb`
 

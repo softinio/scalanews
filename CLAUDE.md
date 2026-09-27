@@ -105,7 +105,7 @@ record `self-check` and a real `generate` run (with Claude summaries) with the t
 # into the DuckDB database, drops articles jev judges irrelevant and summarises the rest with
 # Claude (requires TYPESAFE_API_KEY and ANTHROPIC_API_KEY unless every article already has
 # stored results)
-./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07
+./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07   # both dates inclusive
 # -r/--refresh-ai: ask jev and Claude again for articles that already have stored results
 ./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07 --refresh-ai
 # --no-ai: keep the database, but no jev or Claude (keyword filter, plain summaries)

@@ -17,14 +17,27 @@
 package com.softinio.scalanews.algebra
 
 import java.text.{ParseException, SimpleDateFormat}
-import java.util.Date
+import java.util.{Calendar, Date}
 
-/** The period a newsletter covers. An article is in range when published
-  * strictly after `start` and strictly before `end`; both are midnight, so
-  * articles published on the end date itself are not included.
+/** The period a newsletter covers, both dates inclusive: `start` and `end` are
+  * midnight at the start of each day, and an article is in range when published
+  * from `start` up to (not including) midnight after `end`.
   */
 final case class DateRange(start: Date, end: Date) {
-  def contains(date: Date): Boolean = date.after(start) && date.before(end)
+
+  /** Midnight at the end of `end`: one calendar day later, in the local time
+    * zone the dates were parsed in, so a daylight-saving change still counts as
+    * one day.
+    */
+  private val endExclusive: Date = {
+    val calendar = Calendar.getInstance()
+    calendar.setTime(end)
+    calendar.add(Calendar.DAY_OF_MONTH, 1)
+    calendar.getTime
+  }
+
+  def contains(date: Date): Boolean =
+    !date.before(start) && date.before(endExclusive)
 }
 
 object DateRange {

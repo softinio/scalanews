@@ -43,12 +43,18 @@ class DateRangeSuite extends FunSuite {
     )
   }
 
-  test("contains - excludes both ends (midnight on each date)") {
+  test("contains - includes both the start and the end date") {
     val r = range("2026-09-01", "2026-09-26")
-    val day = 24 * 60 * 60 * 1000L
-    assert(r.contains(new java.util.Date(r.start.getTime + day)))
-    assert(!r.contains(r.start))
-    assert(!r.contains(r.end))
-    assert(!r.contains(new java.util.Date(r.end.getTime + day / 2)))
+    val hour = 60 * 60 * 1000L
+    assert(r.contains(r.start), "midnight at the start of the start date")
+    assert(r.contains(new java.util.Date(r.end.getTime + 15 * hour)), "the afternoon of the end date")
+    assert(r.contains(new java.util.Date(r.end.getTime + 24 * hour - 1)), "the last moment of the end date")
+    assert(!r.contains(new java.util.Date(r.end.getTime + 24 * hour)), "midnight after the end date")
+    assert(!r.contains(new java.util.Date(r.start.getTime - 1)), "just before the start date")
+  }
+
+  test("contains - a single-day range covers that whole day") {
+    val r = range("2026-09-26", "2026-09-26")
+    assert(r.contains(new java.util.Date(r.start.getTime + 12 * 60 * 60 * 1000L)))
   }
 }

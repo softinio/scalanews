@@ -3,6 +3,8 @@
 //> using dep org.typelevel::laika-io:1.3.2
 //> using file ArchiveNav.scala
 //> using file SiteTheme.scala
+//> using file Editions.scala
+//> using file SiteFiles.scala
 //> using dep org.typelevel::laika-preview:1.3.2
 //> using dep org.http4s::http4s-ember-server:0.23.37
 //> using dep org.http4s::http4s-dsl:0.23.37
@@ -34,12 +36,12 @@ object LaikaPreview extends IOApp.Simple {
     import org.http4s.ember.server.EmberServerBuilder
     import org.http4s.server.staticcontent._
 
-    SiteTheme.transformer.use { t =>
+    Edition.load().flatMap(editions => SiteTheme.transformer(editions).use { t =>
       val siteDir = "site/target/docs/preview"
 
       for {
         _ <- IO.println("Building documentation site...")
-        docs <- ArchiveNav.input()
+        docs <- ArchiveNav.input().flatMap(SiteFiles.add(_, editions))
         _ <- t.fromInput(docs).toDirectory(siteDir).transform
         _ <- IO.println(s"Site built at: $siteDir")
 
@@ -63,6 +65,6 @@ object LaikaPreview extends IOApp.Simple {
           .build
           .use(_ => IO.never)
       } yield ()
-    }
+    })
   }
 }

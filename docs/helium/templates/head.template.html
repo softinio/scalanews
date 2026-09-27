@@ -7,13 +7,7 @@
   @:for(laika.site.metadata.authors)
   <meta name="author" content="${_}"/>
   @:@
-  @:for(laika.site.metadata.description)
-  <meta name="description" content="${_}"/>
-  @:@
-  @:scalanewsEditionMeta
-  @:for(laika.metadata.canonicalLink)
-  <link rel="canonical" href="${_}"/>
-  @:@
+  @:scalanewsPageMeta
   @:for(helium.site.favIcons)
   <link rel="icon" @:attribute(sizes, _.sizes) @:attribute(type, _.type) href="@:target(_.target)"/>
   @:@

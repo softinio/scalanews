@@ -3,6 +3,8 @@
 //> using dep org.typelevel::laika-io:1.3.2
 //> using file ArchiveNav.scala
 //> using file SiteTheme.scala
+//> using file Editions.scala
+//> using file SiteFiles.scala
 
 /*
  * Copyright 2024 Salar Rahmanian
@@ -27,9 +29,10 @@ object LaikaBuild extends IOApp.Simple {
   def run: IO[Unit] = for {
     _ <- IO.println("Starting Laika documentation build...")
 
-    docs <- ArchiveNav.input()
+    editions <- Edition.load()
+    docs <- ArchiveNav.input().flatMap(SiteFiles.add(_, editions))
     _ <- IO.println("Running transformation...")
-    _ <- SiteTheme.transformer.use { t =>
+    _ <- SiteTheme.transformer(editions).use { t =>
       t.fromInput(docs)
         .toDirectory("site/target/docs/site")
         .transform

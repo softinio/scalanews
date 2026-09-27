@@ -142,6 +142,9 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     // DuckDB loads its JNI library in a static initialiser; that must happen
     // at runtime or the native binary can't find the library's symbols.
     "--initialize-at-run-time=org.duckdb",
+    // scala.util.Random's shared generator (used by verdict4s's retry jitter)
+    // must be seeded at runtime, not frozen into the image.
+    "--initialize-at-run-time=scala.util.Random,scala.util.Random$",
     // cats-effect still ships its SignalHandler proxy config in the deprecated
     // proxy-config format; ignore it and register the proxy in our own
     // reachability-metadata.json instead.

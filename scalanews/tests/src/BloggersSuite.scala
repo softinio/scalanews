@@ -18,7 +18,7 @@ package com.softinio.scalanews
 
 import com.softinio.scalanews.algebra.{Article, ArticleSummary, Blog}
 import com.softinio.scalanews.db.Database
-import com.softinio.scalanews.db.tables.StoredSummary
+import com.softinio.scalanews.db.tables.{StoredRelevance, StoredSummary}
 import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
 import munit.CatsEffectSuite
 
@@ -233,5 +233,86 @@ class BloggersSuite extends CatsEffectSuite {
       Bloggers.summaryOf(StoredSummary.NoSummary("link", "m")),
       None
     )
+  }
+
+  private def noul(p: Double) =
+    com.softinio.verdict4s.algebra.Probability.either(p).toOption.get
+
+  test("relevant - about Scala and not just an announcement") {
+    assert(Bloggers.relevant(noul(0.98), noul(0.03)))
+  }
+
+  test("relevant - a release announcement is not relevant") {
+    assert(!Bloggers.relevant(noul(0.98), noul(0.94)))
+  }
+
+  test("relevant - an off-topic article is not relevant") {
+    assert(!Bloggers.relevant(noul(0.03), noul(0.02)))
+  }
+
+  test("relevant - borderline Scala community news is kept") {
+    assert(Bloggers.relevant(noul(0.41), noul(0.02)))
+  }
+
+  test("relevant - a post that also mentions a release is kept") {
+    assert(Bloggers.relevant(noul(0.97), noul(0.31)))
+  }
+
+  test("relevant - thresholds are inclusive for yes") {
+    assert(Bloggers.relevant(noul(Bloggers.aboutScalaThreshold), noul(0.0)))
+    assert(
+      !Bloggers.relevant(noul(1.0), noul(Bloggers.announcementThreshold))
+    )
+  }
+
+  test("relevanceQuestions - form a valid request with the title and description") {
+    val request = Bloggers.relevanceQuestions.request(
+      Bloggers.RelevanceContext("sbt 2.0.9", "Bug fixes."),
+      com.softinio.verdict4s.algebra.Model.JevLatest
+    )
+    assert(request.isValid)
+  }
+
+  test("relevant - decided from stored probabilities") {
+    assert(Bloggers.relevant(StoredRelevance(noul(0.98), noul(0.03), "jev")))
+    assert(!Bloggers.relevant(StoredRelevance(noul(0.98), noul(0.94), "jev")))
+  }
+
+  private def verdictApiError(status: Int) =
+    com.softinio.verdict4s.Verdict4sError.Api(status, "details")
+
+  test("isFatalVerdict - a bad key or no permission stops the run") {
+    assert(Bloggers.isFatalVerdict(verdictApiError(401)))
+    assert(Bloggers.isFatalVerdict(verdictApiError(403)))
+    assert(
+      Bloggers.isFatalVerdict(
+        new RuntimeException("wrapped", verdictApiError(401))
+      )
+    )
+  }
+
+  test("isFatalVerdict - rate limits and other errors keep going") {
+    assert(!Bloggers.isFatalVerdict(verdictApiError(429)))
+    assert(!Bloggers.isFatalVerdict(verdictApiError(500)))
+    assert(!Bloggers.isFatalVerdict(new RuntimeException("timeout")))
+  }
+
+  test("missingTypesafeKeyHint - points to --no-ai when the key is missing") {
+    val missing = com.softinio.verdict4s.Verdict4sError.Validation(
+      "TYPESAFE_API_KEY",
+      "environment variable is not set"
+    )
+    val hinted = Bloggers.missingTypesafeKeyHint.lift(missing)
+    assert(hinted.exists(_.getMessage.contains("--no-ai")))
+    assert(hinted.exists(_.getCause eq missing))
+  }
+
+  test("missingTypesafeKeyHint - leaves other errors alone") {
+    val other = com.softinio.verdict4s.Verdict4sError.Validation(
+      "TYPESAFE_BASE_URL",
+      "not a URL"
+    )
+    assert(!Bloggers.missingTypesafeKeyHint.isDefinedAt(other))
+    assert(!Bloggers.missingTypesafeKeyHint.isDefinedAt(verdictApiError(401)))
   }
 }

@@ -20,8 +20,10 @@ import com.softinio.duck4s.DuckDBConnection
 import com.softinio.duck4s.algebra.DuckDBResultSet
 import com.softinio.duck4s.effect.DuckDBIO
 import com.softinio.scalanews.algebra.{Article, ArticleSummary}
+import com.softinio.verdict4s.algebra.Probability
 import com.softinio.scalanews.db.{Repository, RowsAffected, TableSchema}
 import cats.effect.IO
+import cats.syntax.all.*
 import fs2.Stream
 import java.sql.Timestamp
 
@@ -32,6 +34,16 @@ enum StoredSummary:
   case Summarised(summary: ArticleSummary, model: String)
   case NoSummary(reason: String, model: String)
 
+/** jev's answers to the relevance questions, stored so reruns reuse them. The
+  * keep/drop decision is made from these probabilities when read, so the
+  * thresholds can be retuned without asking jev again.
+  */
+final case class StoredRelevance(
+    aboutScala: Probability,
+    announcement: Probability,
+    model: String
+)
+
 case class ArticleRow(
     id: java.util.UUID,
     title: String,
@@ -41,7 +53,9 @@ case class ArticleRow(
     publishedDate: java.util.Date,
     createdAt: java.sql.Timestamp,
     storedSummary: Option[StoredSummary] = None,
-    summarisedAt: Option[java.sql.Timestamp] = None
+    summarisedAt: Option[java.sql.Timestamp] = None,
+    storedRelevance: Option[StoredRelevance] = None,
+    relevanceCheckedAt: Option[java.sql.Timestamp] = None
 )
 
 object ArticleSchema extends TableSchema:
@@ -58,7 +72,11 @@ object ArticleSchema extends TableSchema:
        |  summary_status VARCHAR   CHECK (summary_status IN ('summarised', 'no_summary')),
        |  summary_reason VARCHAR,
        |  summary_model  VARCHAR,
-       |  summarised_at  TIMESTAMP
+       |  summarised_at  TIMESTAMP,
+       |  p_about_scala  DOUBLE    CHECK (p_about_scala BETWEEN 0 AND 1),
+       |  p_announcement DOUBLE    CHECK (p_announcement BETWEEN 0 AND 1),
+       |  relevance_model VARCHAR,
+       |  relevance_checked_at TIMESTAMP
        |)""".stripMargin
 
 object ArticleRepository extends Repository[Article, ArticleRow]:
@@ -68,10 +86,13 @@ object ArticleRepository extends Repository[Article, ArticleRow]:
     "INSERT INTO articles (title, content, url, author, published_date) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING"
 
   private val columns =
-    "id, title, content, url, author, published_date, created_at, summary, summary_status, summary_reason, summary_model, summarised_at"
+    "id, title, content, url, author, published_date, created_at, summary, summary_status, summary_reason, summary_model, summarised_at, p_about_scala, p_announcement, relevance_model, relevance_checked_at"
 
   private val selectAllSql =
     s"SELECT $columns FROM articles ORDER BY published_date DESC"
+
+  private val saveRelevanceSql =
+    "UPDATE articles SET p_about_scala = ?, p_announcement = ?, relevance_model = ?, relevance_checked_at = now() WHERE id = ?"
 
   private val saveSummarySql =
     "UPDATE articles SET summary = ?, summary_status = ?, summary_reason = ?, summary_model = ?, summarised_at = now() WHERE id = ?"
@@ -142,8 +163,57 @@ object ArticleRepository extends Repository[Article, ArticleRow]:
         Option(rs.getString("summary_reason")),
         Option(rs.getString("summary_model"))
       ),
-      summarisedAt = Option(rs.getTimestamp("summarised_at"))
+      summarisedAt = Option(rs.getTimestamp("summarised_at")),
+      storedRelevance = storedRelevance(
+        probability(rs, "p_about_scala"),
+        probability(rs, "p_announcement"),
+        Option(rs.getString("relevance_model"))
+      ),
+      relevanceCheckedAt = Option(rs.getTimestamp("relevance_checked_at"))
     )
+
+  private def probability(
+      rs: DuckDBResultSet,
+      column: String
+  ): Option[Probability] =
+    Option(rs.getObject(column))
+      .collect { case n: java.lang.Number => n.doubleValue }
+      .flatMap(d => Probability.either(d).toOption)
+
+  private def storedRelevance(
+      aboutScala: Option[Probability],
+      announcement: Option[Probability],
+      model: Option[String]
+  ): Option[StoredRelevance] =
+    (aboutScala, announcement, model).mapN(StoredRelevance.apply)
+
+  /** Stores jev's relevance answers for an article, replacing any earlier ones.
+    */
+  def saveRelevance(
+      conn: DuckDBConnection,
+      id: java.util.UUID,
+      stored: StoredRelevance
+  ): IO[RowsAffected] =
+    for
+      stmt <- IO.fromEither(
+        conn
+          .prepareStatement(saveRelevanceSql)
+          .left
+          .map(e => new RuntimeException(e.toString))
+      )
+      _ <- IO.blocking {
+        stmt.setDouble(1, stored.aboutScala.value)
+        stmt.setDouble(2, stored.announcement.value)
+        stmt.setString(3, stored.model)
+        stmt.setObject(4, id)
+      }.void
+      rows <- IO
+        .blocking(stmt.executeUpdate())
+        .flatMap(r =>
+          IO.fromEither(r.left.map(e => new RuntimeException(e.toString)))
+        )
+      _ <- IO(stmt.close())
+    yield rows
 
   private def storedSummary(
       status: Option[String],

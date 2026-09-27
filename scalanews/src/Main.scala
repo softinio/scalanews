@@ -24,7 +24,7 @@ import cats.implicits.*
 import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
-import com.softinio.scalanews.algebra.{EventType, GenerateMode, Summaries}
+import com.softinio.scalanews.algebra.{AiMode, EventType, GenerateMode}
 import com.softinio.scalanews.db.Database
 
 object Main
@@ -126,9 +126,9 @@ object Main
     }
 
   /** `generate`: by default ingests into the database and summarises with
-    * Claude; `--no-ai` keeps the database with plain summaries, `--no-db` reads
-    * the feeds directly. Flag combinations that make no sense are rejected
-    * rather than ignored.
+    * Claude; `--no-ai` keeps the database without jev or Claude, `--no-db`
+    * reads the feeds directly. Flag combinations that make no sense are
+    * rejected rather than ignored.
     */
   private[scalanews] val generateOpts: Opts[Generate] =
     Opts.subcommand(
@@ -144,11 +144,16 @@ object Main
             "Read the feeds directly instead of via the database (plain summaries)"
           )
           .orFalse,
-        Opts.flag("no-ai", "Use plain summaries instead of Claude").orFalse,
         Opts
           .flag(
-            "resummarise",
-            "Ask Claude again even for articles with a stored summary",
+            "no-ai",
+            "No jev relevance check or Claude summaries (keyword filter, plain summaries)"
+          )
+          .orFalse,
+        Opts
+          .flag(
+            "refresh-ai",
+            "Ask jev and Claude again even for articles with stored results",
             short = "r"
           )
           .orFalse,
@@ -157,18 +162,18 @@ object Main
           .orNone
       ).tupled.mapValidated {
         case (_, _, true, _, true, _) =>
-          "--resummarise needs the database; it can't be used with --no-db".invalidNel
+          "--refresh-ai needs the database; it can't be used with --no-db".invalidNel
         case (_, _, true, _, _, Some(_)) =>
           "--dbpath can't be used with --no-db".invalidNel
         case (_, _, false, true, true, _) =>
-          "--resummarise only applies to Claude summaries; it can't be used with --no-ai".invalidNel
-        case (startDate, endDate, noDb, noAi, resummarise, dbPath) =>
+          "--refresh-ai only applies with AI; it can't be used with --no-ai".invalidNel
+        case (startDate, endDate, noDb, noAi, refresh, dbPath) =>
           val mode =
             if (noDb) GenerateMode.Direct
             else
               GenerateMode.Database(
                 dbPath.getOrElse(Database.defaultPath),
-                if (noAi) Summaries.Plain else Summaries.Claude(resummarise)
+                if (noAi) AiMode.Disabled else AiMode.Enabled(refresh)
               )
           Generate(startDate, endDate, mode).validNel
       }

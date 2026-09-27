@@ -19,7 +19,7 @@ package com.softinio.scalanews
 import com.monovore.decline.Command
 import munit.FunSuite
 
-import com.softinio.scalanews.algebra.{GenerateMode, Summaries}
+import com.softinio.scalanews.algebra.{AiMode, GenerateMode}
 import com.softinio.scalanews.db.Database
 
 class MainSuite extends FunSuite {
@@ -39,28 +39,28 @@ class MainSuite extends FunSuite {
       Right(
         GenerateMode.Database(
           Database.defaultPath,
-          Summaries.Claude(resummarise = false)
+          AiMode.Enabled(refresh = false)
         )
       )
     )
   }
 
-  test("generate - --resummarise asks Claude again") {
+  test("generate - --refresh-ai asks jev and Claude again") {
     assertEquals(
-      parse((dates :+ "--resummarise")*),
+      parse((dates :+ "--refresh-ai")*),
       Right(
         GenerateMode.Database(
           Database.defaultPath,
-          Summaries.Claude(resummarise = true)
+          AiMode.Enabled(refresh = true)
         )
       )
     )
   }
 
-  test("generate - --no-ai keeps the database with plain summaries") {
+  test("generate - --no-ai keeps the database without AI") {
     assertEquals(
       parse((dates :+ "--no-ai")*),
-      Right(GenerateMode.Database(Database.defaultPath, Summaries.Plain))
+      Right(GenerateMode.Database(Database.defaultPath, AiMode.Disabled))
     )
   }
 
@@ -70,7 +70,7 @@ class MainSuite extends FunSuite {
       Right(
         GenerateMode.Database(
           "data/other.duckdb",
-          Summaries.Claude(resummarise = false)
+          AiMode.Enabled(refresh = false)
         )
       )
     )
@@ -85,8 +85,8 @@ class MainSuite extends FunSuite {
   }
 
   test("generate - rejects flag combinations that make no sense") {
-    assert(parse((dates ++ Seq("--no-db", "--resummarise"))*).isLeft)
+    assert(parse((dates ++ Seq("--no-db", "--refresh-ai"))*).isLeft)
     assert(parse((dates ++ Seq("--no-db", "--dbpath", "x.duckdb"))*).isLeft)
-    assert(parse((dates ++ Seq("--no-ai", "--resummarise"))*).isLeft)
+    assert(parse((dates ++ Seq("--no-ai", "--refresh-ai"))*).isLeft)
   }
 }

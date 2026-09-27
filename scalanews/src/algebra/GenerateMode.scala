@@ -22,20 +22,24 @@ enum GenerateMode {
   /** Ingest the feeds into the database (skipping articles already stored),
     * then build the newsletter from it.
     */
-  case Database(dbPath: String, summaries: Summaries)
+  case Database(dbPath: String, ai: AiMode)
 
   /** Build the newsletter straight from the feeds, with plain summaries. */
   case Direct
 }
 
-/** How article summaries are written in [[GenerateMode.Database]]. */
-enum Summaries {
+/** Whether AI is used in [[GenerateMode.Database]]: jev checks each article's
+  * relevance and Claude writes the summaries.
+  */
+enum AiMode {
 
-  /** Summarised by Claude and stored; stored summaries are reused unless
-    * `resummarise`.
+  /** jev and Claude results are stored and reused on later runs, unless
+    * `refresh` asks both again.
     */
-  case Claude(resummarise: Boolean)
+  case Enabled(refresh: Boolean)
 
-  /** The first sentences of each article. */
-  case Plain
+  /** Keyword filtering only, and plain summaries (the first sentences of each
+    * article).
+    */
+  case Disabled
 }

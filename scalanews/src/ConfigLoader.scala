@@ -33,11 +33,6 @@ object ConfigLoader {
     ConfigSource.file(configPath).loadF[IO, Configuration]()
   }
 
-  def loadEventsConfig(filePath: String = "events.json"): IO[EventConfig] = {
-    val configPath = sys.env.getOrElse("SCALA_NEWS_EVENTS_CONFIG", filePath)
-    ConfigSource.file(configPath).loadF[IO, EventConfig]()
-  }
-
   def loadAnthropicConfig(): IO[AnthropicConfig] =
     IO.fromOption(sys.env.get("ANTHROPIC_API_KEY").filter(_.nonEmpty))(
       new RuntimeException(
@@ -51,4 +46,9 @@ object ConfigLoader {
           .map(new RuntimeException(_))
       )
     }
+
+  def loadEventsConfig(filePath: String = "events.json"): IO[EventConfig] = {
+    val configPath = sys.env.getOrElse("SCALA_NEWS_EVENTS_CONFIG", filePath)
+    ConfigSource.file(configPath).loadF[IO, EventConfig]()
+  }
 }

@@ -28,8 +28,10 @@ import com.softinio.scalanews.algebra.{Article, ArticleSummary}
 import com.softinio.scalanews.db.tables.{
   ArticleRepository,
   ArticleSchema,
+  StoredRelevance,
   StoredSummary
 }
+import com.softinio.verdict4s.algebra.Probability
 
 class ArticleRepositorySuite extends CatsEffectSuite {
 
@@ -212,5 +214,73 @@ class ArticleRepositorySuite extends CatsEffectSuite {
     storeAndReload(first, second).map(result =>
       assertEquals(result, (Some(second), true))
     )
+  }
+
+  private def probability(p: Double) = Probability.either(p).toOption.get
+
+  private def relevanceAfter(
+      saves: StoredRelevance*
+  ): IO[(Option[StoredRelevance], Boolean)] =
+    for {
+      path <- tempDbPath
+      row <- Database.connect(path, Seq(ArticleSchema)).use { conn =>
+        for {
+          _ <- ArticleRepository.insert(conn, testArticle)
+          id <- ArticleRepository.findAll(conn).compile.lastOrError.map(_.id)
+          _ <- saves.toList.traverse_(
+            ArticleRepository.saveRelevance(conn, id, _)
+          )
+          row <- ArticleRepository.findById(conn, id)
+        } yield row
+      }
+    } yield (
+      row.flatMap(_.storedRelevance),
+      row.exists(_.relevanceCheckedAt.isDefined)
+    )
+
+  test("new articles have no stored relevance") {
+    relevanceAfter().map(result => assertEquals(result, (None, false)))
+  }
+
+  test("saveRelevance - stores jev's probabilities and model") {
+    val stored =
+      StoredRelevance(probability(0.98), probability(0.03), "jev-latest")
+    relevanceAfter(stored).map(result =>
+      assertEquals(result, (Some(stored), true))
+    )
+  }
+
+  test("saveRelevance - replaces earlier answers") {
+    val first =
+      StoredRelevance(probability(0.2), probability(0.1), "jev-latest")
+    val second =
+      StoredRelevance(probability(0.9), probability(0.8), "jev-preview")
+    relevanceAfter(first, second).map(result =>
+      assertEquals(result, (Some(second), true))
+    )
+  }
+
+  test("relevance and summary are stored independently") {
+    val relevance =
+      StoredRelevance(probability(0.9), probability(0.1), "jev-latest")
+    val summary = StoredSummary.Summarised(
+      ArticleSummary.from("About Scala 3.").get,
+      "claude-sonnet-5"
+    )
+    for {
+      path <- tempDbPath
+      row <- Database.connect(path, Seq(ArticleSchema)).use { conn =>
+        for {
+          _ <- ArticleRepository.insert(conn, testArticle)
+          id <- ArticleRepository.findAll(conn).compile.lastOrError.map(_.id)
+          _ <- ArticleRepository.saveRelevance(conn, id, relevance)
+          _ <- ArticleRepository.saveSummary(conn, id, summary)
+          row <- ArticleRepository.findById(conn, id)
+        } yield row
+      }
+    } yield {
+      assertEquals(row.flatMap(_.storedRelevance), Some(relevance))
+      assertEquals(row.flatMap(_.storedSummary), Some(summary))
+    }
   }
 }

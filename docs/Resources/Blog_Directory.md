@@ -1,11 +1,9 @@
-
-       
 # Bloggers
 
 A Directory of bloggers producing Scala related content with links to their rss feed when available.
 
-| Blog        | URL           | RSS Feed  |
-| ------------- |:-------------:| -----:|
+| Blog | URL | RSS Feed |
+| --- |:---:| ---:|
 | Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |
 | Scala Lang | <https://www.scala-lang.org/blog/> | [rss feed](https://www.scala-lang.org/feed/index.xml) |
 | Typelevel | <https://typelevel.org/blog/> | [rss feed](https://typelevel.org/blog/feed.rss) |
@@ -38,7 +36,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | A Developer's Experience | <https://blog.rhetoricalmusings.com> | [rss feed](https://blog.rhetoricalmusings.com/index.xml) |
 | Erik van Oosten | <https://day-to-day-stuff.blogspot.com/> | [rss feed](https://day-to-day-stuff.blogspot.com/feeds/posts/default?q=label:scala&alt=rss) |
 | Steven Hicks: The Exception Catcher | <https://theexceptioncatcher.com/> | [rss feed](https://theexceptioncatcher.com/feed) |
-       
+
 ###### Got a Scala related blog? Add it to this Blog Directory!
 
 See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details.

@@ -41,4 +41,17 @@ class BlogDirectorySuite extends CatsEffectSuite {
     )
     assertIO(obtained, true)
   }
+
+  test("generateDirectory - starts with the heading and has no stray whitespace") {
+    val blog = Blog(
+      "Salar Rahmanian",
+      new URI("https://www.softinio.com"),
+      new URI("https://www.softinio.com/index.xml")
+    )
+    BlogDirectory.generateDirectory(List(blog)).map { page =>
+      assert(page.startsWith("# Bloggers\n"), page)
+      assert(page.endsWith("for details.\n"), page)
+      assert(!page.linesIterator.exists(_.endsWith(" ")), page)
+    }
+  }
 }

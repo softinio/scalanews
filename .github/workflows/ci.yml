@@ -62,6 +62,16 @@ jobs:
         run: |
           nix develop --command mill --no-server scalanews.tests.testCached
 
+      # On a PR, check the bloggers in config.json, fetching the feeds of the
+      # ones it adds or changes compared with the target branch.
+      - name: Check bloggers
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git show "origin/$BASE_REF:config.json" > "$RUNNER_TEMP/base-config.json"
+          nix develop --command mill --no-server scalanews.run blogger --check --base "$RUNNER_TEMP/base-config.json"
+
       # Upload test results
       - name: Upload test results
         if: always()

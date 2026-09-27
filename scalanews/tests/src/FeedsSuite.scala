@@ -133,6 +133,15 @@ class FeedsSuite extends CatsEffectSuite {
     )
   }
 
+  test("toArticle - an Atom entry with only an updated date is dated by it") {
+    val e = entry(published = null)
+    e.setUpdatedDate(inRange)
+    assertEquals(
+      Feeds.toArticle(blog, e, range2021).map(_.publishedDate),
+      Some(inRange)
+    )
+  }
+
   test("toArticle - entries outside the range or missing fields are skipped") {
     val outside = DateRange.parse("2022-01-01", "2022-01-02").toOption.get.start
     assert(Feeds.toArticle(blog, entry(published = outside), range2021).isEmpty)

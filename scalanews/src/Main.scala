@@ -39,7 +39,11 @@ object Main
   )
   private case class Create(overwrite: Boolean)
 
-  private case class Blogger(directory: Boolean)
+  private case class Blogger(
+      directory: Boolean,
+      check: Boolean,
+      base: Option[String]
+  )
 
   private case object SelfCheckCmd
 
@@ -111,10 +115,29 @@ object Main
 
   private val bloggerOpts: Opts[Blogger] =
     Opts.subcommand("blogger", "Blogger directory tasks") {
-      Opts
-        .flag("directory", "create a new blogger directory page", short = "d")
-        .orFalse
-        .map(Blogger.apply)
+      (
+        Opts
+          .flag("directory", "create a new blogger directory page", short = "d")
+          .orFalse,
+        Opts
+          .flag(
+            "check",
+            "validate config.json's bloggers and fetch their feeds (exits with an error on problems)",
+            short = "c"
+          )
+          .orFalse,
+        Opts
+          .option[String](
+            "base",
+            "with --check, a config.json to compare with: only new or changed bloggers' feeds are fetched"
+          )
+          .orNone
+      ).tupled.mapValidated {
+        case (_, false, Some(_)) =>
+          "--base only applies with --check".invalidNel
+        case (directory, check, base) =>
+          Blogger(directory, check, base).validNel
+      }
     }
 
   /** `generate`: by default ingests into the database and summarises with
@@ -232,13 +255,19 @@ object Main
         Edition.run(range, dbPath, refresh)
       case IngestBlogs(range, dbPath) =>
         Newsletter.ingestBlogsToDB(range, dbPath)
-      case Blogger(directory) =>
-        if (directory) {
-          for {
-            config <- ConfigLoader.load()
-            result <- BlogDirectory.createBloggerDirectory(config.bloggers)
-          } yield result
-        } else IO(ExitCode.Success)
+      case Blogger(directory, check, base) =>
+        // With both flags, the page is only written when the check passes.
+        for {
+          config <- ConfigLoader.load()
+          baseBloggers <- base.traverse(ConfigLoader.load(_).map(_.bloggers))
+          checked <-
+            if (check) BloggerCheck.check(config.bloggers, baseBloggers)
+            else IO.pure(ExitCode.Success)
+          result <-
+            if (directory && checked == ExitCode.Success)
+              BlogDirectory.createBloggerDirectory(config.bloggers)
+            else IO.pure(checked)
+        } yield result
       case other =>
         IO.raiseError(new IllegalStateException(s"Unhandled command: $other"))
     }

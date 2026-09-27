@@ -141,8 +141,14 @@ record `self-check` and a real `generate` run (with Claude summaries) with the t
 # given (yyyyMMdd)
 ./out/scalanews/nativeImagePath.dest/target/scalanews publish -p 20240107
 
-# Generate blogger directory page
+# Generate blogger directory page (docs/Resources/Blog_Directory.md) from config.json
 ./out/scalanews/nativeImagePath.dest/target/scalanews blogger --directory
+
+# Validate config.json's bloggers (http(s) URLs, no duplicates) and fetch their feeds (each needs
+# an entry with a link and a date); exits with an error on problems. --base compares with another
+# config.json so only new or changed bloggers' feeds are fetched (CI does this on PRs). With
+# --directory too, the page is only written when the check passes
+./out/scalanews/nativeImagePath.dest/target/scalanews blogger --check --base /tmp/main-config.json
 
 # Alternative: Run with mill directly (JVM, slower startup)
 mill scalanews.run generate 2024-01-01 2024-01-07
@@ -171,6 +177,7 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - `Summaries`: plain and Claude summaries, and their stored outcomes
 - `NewsletterPage`: rendering the newsletter page (cards, More articles list) and the run summary
 - `BlogDirectory`: the blog directory page
+- `BloggerCheck`: `blogger --check`, validating config.json's bloggers and their feeds
 - `Services` (`FeedSource`, `RelevanceChecker`, `Summariser`): what the pipeline needs from the outside world. `Services.live` wires in the real feeds, jev and Claude; `NewsletterSuite` runs `generate` end to end with fakes and a temporary database and page, no network
 - `Stored.runMissing`: the part the relevance and summary steps share (acquire the service only if some article needs it, call it concurrently, record results one at a time)
 - `Rome`: RSS feed parsing using Rome Tools
@@ -182,6 +189,10 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - `StructuredOutput` / `JsonSchema`: derive a structured-output JSON schema and matching decoder from a case class or sealed trait
 - `ArticleSummariser`: typed article summarisation (request `ArticleInput`, reply `Summary | InsufficientContent`)
 - `Output` / `UserError`: CLI output. Print through `Output.info` (stdout) for progress, `Output.warn`/`Output.error` (stderr) for problems; never `IO.println` directly. Raise `UserError` for expected, user-fixable failures (missing or rejected API keys): `Main` reports it, a bad config file or an invalid date as one `error:` line with exit code 1, while unexpected errors keep their stack trace. A `generate` run ends with a one-line summary; per-article lines ("Not relevant", "No summary") are printed only for results decided on that run
+
+**CI** (`.github/workflows/`):
+- `ci.yml`: tests, and on PRs `blogger --check` against the target branch's config.json; builds the site and publishes it on pushes to main
+- `bloggers.yml`: when config.json changes on main, regenerates the Bloggers page and opens a PR (`bot/update-bloggers-page`) with it; needs "Allow GitHub Actions to create and approve pull requests" enabled
 
 **Configuration**:
 - Blogger RSS feeds: `config.json`

@@ -26,31 +26,27 @@ object BlogDirectory {
   private val directoryMarkdownFilePath =
     Path("docs/Resources/Blog_Directory.md")
 
-  def generateDirectory(bloggerList: List[Blog]): IO[String] = {
+  def generateDirectory(bloggerList: List[Blog]): IO[String] =
     IO.blocking {
-      val header = """
-       |# Bloggers
-
-       |A Directory of bloggers producing Scala related content with links to their rss feed when available.
-
-       || Blog        | URL           | RSS Feed  |
-       || ------------- |:-------------:| -----:|"""
-
-      val footer = """
-       |###### Got a Scala related blog? Add it to this Blog Directory!
-
-       |See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details."""
-
-      val directory = bloggerList.map { blog =>
-        s"|| ${blog.name} | <${blog.url}> | [rss feed](${blog.rss}) |"
-      }
-
-      s"""
-       $header
-       ${directory.mkString("\n")}
-       $footer\n""".stripMargin
+      val header = List(
+        "# Bloggers",
+        "",
+        "A Directory of bloggers producing Scala related content with links to their rss feed when available.",
+        "",
+        "| Blog | URL | RSS Feed |",
+        "| --- |:---:| ---:|"
+      )
+      val rows = bloggerList.map(blog =>
+        s"| ${blog.name} | <${blog.url}> | [rss feed](${blog.rss}) |"
+      )
+      val footer = List(
+        "",
+        "###### Got a Scala related blog? Add it to this Blog Directory!",
+        "",
+        "See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details."
+      )
+      (header ++ rows ++ footer).mkString("", "\n", "\n")
     }
-  }
 
   def createBloggerDirectory(bloggerList: List[Blog]): IO[ExitCode] =
     generateDirectory(bloggerList)

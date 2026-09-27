@@ -42,7 +42,9 @@ object Feeds {
   extension (entry: SyndEntry) {
     private def titleOpt: Option[String] = Option(entry.getTitle)
     private def linkOpt: Option[String] = Option(entry.getLink)
-    private def publishedOpt: Option[Date] = Option(entry.getPublishedDate)
+    // Atom entries may only have <updated> (e.g. scala-lang.org's feed).
+    private[scalanews] def publishedOpt: Option[Date] =
+      Option(entry.getPublishedDate).orElse(Option(entry.getUpdatedDate))
     private def descriptionText: Option[String] =
       Option(entry.getDescription).flatMap(d => Option(d.getValue))
     private def categoryNames: List[String] =

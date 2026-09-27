@@ -1,0 +1,70 @@
+name: "Bloggers page"
+
+# After a change to config.json reaches main (e.g. a merged PR adding a
+# blogger), regenerate the Bloggers page from it and open a PR with the result
+# for review. Merging that PR publishes the site as usual (see ci.yml).
+#
+# Needs "Allow GitHub Actions to create and approve pull requests" enabled in
+# the repository's Actions settings. PRs opened with GITHUB_TOKEN don't start
+# other workflows, so the PR shows no CI checks: it only changes generated
+# Markdown, and the feeds were checked on the original PR.
+
+on:
+  push:
+    branches: [main]
+    paths: [config.json]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: bloggers-page
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Update Bloggers page
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v7
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache Mill
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/mill
+            ~/.cache/coursier
+          key: ${{ runner.os }}-mill-${{ hashFiles('build.mill', '.mill-version') }}
+          restore-keys: |
+            ${{ runner.os }}-mill-
+
+      # No feed check here: it ran on the PR that changed config.json, and a
+      # feed that's down for a moment shouldn't block the page.
+      - name: Regenerate the Bloggers page
+        run: |
+          nix develop --command mill --no-server scalanews.run blogger --directory
+
+      # Opens (or updates) a PR only when the page changed.
+      - name: Open a PR with the updated page
+        uses: peter-evans/create-pull-request@v8.1.1
+        with:
+          branch: bot/update-bloggers-page
+          delete-branch: true
+          add-paths: docs/Resources/Blog_Directory.md
+          commit-message: "update the Bloggers page from config.json"
+          title: "Update the Bloggers page"
+          body: |
+            The Bloggers page, regenerated from `config.json` on `main` by the
+            [Bloggers page workflow](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            after ${{ github.sha }}.
+
+            Merging this publishes the site with the updated page.

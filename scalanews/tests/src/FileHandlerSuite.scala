@@ -97,4 +97,37 @@ class FileHandlerSuite extends CatsEffectSuite {
     val date = FileHandler.getPublishDate(None)
     assertIO(date, Right(LocalDate.now()))
   }
+
+  test("getArchivePath - files an edition under its year by default") {
+    Files[IO].tempDirectory.use { root =>
+      for {
+        path <- FileHandler.getArchivePath("20260920", None, root)
+        folderExists <- Files[IO].isDirectory(root / "2026")
+      } yield {
+        assertEquals(path, root / "2026" / "scala_news_2026-09-20.md")
+        assert(folderExists)
+      }
+    }
+  }
+
+  test("getArchivePath - uses the folder given instead of the year") {
+    Files[IO].tempDirectory.use { root =>
+      FileHandler
+        .getArchivePath("20260920", Some("special"), root)
+        .map(path =>
+          assertEquals(path, root / "special" / "scala_news_2026-09-20.md")
+        )
+    }
+  }
+
+  test("getArchivePath - rejects an invalid archive date") {
+    Files[IO].tempDirectory.use { root =>
+      FileHandler
+        .getArchivePath("2026-09-20", None, root)
+        .attempt
+        .map(result =>
+          assert(result.left.exists(_.isInstanceOf[UserError]), result)
+        )
+    }
+  }
 }

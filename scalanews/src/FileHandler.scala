@@ -93,36 +93,28 @@ object FileHandler {
         else IO.unit
     } yield ExitCode.Success
 
-  private def createArchiveFolderPath(
-      archiveFolder: Option[String]
-  ): IO[String] = {
-    IO.blocking {
-      val folderPath = archiveFolder match {
-        case Some(folder) => s"docs/Archive/$folder/"
-        case None         => s"docs/Archive/"
-      }
-      Files[IO].createDirectories(Path(folderPath))
-      folderPath
-    }
-  }
-
-  private def createArchiveFileName(archiveDate: String): IO[String] =
-    for {
-      aDate <- getArchiveDate(archiveDate)
-      fileName <- aDate match {
-        case Right(rDate) => IO(s"scala_news_$rDate.md")
-        case _            => IO("")
-      }
-    } yield fileName
-
-  private def getArchivePath(
+  /** Where the current edition is archived: `docs/Archive/<year>/` by default,
+    * so the site's sidebar groups it under that year, or
+    * `docs/Archive/<folder>/` when a folder is given. The folder is created if
+    * needed.
+    */
+  private[scalanews] def getArchivePath(
       archiveDate: String,
-      archiveFolder: Option[String]
+      archiveFolder: Option[String],
+      archiveRoot: Path = Path("docs/Archive")
   ): IO[Path] =
-    for {
-      fileName <- createArchiveFileName(archiveDate)
-      folderPath <- createArchiveFolderPath(archiveFolder)
-    } yield Path(s"$folderPath$fileName")
+    getArchiveDate(archiveDate).flatMap {
+      case Right(date) =>
+        val folder =
+          archiveRoot / archiveFolder.getOrElse(date.getYear.toString)
+        Files[IO].createDirectories(folder).as(folder / s"scala_news_$date.md")
+      case Left(_) =>
+        IO.raiseError(
+          new UserError(
+            s"invalid archive date '$archiveDate': expected yyyyMMdd, e.g. 20241124"
+          )
+        )
+    }
 
   def publish(
       publishDate: Option[String],

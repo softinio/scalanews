@@ -1,0 +1,39 @@
+<nav id="sidebar">
+
+  <div class="row">
+    @:for(helium.site.topNavigation.phoneLinks)
+    ${_}
+    @:@
+  </div>
+
+  @:navigationTree {
+    entries = [
+      { target = "/index.md", excludeSections = true }
+    ]
+  }
+
+  <ul class="nav-list archive-nav">
+    <li class="level1 nav-header">Archive</li>
+  </ul>
+  @:for(scalanews.archiveYears)
+  <details class="archive-year" ${_.openAttr}>
+    <summary>${_.year}<span class="archive-count">${_.count}</span></summary>
+    @:if(_.empty)
+    <p class="archive-empty">No editions yet</p>
+    @:else
+    @:navigationTree {
+      entries = [
+        { target = "/Archive/"${_.year}, excludeRoot = true, depth = 1 }
+      ]
+    }
+    @:@
+  </details>
+  @:@
+
+  @:navigationTree {
+    entries = [
+      { target = "/Resources", depth = 2 }
+    ]
+  }
+
+</nav>

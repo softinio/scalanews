@@ -296,6 +296,6 @@ object docs extends ScalaModule {
 //   mill scalanews.run generate 2024-01-01 2024-01-07
 //   mill scalanews.run generate 2024-01-01 2024-01-07 --no-ai
 //   mill scalanews.run create
-//   mill scalanews.run publish 2024-01-07
+//   mill scalanews.run publish 20240107
 //   mill scalanews.tests.testOnly "com.softinio.scalanews.BloggersSuite"
 //   mill scalanews.nativeImage          - Creates ./target/scalanews executable

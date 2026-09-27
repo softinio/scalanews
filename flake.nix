@@ -72,11 +72,25 @@
             mill mill.bsp.BSP/install
           '';
         };
+
+        # Build the documentation site and serve it at http://localhost:4242.
+        # docs.preview runs scripts/LaikaPreview.scala with scala-cli.
+        docs-preview = pkgs.writeShellApplication {
+          name = "docs-preview";
+          runtimeInputs = [
+            mill
+            pkgs.scala-cli
+          ];
+          text = ''
+            mill docs.preview
+          '';
+        };
       in
       {
         devShells.default = pkgs.mkShell {
           packages = [
             bsp-install
+            docs-preview
             mill
             pre-pr
           ]
@@ -102,6 +116,7 @@
             echo "  mill scalanews.run               - Run the application"
             echo "  pre-pr                           - Compile, check formatting and dependency order, run tests"
             echo "  bsp-install                      - Set up Mill's BSP connection for your IDE"
+            echo "  docs-preview                     - Build the docs site and serve it at http://localhost:4242"
             echo ""
             echo "See CLAUDE.md for more commands and project documentation"
             echo ""

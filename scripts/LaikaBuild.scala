@@ -1,6 +1,7 @@
 //> using scala 3.9.0
 //> using dep org.typelevel::laika-core:1.3.2
 //> using dep org.typelevel::laika-io:1.3.2
+//> using file ArchiveNav.scala
 
 /*
  * Copyright 2024 Salar Rahmanian
@@ -65,9 +66,10 @@ object LaikaBuild extends IOApp.Simple {
       .withTheme(heliumTheme)
       .build
 
+    docs <- ArchiveNav.input()
     _ <- IO.println("Running transformation...")
     result <- transformer.use { t =>
-      t.fromDirectory("docs")
+      t.fromInput(docs)
         .toDirectory("site/target/docs/site")
         .transform
     }

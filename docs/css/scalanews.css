@@ -126,3 +126,66 @@
     padding: 1rem 1.15rem;
   }
 }
+
+/* Sidebar archive: one <details> group per year, rendered by
+   helium/templates/mainNav.template.html. Folding is the browser's own
+   <details> behaviour, so there is no JavaScript. Sizes and colours follow
+   Helium's sidebar rules for its section headers and entries. */
+
+#sidebar ul.nav-list.archive-nav {
+  padding-bottom: 0;
+}
+
+#sidebar details.archive-year {
+  margin: 0 0 0 25px;
+}
+
+#sidebar details.archive-year > summary {
+  display: block;
+  padding: 4px 15px 4px 0;
+  color: var(--secondary-color);
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  list-style: none;
+}
+
+#sidebar details.archive-year > summary::-webkit-details-marker {
+  display: none;
+}
+
+#sidebar details.archive-year > summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  transition: transform 0.15s;
+}
+
+#sidebar details.archive-year[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+#sidebar details.archive-year .archive-count {
+  margin-left: 0.3em;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+#sidebar details.archive-year ul.nav-list {
+  padding: 0 0 6px;
+  margin: 0 0 0 1em;
+}
+
+#sidebar details.archive-year .nav-list li.level1 {
+  margin-left: -15px;
+  font-size: 0.9em;
+}
+
+#sidebar .archive-empty {
+  margin: 0 0 6px 1em;
+  padding: 2px 0 4px;
+  color: var(--text-color);
+  font-size: 0.85em;
+  font-style: italic;
+  opacity: 0.7;
+}

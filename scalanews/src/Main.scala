@@ -90,7 +90,7 @@ object Main
     Opts
       .option[String](
         "folder",
-        "Folder name to archive current newsletter to",
+        "Folder under docs/Archive to archive the current newsletter to (default: its year)",
         short = "f"
       )
       .orNone

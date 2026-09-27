@@ -1,6 +1,7 @@
 //> using scala 3.9.0
 //> using dep org.typelevel::laika-core:1.3.2
 //> using dep org.typelevel::laika-io:1.3.2
+//> using file ArchiveNav.scala
 //> using dep org.typelevel::laika-preview:1.3.2
 //> using dep org.http4s::http4s-ember-server:0.23.37
 //> using dep org.http4s::http4s-dsl:0.23.37
@@ -82,7 +83,8 @@ object LaikaPreview extends IOApp.Simple {
 
       for {
         _ <- IO.println("Building documentation site...")
-        _ <- t.fromDirectory("docs").toDirectory(siteDir).transform
+        docs <- ArchiveNav.input()
+        _ <- t.fromInput(docs).toDirectory(siteDir).transform
         _ <- IO.println(s"Site built at: $siteDir")
 
         // Serve the built site with HTTP server

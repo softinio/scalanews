@@ -63,6 +63,7 @@ mill scalanews.nativeImage          # Build GraalVM native image executable
 # Documentation Site
 mill docs.build                     # Build documentation site
 mill docs.preview                   # Build and serve documentation at http://localhost:4242
+docs-preview                        # The same, on the dev shell's PATH
 ```
 
 **Alternative**: The documentation can also be built/previewed directly with scala-cli:
@@ -129,7 +130,7 @@ record `self-check` and a real `generate` run (with Claude summaries) with the t
 ./out/scalanews/nativeImagePath.dest/target/scalanews create
 
 # Publish current draft and archive
-./out/scalanews/nativeImagePath.dest/target/scalanews publish 2024-01-07
+./out/scalanews/nativeImagePath.dest/target/scalanews publish 20240107
 
 # Generate blogger directory page
 ./out/scalanews/nativeImagePath.dest/target/scalanews blogger --directory
@@ -186,7 +187,11 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 **File Structure**:
 - Draft newsletter: `next/next.md`
 - Published newsletter: `docs/index.md`
-- Archives: `docs/Archive/[year]/`
+- Archives: `docs/Archive/[year]/` (`publish` files an edition under its year)
+- Sidebar: `docs/helium/templates/mainNav.template.html` overrides Helium's
+  navigation, rendering each archive year as a `<details>` group (no
+  JavaScript). `scripts/ArchiveNav.scala` supplies the years and the
+  newest-first order at build time, so nothing about it is kept in `docs/`
 - Generated directories: `docs/Resources/`
 - DuckDB database (default): `data/scalanews.duckdb`
 

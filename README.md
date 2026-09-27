@@ -10,9 +10,11 @@ For more information have a look at our [about us](docs/Resources/About.md)
 Add yourself with details of your rss path to our directory (see next section below) of bloggers and your articles will automatically be included in our next edition of Scala News.
 
 
-## Do you have a Scala related Blog? Want to add it in our [Blog Directory](docs/Resources/Blog_Directory.md)?
+## Do you have a Scala related Blog? Want to add it to our [Bloggers](docs/Resources/Blog_Directory.md) directory?
 
 Create a PR adding your blog to the `bloggers` array in our [config.json file](config.json)
+
+Blogs that mainly publish sales or recruitment oriented posts won't be added, and such posts are left out of the newsletter. See [what kind of links will be published](docs/Resources/About.md#what-kind-of-links-will-be-published) for details.
 
 ## Created By
 

@@ -244,7 +244,12 @@ class ArticleRepositorySuite extends CatsEffectSuite {
 
   test("saveRelevance - stores jev's probabilities and model") {
     val stored =
-      StoredRelevance(probability(0.98), probability(0.03), "jev-latest")
+      StoredRelevance(
+        probability(0.98),
+        probability(0.03),
+        probability(0.12),
+        "jev-latest"
+      )
     relevanceAfter(stored).map(result =>
       assertEquals(result, (Some(stored), true))
     )
@@ -252,9 +257,19 @@ class ArticleRepositorySuite extends CatsEffectSuite {
 
   test("saveRelevance - replaces earlier answers") {
     val first =
-      StoredRelevance(probability(0.2), probability(0.1), "jev-latest")
+      StoredRelevance(
+        probability(0.2),
+        probability(0.1),
+        probability(0.05),
+        "jev-latest"
+      )
     val second =
-      StoredRelevance(probability(0.9), probability(0.8), "jev-preview")
+      StoredRelevance(
+        probability(0.9),
+        probability(0.8),
+        probability(0.6),
+        "jev-preview"
+      )
     relevanceAfter(first, second).map(result =>
       assertEquals(result, (Some(second), true))
     )
@@ -262,7 +277,12 @@ class ArticleRepositorySuite extends CatsEffectSuite {
 
   test("relevance and summary are stored independently") {
     val relevance =
-      StoredRelevance(probability(0.9), probability(0.1), "jev-latest")
+      StoredRelevance(
+        probability(0.9),
+        probability(0.1),
+        probability(0.1),
+        "jev-latest"
+      )
     val summary = StoredSummary.Summarised(
       ArticleSummary.from("About Scala 3.").get,
       "claude-sonnet-5"

@@ -93,10 +93,10 @@ class NewsletterSuite extends CatsEffectSuite {
           if (failRelevanceFor(row.title))
             IO.raiseError(new RuntimeException("jev timed out"))
           else if (row.title.contains("Rust"))
-            IO.pure(StoredRelevance(p(0.02), p(0.02), "fake-jev"))
+            IO.pure(StoredRelevance(p(0.02), p(0.02), p(0.02), "fake-jev"))
           else if (row.title.contains("released"))
-            IO.pure(StoredRelevance(p(0.98), p(0.95), "fake-jev"))
-          else IO.pure(StoredRelevance(p(0.97), p(0.05), "fake-jev"))
+            IO.pure(StoredRelevance(p(0.98), p(0.95), p(0.02), "fake-jev"))
+          else IO.pure(StoredRelevance(p(0.97), p(0.05), p(0.02), "fake-jev"))
         }
       ),
       summariser = Resource.pure(new Summariser {

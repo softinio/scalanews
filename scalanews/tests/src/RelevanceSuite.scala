@@ -32,29 +32,47 @@ class RelevanceSuite extends CatsEffectSuite {
     com.softinio.verdict4s.algebra.Probability.either(p).toOption.get
 
   test("relevant - about Scala and not just an announcement") {
-    assert(Relevance.relevant(noul(0.98), noul(0.03)))
+    assert(Relevance.relevant(noul(0.98), noul(0.03), noul(0.02)))
   }
 
   test("relevant - a release announcement is not relevant") {
-    assert(!Relevance.relevant(noul(0.98), noul(0.94)))
+    assert(!Relevance.relevant(noul(0.98), noul(0.94), noul(0.02)))
   }
 
   test("relevant - an off-topic article is not relevant") {
-    assert(!Relevance.relevant(noul(0.03), noul(0.02)))
+    assert(!Relevance.relevant(noul(0.03), noul(0.02), noul(0.02)))
   }
 
   test("relevant - borderline Scala community news is kept") {
-    assert(Relevance.relevant(noul(0.41), noul(0.02)))
+    assert(Relevance.relevant(noul(0.41), noul(0.02), noul(0.02)))
   }
 
   test("relevant - a post that also mentions a release is kept") {
-    assert(Relevance.relevant(noul(0.97), noul(0.31)))
+    assert(Relevance.relevant(noul(0.97), noul(0.31), noul(0.02)))
   }
 
   test("relevant - thresholds are inclusive for yes") {
-    assert(Relevance.relevant(noul(Relevance.aboutScalaThreshold), noul(0.0)))
+    assert(Relevance.relevant(noul(Relevance.aboutScalaThreshold), noul(0.0), noul(0.02)))
     assert(
-      !Relevance.relevant(noul(1.0), noul(Relevance.announcementThreshold))
+      !Relevance.relevant(noul(1.0), noul(Relevance.announcementThreshold), noul(0.02))
+    )
+  }
+
+  test("relevant - sales or recruitment content is not relevant") {
+    assert(!Relevance.relevant(noul(0.95), noul(0.05), noul(0.9)))
+  }
+
+  test("relevant - a post by a company that shares knowledge is kept") {
+    assert(Relevance.relevant(noul(0.95), noul(0.05), noul(0.3)))
+  }
+
+  test("relevant - the sales/recruitment threshold is inclusive for yes") {
+    assert(
+      !Relevance.relevant(
+        noul(1.0),
+        noul(0.0),
+        noul(Relevance.promotionalThreshold)
+      )
     )
   }
 
@@ -67,8 +85,8 @@ class RelevanceSuite extends CatsEffectSuite {
   }
 
   test("relevant - decided from stored probabilities") {
-    assert(Relevance.relevant(StoredRelevance(noul(0.98), noul(0.03), "jev")))
-    assert(!Relevance.relevant(StoredRelevance(noul(0.98), noul(0.94), "jev")))
+    assert(Relevance.relevant(StoredRelevance(noul(0.98), noul(0.03), noul(0.02), "jev")))
+    assert(!Relevance.relevant(StoredRelevance(noul(0.98), noul(0.94), noul(0.02), "jev")))
   }
 
   private def verdictApiError(status: Int) =

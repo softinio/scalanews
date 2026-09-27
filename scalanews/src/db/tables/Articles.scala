@@ -41,6 +41,7 @@ enum StoredSummary:
 final case class StoredRelevance(
     aboutScala: Probability,
     announcement: Probability,
+    promotional: Probability,
     model: String
 )
 
@@ -84,6 +85,7 @@ object ArticleSchema extends TableSchema:
        |  summarised_at  TIMESTAMP,
        |  p_about_scala  DOUBLE    CHECK (p_about_scala BETWEEN 0 AND 1),
        |  p_announcement DOUBLE    CHECK (p_announcement BETWEEN 0 AND 1),
+       |  p_promotional  DOUBLE    CHECK (p_promotional BETWEEN 0 AND 1),
        |  relevance_model VARCHAR,
        |  relevance_checked_at TIMESTAMP
        |)""".stripMargin
@@ -95,13 +97,13 @@ object ArticleRepository extends Repository[Article, ArticleRow]:
     "INSERT INTO articles (title, content, url, author, published_date) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING"
 
   private val columns =
-    "id, title, content, url, author, published_date, created_at, summary, summary_status, summary_reason, summary_model, summarised_at, p_about_scala, p_announcement, relevance_model, relevance_checked_at"
+    "id, title, content, url, author, published_date, created_at, summary, summary_status, summary_reason, summary_model, summarised_at, p_about_scala, p_announcement, p_promotional, relevance_model, relevance_checked_at"
 
   private val selectAllSql =
     s"SELECT $columns FROM articles ORDER BY published_date DESC"
 
   private val saveRelevanceSql =
-    "UPDATE articles SET p_about_scala = ?, p_announcement = ?, relevance_model = ?, relevance_checked_at = now() WHERE id = ?"
+    "UPDATE articles SET p_about_scala = ?, p_announcement = ?, p_promotional = ?, relevance_model = ?, relevance_checked_at = now() WHERE id = ?"
 
   private val saveSummarySql =
     "UPDATE articles SET summary = ?, summary_status = ?, summary_reason = ?, summary_model = ?, summarised_at = now() WHERE id = ?"
@@ -176,6 +178,7 @@ object ArticleRepository extends Repository[Article, ArticleRow]:
       storedRelevance = storedRelevance(
         probability(rs, "p_about_scala"),
         probability(rs, "p_announcement"),
+        probability(rs, "p_promotional"),
         Option(rs.getString("relevance_model"))
       ),
       relevanceCheckedAt = Option(rs.getTimestamp("relevance_checked_at"))
@@ -192,9 +195,10 @@ object ArticleRepository extends Repository[Article, ArticleRow]:
   private def storedRelevance(
       aboutScala: Option[Probability],
       announcement: Option[Probability],
+      promotional: Option[Probability],
       model: Option[String]
   ): Option[StoredRelevance] =
-    (aboutScala, announcement, model).mapN(StoredRelevance.apply)
+    (aboutScala, announcement, promotional, model).mapN(StoredRelevance.apply)
 
   /** Stores jev's relevance answers for an article, replacing any earlier ones.
     */
@@ -213,8 +217,9 @@ object ArticleRepository extends Repository[Article, ArticleRow]:
       _ <- IO.blocking {
         stmt.setDouble(1, stored.aboutScala.value)
         stmt.setDouble(2, stored.announcement.value)
-        stmt.setString(3, stored.model)
-        stmt.setObject(4, id)
+        stmt.setDouble(3, stored.promotional.value)
+        stmt.setString(4, stored.model)
+        stmt.setObject(5, id)
       }.void
       rows <- IO
         .blocking(stmt.executeUpdate())

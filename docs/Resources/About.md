@@ -29,7 +29,7 @@ Posts about Scala and its ecosystem from the bloggers in our directory that help
 
 Its hard work writing a book, so I am happy to include links to Scala related books by their authors and any discount they want offer our readers.
 
-I won't be including any links that are directly or indirectly promoting a company and/or a service. This includes but is not limited to paid training and workshops.
+We don't accept sales or recruitment oriented posts: posts that mainly promote a company, a paid product or service (including paid training and workshops), or advertise jobs and hiring are left out. Blogs that mainly publish such posts won't be added to the Bloggers directory. Posts by people who work for a company are welcome when they share knowledge, experience or opinion.
 
 ## Code of Conduct
 

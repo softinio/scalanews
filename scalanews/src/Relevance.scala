@@ -59,11 +59,13 @@ object Relevance {
   // off-topic posts scored at most 0.12 for "about Scala" while Scala
   // community news (e.g. Typelevel governance posts) scored 0.41-0.66; release
   // announcements scored 0.84-0.94 for "just an announcement" and substantive
-  // posts at most 0.31.
+  // posts at most 0.31. The sales/recruitment threshold isn't calibrated yet;
+  // like the announcement one it only drops articles jev is fairly sure of.
   private[scalanews] val aboutScalaThreshold = 0.3
   private[scalanews] val announcementThreshold = 0.7
+  private[scalanews] val promotionalThreshold = 0.7
 
-  // Both questions go to jev in a single request.
+  // All three questions go to jev in a single request.
   private[scalanews] val relevanceQuestions = Ask(
     (
       Question.noul(
@@ -75,25 +77,32 @@ object Relevance {
         "Is this article just an announcement of a new version of a Scala library or application?",
         "It only announces a release: a version number, a list of changes or release notes, with little else.",
         "It has substance beyond announcing a release, such as explanation, tutorial, design discussion or opinion."
+      ),
+      Question.noul(
+        "Is this article mainly sales or recruitment content?",
+        "It mainly promotes a paid product, service, training or consultancy, or advertises jobs or hiring, rather than sharing knowledge.",
+        "It mainly shares knowledge, experience or opinion, even if the author works for a company or mentions its products in passing."
       )
     )
   )
 
-  /** Relevant when jev judged it about Scala and not just a release
-    * announcement. Decided from stored probabilities, so retuning the
-    * thresholds needs no new jev calls.
+  /** Relevant when jev judged it about Scala, not just a release announcement
+    * and not sales or recruitment content. Decided from stored probabilities,
+    * so retuning the thresholds needs no new jev calls.
     */
   private[scalanews] def relevant(
       aboutScala: Probability,
-      announcement: Probability
+      announcement: Probability,
+      promotional: Probability
   ): Boolean =
     (aboutScala.value: Double) >= aboutScalaThreshold &&
-      (announcement.value: Double) < announcementThreshold
+      (announcement.value: Double) < announcementThreshold &&
+      (promotional.value: Double) < promotionalThreshold
 
   private[scalanews] def relevant(stored: StoredRelevance): Boolean =
-    relevant(stored.aboutScala, stored.announcement)
+    relevant(stored.aboutScala, stored.announcement, stored.promotional)
 
-  /** jev's answers to both relevance questions for a stored article. */
+  /** jev's answers to the relevance questions for a stored article. */
   private[scalanews] def assessRelevance(
       row: ArticleRow,
       client: Verdict4sClient[IO]
@@ -103,10 +112,11 @@ object Relevance {
         relevanceQuestions,
         RelevanceContext(row.title, row.content.take(relevanceTextChars))
       )
-      .map((aboutScala, announcement) =>
+      .map((aboutScala, announcement, promotional) =>
         StoredRelevance(
           aboutScala.value,
           announcement.value,
+          promotional.value,
           client.config.model.name
         )
       )
@@ -188,7 +198,7 @@ object Relevance {
           case Some(stored) if !relevant(stored) =>
             Output
               .info(
-                f"Not relevant: '${row.title}' (P(about Scala)=${stored.aboutScala.value: Double}%.2f, P(announcement)=${stored.announcement.value: Double}%.2f)"
+                f"Not relevant: '${row.title}' (P(about Scala)=${stored.aboutScala.value: Double}%.2f, P(announcement)=${stored.announcement.value: Double}%.2f, P(sales/recruitment)=${stored.promotional.value: Double}%.2f)"
               )
               .whenA(checked.contains(row.id))
               .as(None)

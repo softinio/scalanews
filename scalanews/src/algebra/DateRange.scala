@@ -17,6 +17,7 @@
 package com.softinio.scalanews.algebra
 
 import java.text.{ParseException, SimpleDateFormat}
+import java.time.{LocalDate, ZoneId}
 import java.util.{Calendar, Date}
 
 /** The period a newsletter covers, both dates inclusive: `start` and `end` are
@@ -38,6 +39,10 @@ final case class DateRange(start: Date, end: Date) {
 
   def contains(date: Date): Boolean =
     !date.before(start) && date.before(endExclusive)
+
+  /** The last day of the range, in the local time zone it was parsed in. */
+  def endDate: LocalDate =
+    end.toInstant.atZone(ZoneId.systemDefault).toLocalDate
 }
 
 object DateRange {

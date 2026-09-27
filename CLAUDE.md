@@ -122,15 +122,24 @@ record `self-check` and a real `generate` run (with Claude summaries) with the t
 # Ingest articles into the database without generating a newsletter (e.g. a backfill)
 ./out/scalanews/nativeImagePath.dest/target/scalanews ingest 2024-01-01 2024-01-07
 
-# generate and ingest share the default DB path (data/scalanews.duckdb)
+# generate, ingest and edition share the default DB path (data/scalanews.duckdb)
 # and accept -d/--dbpath to override it
 ./out/scalanews/nativeImagePath.dest/target/scalanews generate 2024-01-01 2024-01-07 -d data/custom.duckdb
 
 # Create new newsletter draft (saves to next/next.md)
 ./out/scalanews/nativeImagePath.dest/target/scalanews create
 
-# Publish current draft and archive
-./out/scalanews/nativeImagePath.dest/target/scalanews publish 20240107
+# Generate and publish the next edition in one go (database, jev and Claude): archives the
+# current edition under docs/Archive/<year>/ (dated from its heading) and makes the new one
+# docs/index.md, dated the end date. Leaves next/next.md alone; publishes nothing when the range
+# has no articles or doesn't end after the current edition. The new-edition skill
+# (.claude/skills/new-edition) runs this.
+./out/scalanews/nativeImagePath.dest/target/scalanews edition 2026-09-01 2026-10-31
+
+# Publish the draft (next/next.md) and archive the current edition. -p dates the new edition
+# (yyyyMMdd, default today); the archive date is read from the current edition's heading unless
+# given (yyyyMMdd)
+./out/scalanews/nativeImagePath.dest/target/scalanews publish -p 20240107
 
 # Generate blogger directory page
 ./out/scalanews/nativeImagePath.dest/target/scalanews blogger --directory
@@ -151,13 +160,13 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 1. `generate` fetches the RSS feeds and stores the articles in a DuckDB database; an article whose URL is already stored is skipped, so overlapping date ranges are safe (`ingest` does just this step)
 2. It then reads the articles for the date range back from the database and writes the newsletter
 3. Relevance: articles pass a cheap keyword filter (`isAboutScala`, "scala"/"sbt") before they're stored, in every mode. With AI, jev (Typesafe, via verdict4s, `jev-latest` by default) is then asked three yes/no questions per article in one request: is it about Scala and its ecosystem, is it just a release announcement, and is it mainly sales or recruitment content. jev's probabilities are stored on the article with the model used, and the keep/drop decision is made from them when read (`aboutScalaThreshold` 0.3, `announcementThreshold` 0.7 and `promotionalThreshold` 0.7 in `Relevance`), so retuning a threshold needs no new jev calls. Articles judged irrelevant are logged with their probabilities and get no summary. A failed check keeps the article and isn't stored, so it's retried; a bad key stops the run
-4. Article summaries are written by Claude (Sonnet 5 by default) using structured outputs; articles without enough text get no summary, and failed calls fall back to the built-in `simpleSummary`. Claude only summarises: it never filters articles out. Claude's outcome (a summary, or "not enough content" with its reason) is stored on the article with the model used, and later runs reuse it instead of calling Claude again (no API key needed if every article has one); failed calls aren't stored, so they're retried. `--refresh-ai` asks jev and Claude again; `--no-ai` skips both (plain summaries); `--no-db` skips the database entirely (plain summaries, the original workflow)
-5. `generate` and `ingest` default to `data/scalanews.duckdb` (`Database.defaultPath`) and accept `-d/--dbpath` to override
+4. Article summaries are written by Claude (Sonnet 5 by default) using structured outputs; articles without enough text get no summary, and failed calls fall back to the built-in `simpleSummary` (the start of the post as plain text: its Markdown is parsed with flexmark and only the text kept, since summaries are shown inside HTML cards). Claude only summarises: it never filters articles out. Claude's outcome (a summary, or "not enough content" with its reason) is stored on the article with the model used, and later runs reuse it instead of calling Claude again (no API key needed if every article has one); failed calls aren't stored, so they're retried. `--refresh-ai` asks jev and Claude again; `--no-ai` skips both (plain summaries); `--no-db` skips the database entirely (plain summaries, the original workflow)
+5. `generate`, `ingest` and `edition` default to `data/scalanews.duckdb` (`Database.defaultPath`) and accept `-d/--dbpath` to override
 6. There are no schema migrations: the table is created with `CREATE TABLE IF NOT EXISTS` (`ArticleSchema`), so after changing the schema delete the database file and re-ingest. Add versioned migrations once the database holds data worth keeping across schema changes
 
 **Key Modules**:
 - `Newsletter`: the pipeline behind `generate` and `ingest` (ingest, relevance, summaries, write the page)
-- `Feeds`: fetching RSS feeds, the `isAboutScala` keyword filter, and turning entries into articles
+- `Feeds`: fetching RSS feeds, the `isAboutScala` keyword filter, and turning entries into articles (links relative to the blog, e.g. `/posts/x/`, are resolved against its URL)
 - `Relevance`: jev relevance checks and their stored verdicts
 - `Summaries`: plain and Claude summaries, and their stored outcomes
 - `NewsletterPage`: rendering the newsletter page (cards, More articles list) and the run summary
@@ -166,6 +175,7 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - `Stored.runMissing`: the part the relevance and summary steps share (acquire the service only if some article needs it, call it concurrently, record results one at a time)
 - `Rome`: RSS feed parsing using Rome Tools
 - `FileHandler`: Newsletter publishing and archiving
+- `Edition`: the `edition` command (generate with AI and the database, then publish)
 - `ConfigLoader`: JSON configuration handling (also loads the Anthropic config)
 - `Database` / `ArticleRepository`: DuckDB persistence layer for articles
 - `AnthropicClient`: cats-effect wrapper around Anthropic's official Java SDK (structured outputs)
@@ -176,13 +186,13 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 **Configuration**:
 - Blogger RSS feeds: `config.json`
 - Newsletter template: `next/template.md`
-- `ANTHROPIC_API_KEY` environment variable: required by `generate` for Claude summaries (not needed with `--no-ai`/`--no-db`, or when every article already has a stored summary)
-- `TYPESAFE_API_KEY` environment variable: required by `generate` for jev relevance checks (not needed with `--no-ai`/`--no-db`, or when every article already has a stored verdict). The verdict4s client is built from the environment (`Verdict4sEnv`): `TYPESAFE_DEFAULT_MODEL` optionally picks the jev model (default `jev-latest`) and `TYPESAFE_BASE_URL` the API endpoint
+- `ANTHROPIC_API_KEY` environment variable: required by `generate` and `edition` for Claude summaries (not needed with `--no-ai`/`--no-db`, or when every article already has a stored summary)
+- `TYPESAFE_API_KEY` environment variable: required by `generate` and `edition` for jev relevance checks (not needed with `--no-ai`/`--no-db`, or when every article already has a stored verdict). The verdict4s client is built from the environment (`Verdict4sEnv`): `TYPESAFE_DEFAULT_MODEL` optionally picks the jev model (default `jev-latest`) and `TYPESAFE_BASE_URL` the API endpoint
 
 **File Structure**:
 - Draft newsletter: `next/next.md`
 - Published newsletter: `docs/index.md`
-- Archives: `docs/Archive/[year]/` (`publish` files an edition under its year)
+- Archives: `docs/Archive/[year]/` (`publish` and `edition` file the outgoing edition under its year, dated from its heading)
 - Site theme: `scripts/SiteTheme.scala` (Helium settings and colours, shared by
   `LaikaBuild` and `LaikaPreview`) plus `docs/css/scalanews.css`
 - Sidebar: `docs/helium/templates/mainNav.template.html` overrides Helium's
@@ -191,7 +201,8 @@ mill scalanews.run generate 2024-01-01 2024-01-07
   newest-first order and the short date labels at build time, so nothing
   about it is kept in `docs/`
 - Generated directories: `docs/Resources/`
-- DuckDB database (default): `data/scalanews.duckdb`
+- DuckDB database (default): `data/scalanews.duckdb` (gitignored)
+- Claude Code skills: `.claude/skills/` (`new-edition` runs the `edition` command)
 
 ## Testing
 
@@ -210,3 +221,4 @@ Key libraries used:
 - Anthropic Java SDK (`anthropic-java`) for Claude summaries
 - verdict4s for jev (Typesafe) relevance checks
 - DuckDB (via duck4s) for article storage
+- flexmark for converting feed HTML to Markdown, and Markdown to plain text for plain summaries

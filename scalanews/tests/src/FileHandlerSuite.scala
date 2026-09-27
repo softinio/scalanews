@@ -19,6 +19,7 @@ package com.softinio.scalanews
 import java.time.format.DateTimeFormatter.BASIC_ISO_DATE
 import java.time.LocalDate
 import fs2.io.file.*
+import cats.syntax.all.*
 import java.nio.charset.StandardCharsets
 
 import java.time.format.DateTimeFormatter
@@ -98,10 +99,12 @@ class FileHandlerSuite extends CatsEffectSuite {
     assertIO(date, Right(LocalDate.now()))
   }
 
+  private val sept20 = LocalDate.of(2026, 9, 20)
+
   test("getArchivePath - files an edition under its year by default") {
     Files[IO].tempDirectory.use { root =>
       for {
-        path <- FileHandler.getArchivePath("20260920", None, root)
+        path <- FileHandler.getArchivePath(sept20, None, root)
         folderExists <- Files[IO].isDirectory(root / "2026")
       } yield {
         assertEquals(path, root / "2026" / "scala_news_2026-09-20.md")
@@ -113,21 +116,85 @@ class FileHandlerSuite extends CatsEffectSuite {
   test("getArchivePath - uses the folder given instead of the year") {
     Files[IO].tempDirectory.use { root =>
       FileHandler
-        .getArchivePath("20260920", Some("special"), root)
+        .getArchivePath(sept20, Some("special"), root)
         .map(path =>
           assertEquals(path, root / "special" / "scala_news_2026-09-20.md")
         )
     }
   }
 
-  test("getArchivePath - rejects an invalid archive date") {
-    Files[IO].tempDirectory.use { root =>
-      FileHandler
-        .getArchivePath("2026-09-20", None, root)
-        .attempt
+  private def edition(dir: Path, name: String, heading: String): IO[Path] = {
+    val path = dir / name
+    fs2.Stream
+      .emit(s"\n$heading\n\nA curated list.\n")
+      .through(Files[IO].writeUtf8(path))
+      .compile
+      .drain
+      .as(path)
+  }
+
+  test("editionDate - reads the date from the edition's heading") {
+    Files[IO].tempDirectory.use { dir =>
+      for {
+        dated <- edition(dir, "a.md", "# Scala News - November 24, 2024")
+        undated <- edition(dir, "b.md", "# Scala News")
+        date <- FileHandler.editionDate(dated)
+        none <- FileHandler.editionDate(undated)
+      } yield {
+        assertEquals(date, Some(LocalDate.of(2024, 11, 24)))
+        assertEquals(none, None)
+      }
+    }
+  }
+
+  test("archiveDateFor - the date given wins; invalid ones are rejected") {
+    Files[IO].tempDirectory.use { dir =>
+      for {
+        index <- edition(dir, "index.md", "# Scala News - November 24, 2024")
+        fromArg <- FileHandler.archiveDateFor(Some("20260920"), index)
+        fromHeading <- FileHandler.archiveDateFor(None, index)
+        invalid <- FileHandler.archiveDateFor(Some("2026-09-20"), index).attempt
+      } yield {
+        assertEquals(fromArg, sept20)
+        assertEquals(fromHeading, LocalDate.of(2024, 11, 24))
+        assert(invalid.left.exists(_.isInstanceOf[UserError]), invalid)
+      }
+    }
+  }
+
+  test("archiveDateFor - an undated edition needs the date given") {
+    Files[IO].tempDirectory.use { dir =>
+      edition(dir, "index.md", "# Scala News")
+        .flatMap(FileHandler.archiveDateFor(None, _).attempt)
         .map(result =>
           assert(result.left.exists(_.isInstanceOf[UserError]), result)
         )
+    }
+  }
+
+  test("publishEdition - archives the current edition and dates the new one") {
+    Files[IO].tempDirectory.use { dir =>
+      for {
+        index <- edition(dir, "index.md", "# Scala News - August 31, 2026")
+        draft <- edition(dir, "draft.md", "# Scala News")
+        archived <- FileHandler.publishEdition(
+          draft,
+          LocalDate.of(2026, 10, 31),
+          index = index,
+          archiveRoot = dir / "Archive"
+        )
+        newDate <- FileHandler.editionDate(index)
+        archivedDate <- archived.flatTraverse(FileHandler.editionDate)
+        draftLeft <- Files[IO].exists(draft)
+      } yield {
+        assertEquals(
+          archived,
+          Some(dir / "Archive" / "2026" / "scala_news_2026-08-31.md")
+        )
+        assertEquals(archivedDate, Some(LocalDate.of(2026, 8, 31)))
+        assertEquals(newDate, Some(LocalDate.of(2026, 10, 31)))
+        assert(!draftLeft)
+      }
     }
   }
 }

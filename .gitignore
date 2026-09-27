@@ -47,5 +47,7 @@ node_modules/
 result
 result-*
 
-# DuckDB database files
-data/*.duckdb
+# DuckDB database files, and the write-ahead log next to one while it's open
+# (anywhere: --dbpath can put them outside data/)
+*.duckdb
+*.duckdb.wal

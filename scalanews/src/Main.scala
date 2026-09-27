@@ -34,7 +34,7 @@ object Main
 
   private case class Publish(
       publishDate: Option[String],
-      archiveDate: String,
+      archiveDate: Option[String],
       archiveFolder: Option[String]
   )
   private case class Create(overwrite: Boolean)
@@ -47,9 +47,17 @@ object Main
 
   private case class IngestBlogs(range: DateRange, dbPath: String)
 
-  private val archiveDateOps: Opts[String] =
+  private[scalanews] case class NewEdition(
+      range: DateRange,
+      dbPath: String,
+      refresh: Boolean
+  )
+
+  // Optional: publish reads the current edition's date from its heading.
+  private val archiveDateOps: Opts[Option[String]] =
     Opts
       .argument[String](metavar = "archiveDate")
+      .orNone
 
   private val startDateOps: Opts[String] =
     Opts
@@ -74,7 +82,7 @@ object Main
     Opts
       .option[String](
         "publishdate",
-        "Publish date for current newsletter to",
+        "Date for the new edition's heading (yyyyMMdd, default today)",
         short = "p"
       )
       .orNone
@@ -162,6 +170,27 @@ object Main
       }
     }
 
+  /** `edition`: generate with the database, jev and Claude, archive the current
+    * edition and publish the new one, in one go.
+    */
+  private[scalanews] val editionOpts: Opts[NewEdition] =
+    Opts.subcommand(
+      "edition",
+      "Generate the next edition (database, jev and Claude), archive the current one and publish the new one, dated the end date"
+    ) {
+      (
+        dateRangeOps,
+        dbPathOps,
+        Opts
+          .flag(
+            "refresh-ai",
+            "Ask jev and Claude again even for articles with stored results",
+            short = "r"
+          )
+          .orFalse
+      ).mapN(NewEdition.apply)
+    }
+
   private val ingestBlogsOpts: Opts[IngestBlogs] =
     Opts.subcommand("ingest", "Ingest blogs into DB") {
       (dateRangeOps, dbPathOps).mapN(IngestBlogs.apply)
@@ -187,7 +216,7 @@ object Main
   }
 
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateOpts orElse ingestBlogsOpts orElse bloggerOpts orElse selfCheckOpts)
+    (publishOpts orElse createOpts orElse generateOpts orElse editionOpts orElse ingestBlogsOpts orElse bloggerOpts orElse selfCheckOpts)
       .map(command =>
         IO.defer(runCommand(command)).recoverWith(reportUserErrors)
       )
@@ -197,8 +226,10 @@ object Main
       case SelfCheckCmd                                     => SelfCheck.run
       case Publish(publishDate, archiveDate, archiveFolder) =>
         FileHandler.publish(publishDate, archiveDate, archiveFolder)
-      case Create(overwrite)          => FileHandler.create(overwrite)
-      case Generate(range, mode)      => Newsletter.generate(range, mode)
+      case Create(overwrite)     => FileHandler.create(overwrite)
+      case Generate(range, mode) => Newsletter.generate(range, mode)
+      case NewEdition(range, dbPath, refresh) =>
+        Edition.run(range, dbPath, refresh)
       case IngestBlogs(range, dbPath) =>
         Newsletter.ingestBlogsToDB(range, dbPath)
       case Blogger(directory) =>

@@ -1,6 +1,6 @@
 
        
-# Blog Directory
+# Bloggers
 
 A Directory of bloggers producing Scala related content with links to their rss feed when available.
 

@@ -55,7 +55,7 @@ object SiteTheme {
     .site.topNavigationBar(
       homeLink = TextLink.internal(Root / "index.md", "Scala News"),
       navLinks = Seq(
-        TextLink.internal(Root / "Resources" / "Blog_Directory.md", "Blogs"),
+        TextLink.internal(Root / "Resources" / "Blog_Directory.md", "Bloggers"),
         TextLink.internal(Root / "Resources" / "Event_Directory.md", "Events"),
         IconLink.external(
           "https://github.com/softinio/scalanews",

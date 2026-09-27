@@ -19,6 +19,8 @@ object versions {
   val pureconfig = "0.17.10"
   val rome = "2.1.0"
   val scala3 = "3.9.0"
+  val slf4j = "2.0.20"
+  val verdict4s = "0.1.0"
 }
 
 /** Fails if the `versions` vals or any dependency list in this file isn't in
@@ -47,11 +49,14 @@ def checkDependencyOrder() = Task.Command {
   def unsorted[A: Ordering](items: List[A]): Boolean = items != items.sorted
 
   val problems =
-    Option.when(unsorted(versionNames.map(_.toLowerCase)))(
-      s"versions vals: ${versionNames.mkString(", ")}"
-    ).toList ++
+    Option
+      .when(unsorted(versionNames.map(_.toLowerCase)))(
+        s"versions vals: ${versionNames.mkString(", ")}"
+      )
+      .toList ++
       dependencyLists.collect {
-        case deps if unsorted(deps.map((g, a) => (g.toLowerCase, a.toLowerCase))) =>
+        case deps
+            if unsorted(deps.map((g, a) => (g.toLowerCase, a.toLowerCase))) =>
           s"dependencies: ${deps.map((g, a) => s"$g:$a").mkString(", ")}"
       }
 
@@ -80,12 +85,19 @@ object scalanews extends ScalaModule with PublishModule with ScalafmtModule {
     mvn"com.rometools:rome:${versions.rome}",
     mvn"com.softinio::duck4s::${versions.duck4s}",
     mvn"com.softinio::duck4s-cats-effect::${versions.duck4s}",
+    mvn"com.softinio::verdict4s::${versions.verdict4s}",
     mvn"com.vladsch.flexmark:flexmark-html2md-converter:${versions.flexmark}",
     mvn"io.circe::circe-core:${versions.circe}",
     mvn"io.circe::circe-parser:${versions.circe}",
     mvn"org.http4s::http4s-ember-client:${versions.http4s}",
     mvn"org.typelevel::cats-core:${versions.cats}",
     mvn"org.typelevel::cats-effect:${versions.catsEffect}"
+  )
+
+  // Rome, http4s and the Anthropic SDK log through SLF4J; the no-op provider
+  // discards those logs without SLF4J's "no providers found" warning.
+  def runMvnDeps = Seq(
+    mvn"org.slf4j:slf4j-nop:${versions.slf4j}"
   )
 
   def mainClass = Some("com.softinio.scalanews.Main")

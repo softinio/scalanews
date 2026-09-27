@@ -16,15 +16,18 @@
 
 package com.softinio.scalanews
 
-import java.text.SimpleDateFormat
-
 import cats.effect.*
 import cats.implicits.*
 
 import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
-import com.softinio.scalanews.algebra.{AiMode, EventType, GenerateMode}
+import com.softinio.scalanews.algebra.{
+  AiMode,
+  DateRange,
+  EventType,
+  GenerateMode
+}
 import com.softinio.scalanews.db.Database
 
 object Main
@@ -47,26 +50,9 @@ object Main
 
   private case object SelfCheckCmd
 
-  private[scalanews] case class Generate(
-      startDate: String,
-      endDate: String,
-      mode: GenerateMode
-  )
+  private[scalanews] case class Generate(range: DateRange, mode: GenerateMode)
 
-  private case class IngestBlogs(
-      startDate: String,
-      endDate: String,
-      dbPath: String
-  )
-
-  /** Parses a `yyyy-MM-dd` date strictly: an impossible date such as 2026-13-45
-    * is an error rather than rolling over into another month.
-    */
-  private[scalanews] def parseDate(text: String): java.util.Date = {
-    val format = new SimpleDateFormat("yyyy-MM-dd")
-    format.setLenient(false)
-    format.parse(text)
-  }
+  private case class IngestBlogs(range: DateRange, dbPath: String)
 
   private val archiveDateOps: Opts[String] =
     Opts
@@ -79,6 +65,12 @@ object Main
   private val endDateOps: Opts[String] =
     Opts
       .argument[String](metavar = "endDate")
+
+  /** The start and end dates, validated when the command line is parsed. */
+  private val dateRangeOps: Opts[DateRange] =
+    (startDateOps, endDateOps).tupled.mapValidated((start, end) =>
+      DateRange.parse(start, end).toValidatedNel
+    )
 
   private val dbPathOps: Opts[String] =
     Opts
@@ -143,8 +135,7 @@ object Main
       "Generate the next newsletter (database and Claude summaries by default)"
     ) {
       (
-        startDateOps,
-        endDateOps,
+        dateRangeOps,
         Opts
           .flag(
             "no-db",
@@ -168,13 +159,13 @@ object Main
           .option[String]("dbpath", "Database file path", short = "d")
           .orNone
       ).tupled.mapValidated {
-        case (_, _, true, _, true, _) =>
+        case (_, true, _, true, _) =>
           "--refresh-ai needs the database; it can't be used with --no-db".invalidNel
-        case (_, _, true, _, _, Some(_)) =>
+        case (_, true, _, _, Some(_)) =>
           "--dbpath can't be used with --no-db".invalidNel
-        case (_, _, false, true, true, _) =>
+        case (_, false, true, true, _) =>
           "--refresh-ai only applies with AI; it can't be used with --no-ai".invalidNel
-        case (startDate, endDate, noDb, noAi, refresh, dbPath) =>
+        case (range, noDb, noAi, refresh, dbPath) =>
           val mode =
             if (noDb) GenerateMode.Direct
             else
@@ -182,13 +173,13 @@ object Main
                 dbPath.getOrElse(Database.defaultPath),
                 if (noAi) AiMode.Disabled else AiMode.Enabled(refresh)
               )
-          Generate(startDate, endDate, mode).validNel
+          Generate(range, mode).validNel
       }
     }
 
   private val ingestBlogsOpts: Opts[IngestBlogs] =
     Opts.subcommand("ingest", "Ingest blogs into DB") {
-      (startDateOps, endDateOps, dbPathOps).mapN(IngestBlogs.apply)
+      (dateRangeOps, dbPathOps).mapN(IngestBlogs.apply)
     }
 
   private val selfCheckOpts: Opts[SelfCheckCmd.type] =
@@ -198,7 +189,8 @@ object Main
     )(Opts.unit.as(SelfCheckCmd))
 
   /** Expected, user-fixable failures end the run with one `error:` line and
-    * exit code 1; anything else is unexpected and keeps its stack trace.
+    * exit code 1; anything else is unexpected and keeps its stack trace. (Bad
+    * dates are rejected earlier, when the command line is parsed.)
     */
   private[scalanews] val reportUserErrors
       : PartialFunction[Throwable, IO[ExitCode]] = {
@@ -206,10 +198,6 @@ object Main
     case e: pureconfig.error.ConfigReaderException[?] =>
       Output
         .error(s"invalid configuration:\n${e.failures.prettyPrint()}")
-        .as(ExitCode.Error)
-    case e: java.text.ParseException =>
-      Output
-        .error(s"invalid date (expected yyyy-MM-dd): ${e.getMessage}")
         .as(ExitCode.Error)
   }
 
@@ -224,19 +212,10 @@ object Main
       case SelfCheckCmd                                     => SelfCheck.run
       case Publish(publishDate, archiveDate, archiveFolder) =>
         FileHandler.publish(publishDate, archiveDate, archiveFolder)
-      case Create(overwrite)                  => FileHandler.create(overwrite)
-      case Generate(startDate, endDate, mode) =>
-        Newsletter.generate(
-          parseDate(startDate),
-          parseDate(endDate),
-          mode
-        )
-      case IngestBlogs(startDate, endDate, dbPath) =>
-        Newsletter.ingestBlogsToDB(
-          parseDate(startDate),
-          parseDate(endDate),
-          dbPath
-        )
+      case Create(overwrite)          => FileHandler.create(overwrite)
+      case Generate(range, mode)      => Newsletter.generate(range, mode)
+      case IngestBlogs(range, dbPath) =>
+        Newsletter.ingestBlogsToDB(range, dbPath)
       case Blogger(directory) =>
         if (directory) {
           for {

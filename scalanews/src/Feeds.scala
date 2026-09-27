@@ -22,7 +22,7 @@ import cats.syntax.all.*
 import com.rometools.rome.feed.synd.{SyndContent, SyndEntry}
 
 import scala.jdk.CollectionConverters.*
-import com.softinio.scalanews.algebra.{Article, Blog}
+import com.softinio.scalanews.algebra.{Article, Blog, DateRange}
 
 /** Fetching the bloggers' RSS feeds and turning Scala-related entries into
   * articles.
@@ -33,33 +33,32 @@ object Feeds {
     "sudarshankasar.medium.com"
   )
 
-  private def isAboutScala(entry: SyndEntry): Boolean = {
-    val hasRelevantCategory = Option(entry.getCategories)
-      .map(_.asScala.toList)
-      .getOrElse(List())
-      .exists(category => {
-        val name = category.getName.toLowerCase
-        name.contains("scala") || name.contains("sbt")
-      })
+  /** An entry counts as about Scala when one of these appears in its title,
+    * description or categories.
+    */
+  private val scalaKeywords = List("scala", "sbt")
 
-    val hasRelevantTitle =
-      Option(entry.getTitle)
-        .map(_.toLowerCase)
-        .getOrElse("")
-        .contains("scala") ||
-        Option(entry.getTitle).map(_.toLowerCase).getOrElse("").contains("sbt")
-
-    val hasRelevantDescription = Option(entry.getDescription)
-      .map(_.getValue.toLowerCase)
-      .getOrElse("")
-      .contains("scala") ||
-      Option(entry.getDescription)
-        .map(_.getValue.toLowerCase)
-        .getOrElse("")
-        .contains("sbt")
-
-    hasRelevantCategory || hasRelevantTitle || hasRelevantDescription
+  // Rome returns null for missing fields; read them as options instead.
+  extension (entry: SyndEntry) {
+    private def titleOpt: Option[String] = Option(entry.getTitle)
+    private def linkOpt: Option[String] = Option(entry.getLink)
+    private def publishedOpt: Option[Date] = Option(entry.getPublishedDate)
+    private def descriptionText: Option[String] =
+      Option(entry.getDescription).flatMap(d => Option(d.getValue))
+    private def categoryNames: List[String] =
+      Option(entry.getCategories).toList
+        .flatMap(_.asScala)
+        .flatMap(c => Option(c.getName))
+    private def authorOpt: Option[String] =
+      Option(entry.getAuthor)
+        .filter(_.nonEmpty)
+        .filter(_.toLowerCase != "unknown")
   }
+
+  private def isAboutScala(entry: SyndEntry): Boolean =
+    (entry.categoryNames ++ entry.titleOpt ++ entry.descriptionText).exists(
+      text => scalaKeywords.exists(text.toLowerCase.contains)
+    )
 
   // Many feeds (plain RSS) only carry a <description> summary, not full
   // <content>; fall back to it so the article isn't stored empty.
@@ -69,46 +68,28 @@ object Feeds {
       case contents => contents
     }
 
-  private def getBlogAuthor(entry: SyndEntry, blog: Blog): String =
-    Option(entry.getAuthor)
-      .filter(_.nonEmpty)
-      .filter(_.toLowerCase() != "unknown")
-      .getOrElse(blog.name)
-
-  private def getArticlesFromEntries(
+  /** The entry as an article, if it has a title, link and publication date in
+    * range, isn't from a skipped blog, and is about Scala.
+    */
+  private[scalanews] def toArticle(
       blog: Blog,
-      entries: List[SyndEntry],
-      startDate: Date,
-      endDate: Date
-  ): Option[List[Article]] =
-    entries
-      .filter(_.getPublishedDate != null)
-      .filter(_.getLink != null)
-      .filter(entryItem =>
-        blogsToSkipByUrl.forall(skipItem =>
-          !entryItem.getLink.contains(skipItem)
-        )
-      )
-      .filter(_.getTitle != null)
-      .filter(isAboutScala)
-      .map(entry =>
-        Article(
-          entry.getTitle,
-          entryContent(entry),
-          entry.getLink,
-          getBlogAuthor(entry, blog),
-          entry.getPublishedDate
-        )
-      )
-      .filter { case Article(_, _, _, _, publishedDate) =>
-        publishedDate.after(startDate) && publishedDate.before(endDate)
-      }
-      .distinct
-      .sortBy(_.publishedDate.getTime)
-      .reverse match {
-      case Nil  => None
-      case list => Some(list)
-    }
+      entry: SyndEntry,
+      range: DateRange
+  ): Option[Article] =
+    for {
+      title <- entry.titleOpt
+      link <- entry.linkOpt
+      published <- entry.publishedOpt
+      if range.contains(published) &&
+        !blogsToSkipByUrl.exists(link.contains) &&
+        isAboutScala(entry)
+    } yield Article(
+      title,
+      entryContent(entry),
+      link,
+      entry.authorOpt.getOrElse(blog.name),
+      published
+    )
 
   /** Articles fetched from the feeds, and the blogs whose feed couldn't be
     * read.
@@ -118,13 +99,12 @@ object Feeds {
       failedFeeds: List[String]
   )
 
-  /** A blog's articles in the date range, or why its feed couldn't be read
-    * (also reported as a warning).
+  /** A blog's articles in the date range, newest first, or why its feed
+    * couldn't be read (also reported as a warning).
     */
-  private def fetchBlog(
+  private[scalanews] def fetchBlog(
       blog: Blog,
-      startDate: Date,
-      endDate: Date
+      range: DateRange
   ): IO[Either[Throwable, List[Article]]] =
     Rome.fetchFeed(blog.rss.toURL.toString).flatMap {
       case Left(exception) =>
@@ -136,33 +116,22 @@ object Feeds {
       case Right(feed) =>
         IO.pure(
           Right(
-            getArticlesFromEntries(
-              blog,
-              feed.getEntries.asScala.toList,
-              startDate,
-              endDate
-            ).getOrElse(Nil)
+            feed.getEntries.asScala.toList
+              .flatMap(toArticle(blog, _, range))
+              .distinct
+              .sortBy(_.publishedDate.getTime)
+              .reverse
           )
         )
     }
 
-  def getArticlesForBlogger(
-      blog: Blog,
-      startDate: Date,
-      endDate: Date
-  ): IO[Option[List[Article]]] =
-    fetchBlog(blog, startDate, endDate).map(
-      _.toOption.filter(_.nonEmpty)
-    )
-
   private[scalanews] def fetchArticles(
-      startDate: Date,
-      endDate: Date,
+      range: DateRange,
       configFilePath: String = "config.json"
   ): IO[FetchedArticles] =
     ConfigLoader.load(configFilePath).flatMap { conf =>
       conf.bloggers
-        .traverse(blog => fetchBlog(blog, startDate, endDate).map(blog -> _))
+        .traverse(blog => fetchBlog(blog, range).map(blog -> _))
         .map { results =>
           FetchedArticles(
             results.flatMap(_._2.getOrElse(Nil)),
@@ -170,20 +139,4 @@ object Feeds {
           )
         }
     }
-
-  def createBlogList(
-      startDate: Date,
-      endDate: Date,
-      configFilePath: String = "config.json"
-  ): IO[List[Article]] =
-    fetchArticles(startDate, endDate, configFilePath).map(_.articles)
-
-  def createBlogListFromBloggers(
-      bloggers: List[Blog],
-      startDate: Date,
-      endDate: Date
-  ): IO[List[Article]] =
-    bloggers.flatTraverse(blog =>
-      getArticlesForBlogger(blog, startDate, endDate).map(_.getOrElse(Nil))
-    )
 }

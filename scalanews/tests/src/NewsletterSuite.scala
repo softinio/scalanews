@@ -15,7 +15,7 @@
  */
 
 package com.softinio.scalanews
-import com.softinio.scalanews.algebra.{Article, ArticleSummary, Blog}
+import com.softinio.scalanews.algebra.{Article, ArticleSummary, Blog, DateRange}
 import com.softinio.scalanews.db.Database
 import com.softinio.scalanews.db.tables.{StoredRelevance, StoredSummary}
 import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
@@ -32,15 +32,13 @@ class NewsletterSuite extends CatsEffectSuite {
     "ingestBlogsToDB - returns ExitCode.Success and persists articles to DB"
       .tag(IntegrationTest)
   ) {
-    val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val testConfigPath = getClass.getResource("/test-config.json").getPath
     for {
       _ <- cats.effect.IO.blocking(System.setProperty("SCALA_NEWS_CONFIG", testConfigPath))
       dbDir <- cats.effect.IO.blocking(JFiles.createTempDirectory("scalanews-ingest-test"))
       dbPath = dbDir.resolve("test.db").toString
       exitCode <- Newsletter.ingestBlogsToDB(
-        formatter.parse("2021-01-01"),
-        formatter.parse("2021-12-31"),
+        DateRange.parse("2021-01-01", "2021-12-31").toOption.get,
         dbPath
       ).guarantee(cats.effect.IO.blocking(System.clearProperty("SCALA_NEWS_CONFIG")).void)
       count <- Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>

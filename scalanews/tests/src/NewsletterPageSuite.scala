@@ -15,7 +15,7 @@
  */
 
 package com.softinio.scalanews
-import com.softinio.scalanews.algebra.{Article, ArticleSummary, Blog}
+import com.softinio.scalanews.algebra.{Article, ArticleSummary, Blog, NewsItem}
 import com.softinio.scalanews.db.Database
 import com.softinio.scalanews.db.tables.{StoredRelevance, StoredSummary}
 import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
@@ -38,7 +38,7 @@ class NewsletterPageSuite extends CatsEffectSuite {
 
   test("generateNews - renders a card's summary when there is one") {
     NewsletterPage
-      .generateNews(List(cardArticle -> ArticleSummary.from("About types.")))
+      .generateNews(List(NewsItem(cardArticle, ArticleSummary.from("About types."))))
       .map(page =>
         assert(page.contains("""<p class="article-summary">About types.</p>"""))
       )
@@ -46,7 +46,7 @@ class NewsletterPageSuite extends CatsEffectSuite {
 
   test("generateNews - omits the summary line when there is none") {
     NewsletterPage
-      .generateNews(List(cardArticle -> None))
+      .generateNews(List(NewsItem(cardArticle, None)))
       .map { page =>
         assert(page.contains("Match Types"))
         assert(!page.contains("article-summary"))
@@ -61,7 +61,7 @@ class NewsletterPageSuite extends CatsEffectSuite {
 
   test("generateNews - small editions have only cards") {
     val articles = (1 to NewsletterPage.highlightCount).toList.map(i =>
-      articleTitled(f"Article $i%02d") -> ArticleSummary.from("Summary.")
+      NewsItem(articleTitled(f"Article $i%02d"), ArticleSummary.from("Summary."))
     )
     NewsletterPage
       .generateNews(articles)
@@ -73,7 +73,7 @@ class NewsletterPageSuite extends CatsEffectSuite {
 
   test("generateNews - extra articles are listed under More articles") {
     val articles = (1 to NewsletterPage.highlightCount + 3).toList.map(i =>
-      articleTitled(f"Article $i%02d") -> ArticleSummary.from("Summary.")
+      NewsItem(articleTitled(f"Article $i%02d"), ArticleSummary.from("Summary."))
     )
     NewsletterPage
       .generateNews(articles)
@@ -87,11 +87,10 @@ class NewsletterPageSuite extends CatsEffectSuite {
   test("generateNews - articles with a summary get the cards first") {
     val withoutSummary =
       (1 to NewsletterPage.highlightCount).toList.map(i =>
-        articleTitled(f"A no summary $i%02d") -> None
+        NewsItem(articleTitled(f"A no summary $i%02d"), None)
       )
-    val withSummary = articleTitled("Z has summary") -> ArticleSummary.from(
-      "Summary."
-    )
+    val withSummary =
+      NewsItem(articleTitled("Z has summary"), ArticleSummary.from("Summary."))
     NewsletterPage
       .generateNews(withSummary :: withoutSummary)
       .map { page =>
@@ -107,7 +106,7 @@ class NewsletterPageSuite extends CatsEffectSuite {
       author = "O'Brien"
     )
     NewsletterPage
-      .generateNews(List(article -> ArticleSummary.from("Uses \"quotes\" & <tags>")))
+      .generateNews(List(NewsItem(article, ArticleSummary.from("Uses \"quotes\" & <tags>"))))
       .map { page =>
         assert(page.contains("Either[A, B] &amp; &lt;friends&gt;"))
         assert(page.contains("O&#39;Brien"))
@@ -118,8 +117,10 @@ class NewsletterPageSuite extends CatsEffectSuite {
 
   test("runSummary - counts cards, listed articles and summaries") {
     val articles = (1 to NewsletterPage.highlightCount + 2).toList.map(i =>
-      articleTitled(f"Article $i%02d") ->
-        (if (i <= 5) ArticleSummary.from("Summary.") else None)
+      NewsItem(
+        articleTitled(f"Article $i%02d"),
+        if (i <= 5) ArticleSummary.from("Summary.") else None
+      )
     )
     assertEquals(
       NewsletterPage.runSummary(articles, Some(3)),
@@ -130,7 +131,7 @@ class NewsletterPageSuite extends CatsEffectSuite {
   test("runSummary - leaves out relevance without AI") {
     assert(
       !NewsletterPage
-        .runSummary(List(cardArticle -> None), None)
+        .runSummary(List(NewsItem(cardArticle, None)), None)
         .contains("not relevant")
     )
   }

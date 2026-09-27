@@ -17,7 +17,7 @@
 package com.softinio.scalanews
 
 import cats.effect.*
-import fs2.io.file.*
+import fs2.io.file.Path
 
 import com.softinio.scalanews.algebra.Blog
 
@@ -52,19 +52,8 @@ object BlogDirectory {
     }
   }
 
-  def createBloggerDirectory(bloggerList: List[Blog]): IO[ExitCode] = {
-    for {
-      exists <- Files[IO].exists(directoryMarkdownFilePath)
-      _ <- if (exists) Files[IO].delete(directoryMarkdownFilePath) else IO.unit
-      directory <- generateDirectory(bloggerList)
-      _ <- fs2.Stream
-        .emits(List(directory))
-        .through(fs2.text.utf8.encode)
-        .through(
-          Files[IO].writeAll(directoryMarkdownFilePath, Flags(Flag.CreateNew))
-        )
-        .compile
-        .drain
-    } yield ExitCode.Success
-  }
+  def createBloggerDirectory(bloggerList: List[Blog]): IO[ExitCode] =
+    generateDirectory(bloggerList)
+      .flatMap(TextFiles.write(directoryMarkdownFilePath, _))
+      .as(ExitCode.Success)
 }

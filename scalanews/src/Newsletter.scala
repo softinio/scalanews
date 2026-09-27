@@ -16,17 +16,15 @@
 
 package com.softinio.scalanews
 
-import java.util.Date
 import cats.effect.*
 import cats.syntax.all.*
-import fs2.io.file.*
 
 import com.softinio.duck4s.DuckDBConnection
 import com.softinio.scalanews.algebra.{
   AiMode,
-  Article,
-  ArticleSummary,
-  GenerateMode
+  DateRange,
+  GenerateMode,
+  NewsItem
 }
 import com.softinio.scalanews.db.Database
 import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
@@ -35,15 +33,14 @@ import com.softinio.scalanews.db.tables.{ArticleRepository, ArticleSchema}
 object Newsletter {
 
   /** Fetches the feeds for the date range and stores new articles, skipping
-    * ones already stored.
+    * ones already stored. Returns the blogs whose feed couldn't be read.
     */
   private def ingestInto(
       conn: DuckDBConnection,
-      startDate: Date,
-      endDate: Date
+      range: DateRange
   ): IO[List[String]] =
     for {
-      fetched <- Feeds.fetchArticles(startDate, endDate)
+      fetched <- Feeds.fetchArticles(range)
       inserted <- fetched.articles.traverse(ArticleRepository.insert(conn, _))
       added = inserted.sum
       _ <- Output.info(
@@ -52,13 +49,12 @@ object Newsletter {
     } yield fetched.failedFeeds
 
   def ingestBlogsToDB(
-      startDate: Date,
-      endDate: Date,
+      range: DateRange,
       dbPath: String = Database.defaultPath
   ): IO[ExitCode] =
     Database
       .connect(dbPath, Seq(ArticleSchema))
-      .use(ingestInto(_, startDate, endDate))
+      .use(ingestInto(_, range))
       .flatMap(reportFailedFeeds)
       .as(ExitCode.Success)
 
@@ -69,83 +65,63 @@ object Newsletter {
       )
       .whenA(failedFeeds.nonEmpty)
 
-  /** Writes the next newsletter draft, replacing any existing one. */
+  /** Writes the next newsletter draft and reports what went into it. */
   private def writeNextNewsletter(
-      articles: List[(Article, Option[ArticleSummary])]
+      items: List[NewsItem],
+      notRelevant: Option[Int]
   ): IO[Unit] =
-    for {
-      exists <- Files[IO].exists(NewsletterPage.nextMarkdownFilePath)
-      _ <-
-        if (exists) Files[IO].delete(NewsletterPage.nextMarkdownFilePath)
-        else IO.unit
-      news <- NewsletterPage.generateNews(articles)
-      _ <- fs2.Stream
-        .emits(List(news))
-        .through(fs2.text.utf8.encode)
-        .through(
-          Files[IO].writeAll(
-            NewsletterPage.nextMarkdownFilePath,
-            Flags(Flag.CreateNew)
-          )
-        )
-        .compile
-        .drain
-    } yield ()
+    NewsletterPage
+      .generateNews(items)
+      .flatMap(TextFiles.write(NewsletterPage.nextMarkdownFilePath, _)) >>
+      Output.info(NewsletterPage.runSummary(items, notRelevant))
 
   /** Builds the next newsletter for the date range. */
-  def generate(
-      startDate: Date,
-      endDate: Date,
-      mode: GenerateMode
-  ): IO[ExitCode] =
+  def generate(range: DateRange, mode: GenerateMode): IO[ExitCode] =
     mode match {
       case GenerateMode.Direct =>
         for {
-          fetched <- Feeds.fetchArticles(startDate, endDate)
-          articles = fetched.articles.map(a =>
-            a -> Summaries.simpleSummary(a.content)
+          fetched <- Feeds.fetchArticles(range)
+          items = fetched.articles.map(a =>
+            NewsItem(a, Summaries.simpleSummary(a.content))
           )
-          _ <- writeNextNewsletter(articles)
-          _ <- Output.info(NewsletterPage.runSummary(articles, None))
+          _ <- writeNextNewsletter(items, notRelevant = None)
           _ <- reportFailedFeeds(fetched.failedFeeds)
         } yield ExitCode.Success
 
       case GenerateMode.Database(dbPath, ai) =>
         Database.connect(dbPath, Seq(ArticleSchema)).use { conn =>
           for {
-            failedFeeds <- ingestInto(conn, startDate, endDate)
+            failedFeeds <- ingestInto(conn, range)
             rows <- ArticleRepository
               .findAll(conn)
-              .filter(row =>
-                row.publishedDate.after(startDate) &&
-                  row.publishedDate.before(endDate)
-              )
+              .filter(row => range.contains(row.publishedDate))
               .compile
               .toList
-            result <- ai match {
+            _ <- ai match {
               case AiMode.Enabled(refresh) =>
                 for {
                   relevantRows <- Relevance.filterRelevant(conn, rows, refresh)
-                  articles <- Summaries.summariseWithClaude(
+                  items <- Summaries.summariseWithClaude(
                     conn,
                     relevantRows,
                     refresh
                   )
-                } yield (articles, Some(rows.size - relevantRows.size))
-              case AiMode.Disabled =>
-                IO.pure(
-                  (
-                    rows
-                      .map(row =>
-                        row.toArticle -> Summaries.simpleSummary(row.content)
-                      ),
-                    None
+                  _ <- writeNextNewsletter(
+                    items,
+                    notRelevant = Some(rows.size - relevantRows.size)
                   )
+                } yield ()
+              case AiMode.Disabled =>
+                writeNextNewsletter(
+                  rows.map(row =>
+                    NewsItem(
+                      row.toArticle,
+                      Summaries.simpleSummary(row.content)
+                    )
+                  ),
+                  notRelevant = None
                 )
             }
-            (articles, notRelevant) = result
-            _ <- writeNextNewsletter(articles)
-            _ <- Output.info(NewsletterPage.runSummary(articles, notRelevant))
             _ <- reportFailedFeeds(failedFeeds)
           } yield ExitCode.Success
         }

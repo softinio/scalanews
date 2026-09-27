@@ -19,7 +19,7 @@ package com.softinio.scalanews
 import cats.effect.IO
 import fs2.io.file.Path
 
-import com.softinio.scalanews.algebra.{Article, ArticleSummary}
+import com.softinio.scalanews.algebra.{Article, NewsItem}
 
 /** The newsletter page: article cards, the More articles list, and the run
   * summary.
@@ -42,7 +42,7 @@ object NewsletterPage {
     }
 
   private[scalanews] def generateNews(
-      articles: List[(Article, Option[ArticleSummary])]
+      items: List[NewsItem]
   ): IO[String] = {
     IO.blocking {
       val header =
@@ -57,7 +57,8 @@ object NewsletterPage {
         s"""<a href="$url">${escapeHtml(article.title)}</a>"""
       }
 
-      def card(article: Article, summary: Option[ArticleSummary]): String = {
+      def card(item: NewsItem): String = {
+        val NewsItem(article, summary) = item
         val summaryLine = summary.fold("")(s =>
           s"""\n  <p class="article-summary">${escapeHtml(s.value)}</p>"""
         )
@@ -76,13 +77,13 @@ object NewsletterPage {
 
       // Articles with a summary get the cards first; order within each part is by title.
       val (summarised, unsummarised) =
-        articles.sortBy(_._1.title).partition(_._2.isDefined)
+        items.sortBy(_.article.title).partition(_.summary.isDefined)
       val (highlights, rest) =
         (summarised ++ unsummarised).splitAt(highlightCount)
 
       val cards =
         s"""|<div class="article-cards">
-            |${highlights.map(card.tupled).mkString("\n")}
+            |${highlights.map(card).mkString("\n")}
             |</div>""".stripMargin
 
       val moreArticles =
@@ -93,7 +94,11 @@ object NewsletterPage {
               |### More articles
               |
               |<ul class="more-articles">
-              |${rest.map(_._1).sortBy(_.title).map(listItem).mkString("\n")}
+              |${rest
+               .map(_.article)
+               .sortBy(_.title)
+               .map(listItem)
+               .mkString("\n")}
               |</ul>""".stripMargin
 
       s"""|$header
@@ -105,12 +110,12 @@ object NewsletterPage {
 
   /** The closing line of a `generate` run. */
   private[scalanews] def runSummary(
-      articles: List[(Article, Option[ArticleSummary])],
+      items: List[NewsItem],
       notRelevant: Option[Int]
   ): String = {
-    val cards = articles.size.min(highlightCount)
+    val cards = items.size.min(highlightCount)
     (List(
-      s"Wrote $nextMarkdownFilePath: ${articles.size} articles ($cards as cards, ${articles.size - cards} listed), ${articles.count(_._2.isDefined)} with a summary"
+      s"Wrote $nextMarkdownFilePath: ${items.size} articles ($cards as cards, ${items.size - cards} listed), ${items.count(_.summary.isDefined)} with a summary"
     ) ++ notRelevant.map(n => s"$n not relevant")).mkString("; ")
   }
 }

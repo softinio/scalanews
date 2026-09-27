@@ -21,7 +21,7 @@ import cats.effect.syntax.all.*
 import cats.syntax.all.*
 
 import com.softinio.duck4s.DuckDBConnection
-import com.softinio.scalanews.algebra.{Article, ArticleSummary}
+import com.softinio.scalanews.algebra.{Article, ArticleSummary, NewsItem}
 import com.softinio.scalanews.db.tables.{
   ArticleRepository,
   ArticleRow,
@@ -108,7 +108,7 @@ object Summaries {
       conn: DuckDBConnection,
       rows: List[ArticleRow],
       refresh: Boolean
-  ): IO[List[(Article, Option[ArticleSummary])]] = {
+  ): IO[List[NewsItem]] = {
     val reusable: ArticleRow => Option[StoredSummary] =
       row => if (refresh) None else row.storedSummary
     val toSummarise = rows.filter(reusable(_).isEmpty)
@@ -142,7 +142,7 @@ object Summaries {
         s"Summarised ${toSummarise.size} articles with Claude, reused ${rows.size - toSummarise.size} stored"
       )
     } yield rows.map(row =>
-      row.toArticle -> reusable(row).fold(summaries(row.id))(summaryOf)
+      NewsItem(row.toArticle, reusable(row).fold(summaries(row.id))(summaryOf))
     )
   }
 }

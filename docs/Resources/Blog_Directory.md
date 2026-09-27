@@ -2,6 +2,8 @@
 
 A Directory of bloggers producing Scala related content with links to their rss feed when available.
 
+Follow them all: <a href="bloggers.opml" download>download the OPML file</a> and import it into your feed reader.
+
 | Blog | URL | RSS Feed |
 | --- |:---:| ---:|
 | Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |

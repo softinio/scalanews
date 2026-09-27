@@ -141,7 +141,8 @@ record `self-check` and a real `generate` run (with Claude summaries) with the t
 # given (yyyyMMdd)
 ./out/scalanews/nativeImagePath.dest/target/scalanews publish -p 20240107
 
-# Generate blogger directory page (docs/Resources/Blog_Directory.md) from config.json
+# Generate blogger directory page (docs/Resources/Blog_Directory.md) and an OPML file of all the
+# feeds for feed readers (docs/Resources/bloggers.opml, linked from the page) from config.json
 ./out/scalanews/nativeImagePath.dest/target/scalanews blogger --directory
 
 # Validate config.json's bloggers (http(s) URLs, no duplicates) and fetch their feeds (each needs

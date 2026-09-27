@@ -1,13 +1,14 @@
 name: "Bloggers page"
 
 # After a change to config.json reaches main (e.g. a merged PR adding a
-# blogger), regenerate the Bloggers page from it and open a PR with the result
-# for review. Merging that PR publishes the site as usual (see ci.yml).
+# blogger), regenerate the Bloggers page and its OPML file from it and open a
+# PR with the result for review. Merging that PR publishes the site as usual
+# (see ci.yml).
 #
 # Needs "Allow GitHub Actions to create and approve pull requests" enabled in
 # the repository's Actions settings. PRs opened with GITHUB_TOKEN don't start
 # other workflows, so the PR shows no CI checks: it only changes generated
-# Markdown, and the feeds were checked on the original PR.
+# files, and the feeds were checked on the original PR.
 
 on:
   push:
@@ -59,8 +60,10 @@ jobs:
         with:
           branch: bot/update-bloggers-page
           delete-branch: true
-          add-paths: docs/Resources/Blog_Directory.md
-          commit-message: "update the Bloggers page from config.json"
+          add-paths: |
+            docs/Resources/Blog_Directory.md
+            docs/Resources/bloggers.opml
+          commit-message: "update the Bloggers page and OPML file from config.json"
           title: "Update the Bloggers page"
           body: |
             The Bloggers page, regenerated from `config.json` on `main` by the

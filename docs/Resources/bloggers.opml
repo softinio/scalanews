@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>Scala News bloggers</title>
+  </head>
+  <body>
+    <outline text="Scala News bloggers" title="Scala News bloggers">
+      <outline type="rss" text="Salar Rahmanian" title="Salar Rahmanian" xmlUrl="https://www.softinio.com/index.xml" htmlUrl="https://www.softinio.com"/>
+      <outline type="rss" text="Scala Lang" title="Scala Lang" xmlUrl="https://www.scala-lang.org/feed/index.xml" htmlUrl="https://www.scala-lang.org/blog/"/>
+      <outline type="rss" text="Typelevel" title="Typelevel" xmlUrl="https://typelevel.org/blog/feed.rss" htmlUrl="https://typelevel.org/blog/"/>
+      <outline type="rss" text="Michael Pilquist" title="Michael Pilquist" xmlUrl="https://mpilquist.github.io/index.xml" htmlUrl="https://mpilquist.github.io/"/>
+      <outline type="rss" text="Justin Heyes-Jones" title="Justin Heyes-Jones" xmlUrl="http://justinhj.github.io/feed.xml" htmlUrl="http://justinhj.github.io/"/>
+      <outline type="rss" text="Anton Sviridov" title="Anton Sviridov" xmlUrl="https://blog.indoorvivants.com/rss.xml" htmlUrl="https://blog.indoorvivants.com"/>
+      <outline type="rss" text="James Ward" title="James Ward" xmlUrl="https://jamesward.com/index.xml" htmlUrl="https://jamesward.com"/>
+      <outline type="rss" text="Eugene Yokota" title="Eugene Yokota" xmlUrl="https://eed3si9n.com/index.xml" htmlUrl="https://eed3si9n.com/"/>
+      <outline type="rss" text="Alexandru Nedelcu" title="Alexandru Nedelcu" xmlUrl="https://alexn.org/feeds/blog.xml" htmlUrl="https://alexn.org/blog/"/>
+      <outline type="rss" text="Jakub Kozłowski" title="Jakub Kozłowski" xmlUrl="https://blog.kubukoz.com/atom.xml" htmlUrl="https://blog.kubukoz.com/"/>
+      <outline type="rss" text="Yadu Krishnan" title="Yadu Krishnan" xmlUrl="https://yadukrishnan.live/rss.xml" htmlUrl="https://yadukrishnan.live/"/>
+      <outline type="rss" text="Michał Pawlik" title="Michał Pawlik" xmlUrl="https://blog.michal.pawlik.dev/index.xml" htmlUrl="https://blog.michal.pawlik.dev/"/>
+      <outline type="rss" text="Haoyi Li" title="Haoyi Li" xmlUrl="https://www.lihaoyi.com/feed.xml" htmlUrl="https://www.lihaoyi.com/"/>
+      <outline type="rss" text="Rock The JVM Blog" title="Rock The JVM Blog" xmlUrl="https://rockthejvm.com/articles/feed.xml" htmlUrl="https://blog.rockthejvm.com/"/>
+      <outline type="rss" text="Antonio Gelameris" title="Antonio Gelameris" xmlUrl="https://toniogela.dev/rss.xml" htmlUrl="https://toniogela.dev/"/>
+      <outline type="rss" text="Juliano Alves" title="Juliano Alves" xmlUrl="https://juliano-alves.com/feed.xml" htmlUrl="https://juliano-alves.com/"/>
+      <outline type="rss" text="Inner Product" title="Inner Product" xmlUrl="https://www.inner-product.com/feed/feed.xml" htmlUrl="https://inner-product.com/"/>
+      <outline type="rss" text="Ross Baker" title="Ross Baker" xmlUrl="https://rossabaker.com/blog/index.xml" htmlUrl="https://rossabaker.com/"/>
+      <outline type="rss" text="Chistian Hollinger" title="Chistian Hollinger" xmlUrl="https://chollinger.com/blog/index.xml" htmlUrl="https://chollinger.com/blog/"/>
+      <outline type="rss" text="Anton Kovalevsky" title="Anton Kovalevsky" xmlUrl="https://antonkw.github.io/feed.xml" htmlUrl="https://antonkw.github.io/"/>
+      <outline type="rss" text="Medium" title="Medium" xmlUrl="https://medium.com/feed/tag/scala" htmlUrl="https://medium.com/tag/scala"/>
+      <outline type="rss" text="Jendrik Poloczek" title="Jendrik Poloczek" xmlUrl="https://www.madewithtea.com/rss.xml" htmlUrl="https://www.madewithtea.com"/>
+      <outline type="rss" text="Pierre Ricadat" title="Pierre Ricadat" xmlUrl="https://blog.pierre-ricadat.com/rss.xml" htmlUrl="https://blog.pierre-ricadat.com/"/>
+      <outline type="rss" text="SoftwareMill" title="SoftwareMill" xmlUrl="https://softwaremill.com/blog.rss" htmlUrl="https://softwaremill.com/blog/"/>
+      <outline type="rss" text="Ruslan Shevchenko" title="Ruslan Shevchenko" xmlUrl="https://rssh.github.io/notes/feed.xml" htmlUrl="https://github.com/rssh/notes"/>
+      <outline type="rss" text="Neandertech" title="Neandertech" xmlUrl="https://neander.tech/rss.xml" htmlUrl="https://neander.tech"/>
+      <outline type="rss" text="Scala Metals" title="Scala Metals" xmlUrl="https://scalameta.org/metals/blog/rss.xml" htmlUrl="https://scalameta.org/metals/blog/"/>
+      <outline type="rss" text="Scala for Fun and Profit" title="Scala for Fun and Profit" xmlUrl="https://anchor.fm/s/f303e5b4/podcast/rss" htmlUrl="https://podcasters.spotify.com/pod/show/julien-truffaut"/>
+      <outline type="rss" text="Mark Galea" title="Mark Galea" xmlUrl="https://cloudmark.github.io/feed.xml" htmlUrl="https://cloudmark.github.io/"/>
+      <outline type="rss" text="A Developer&apos;s Experience" title="A Developer&apos;s Experience" xmlUrl="https://blog.rhetoricalmusings.com/index.xml" htmlUrl="https://blog.rhetoricalmusings.com"/>
+      <outline type="rss" text="Erik van Oosten" title="Erik van Oosten" xmlUrl="https://day-to-day-stuff.blogspot.com/feeds/posts/default?q=label:scala&amp;alt=rss" htmlUrl="https://day-to-day-stuff.blogspot.com/"/>
+      <outline type="rss" text="Steven Hicks: The Exception Catcher" title="Steven Hicks: The Exception Catcher" xmlUrl="https://theexceptioncatcher.com/feed" htmlUrl="https://theexceptioncatcher.com/"/>
+    </outline>
+  </body>
+</opml>

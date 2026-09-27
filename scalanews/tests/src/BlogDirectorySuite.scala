@@ -54,4 +54,51 @@ class BlogDirectorySuite extends CatsEffectSuite {
       assert(!page.linesIterator.exists(_.endsWith(" ")), page)
     }
   }
+
+  test("generateOpml - lists every feed as valid OPML, escaping names") {
+    val blogs = List(
+      Blog(
+        "A Developer's Experience",
+        new URI("https://blog.rhetoricalmusings.com"),
+        new URI("https://blog.rhetoricalmusings.com/index.xml")
+      ),
+      Blog(
+        "Tom & Jerry <Scala>",
+        new URI("https://example.com"),
+        new URI("https://example.com/feed?a=1&b=2")
+      )
+    )
+    val doc = javax.xml.parsers.DocumentBuilderFactory
+      .newInstance()
+      .newDocumentBuilder()
+      .parse(
+        new java.io.ByteArrayInputStream(
+          BlogDirectory.generateOpml(blogs).getBytes("UTF-8")
+        )
+      )
+    val outlines = doc.getElementsByTagName("outline")
+    val feeds = (0 until outlines.getLength)
+      .map(outlines.item(_).asInstanceOf[org.w3c.dom.Element])
+      .filter(_.getAttribute("type") == "rss")
+      .map(o => (o.getAttribute("text"), o.getAttribute("xmlUrl"), o.getAttribute("htmlUrl")))
+      .toList
+    assertEquals(doc.getDocumentElement.getAttribute("version"), "2.0")
+    assertEquals(
+      feeds,
+      List(
+        (
+          "A Developer's Experience",
+          "https://blog.rhetoricalmusings.com/index.xml",
+          "https://blog.rhetoricalmusings.com"
+        ),
+        ("Tom & Jerry <Scala>", "https://example.com/feed?a=1&b=2", "https://example.com")
+      )
+    )
+  }
+
+  test("generateDirectory - links to the OPML file") {
+    BlogDirectory
+      .generateDirectory(Nil)
+      .map(page => assert(page.contains("""<a href="bloggers.opml" download>"""), page))
+  }
 }

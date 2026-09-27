@@ -206,6 +206,10 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - Archives: `docs/Archive/[year]/` (`publish` and `edition` file the outgoing edition under its year, dated from its heading)
 - Site theme: `scripts/SiteTheme.scala` (Helium settings and colours, shared by
   `LaikaBuild` and `LaikaPreview`) plus `docs/css/scalanews.css`
+- Page head: `docs/helium/templates/head.template.html` is Helium 1.3.2's head template plus
+  `@:scalanewsEditionMeta` (defined in `SiteTheme`), which adds `og:type` and
+  `article:published_time` meta tags on edition pages, dated from their heading. `SiteTheme` also
+  renders the heading's date as `<time datetime>`. Re-copy Helium's template when upgrading Laika
 - Sidebar: `docs/helium/templates/mainNav.template.html` overrides Helium's
   navigation, rendering each archive year as a `<details>` group (no
   JavaScript). `scripts/ArchiveNav.scala` supplies the years, the

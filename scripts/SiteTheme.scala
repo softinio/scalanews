@@ -16,6 +16,13 @@
 
 import cats.effect.{IO, Resource}
 import laika.api.*
+import laika.api.bundle.{
+  BlockDirectives,
+  DirectiveRegistry,
+  LinkDirectives,
+  SpanDirectives,
+  TemplateDirectives
+}
 import laika.ast.*
 import laika.ast.Path.Root
 import laika.format.*
@@ -24,6 +31,11 @@ import laika.helium.config.*
 import laika.io.api.TreeTransformer
 import laika.io.syntax.*
 import laika.theme.config.Color
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import scala.util.Try
 
 /** The site's Helium theme and Markdown transformer, shared by `LaikaBuild`
   * and `LaikaPreview`.
@@ -39,7 +51,7 @@ object SiteTheme {
     .all.metadata(
       title = Some("Scala News"),
       description = Some(
-        "A curated list of Scala related news from the community: articles from Scala bloggers, events and releases."
+        "A curated list of Scala related news from the community: articles from Scala bloggers."
       ),
       language = Some("en")
     )
@@ -92,6 +104,15 @@ object SiteTheme {
 
   private val editionPrefix = "Scala News - "
 
+  // The date in an edition's heading, as FileHandler writes it.
+  private val headingDateFormat =
+    DateTimeFormatter.ofPattern("MMMM d, uuuu", Locale.ENGLISH)
+
+  /** The ISO date ("2024-11-24") for a heading date ("November 24, 2024"). */
+  private def isoDate(headingDate: String): Option[String] =
+    Try(LocalDate.parse(headingDate.trim, headingDateFormat)).toOption
+      .map(_.toString)
+
   /** Renders an edition's "# Scala News - March 3, 2023" heading as a small
     * "Scala News" label above the date: the top bar already names the site.
     * The heading's text is unchanged, so the page's `<title>` keeps the full
@@ -105,10 +126,40 @@ object SiteTheme {
           Seq(
             Text(editionPrefix.stripSuffix(" - "), Styles("edition-brand")),
             Text(" - ", Styles("edition-separator")),
-            Text(text.stripPrefix(editionPrefix), textOptions)
+            // Rendered as <time> (see `transformer`) when it parses as a date.
+            Text(
+              text.stripPrefix(editionPrefix),
+              textOptions + Styles("edition-date")
+            )
           )
         )
       )
+  }
+
+  /** `@:scalanewsEditionMeta`, used in `docs/helium/templates/head.template.html`:
+    * on an edition's page, meta tags giving its date (from its heading), for
+    * search engines and link previews.
+    */
+  private object EditionDirectives extends DirectiveRegistry {
+    val spanDirectives = Nil
+    val blockDirectives = Nil
+    val linkDirectives = Nil
+    val templateDirectives = Seq(
+      TemplateDirectives.create("scalanewsEditionMeta") {
+        TemplateDirectives.dsl.cursor.map { cursor =>
+          val date = cursor.target.title
+            .map(_.extractText)
+            .filter(_.startsWith(editionPrefix))
+            .flatMap(title => isoDate(title.stripPrefix(editionPrefix)))
+          TemplateString(
+            date.fold("")(date =>
+              s"""<meta property="og:type" content="article"/>
+                 |  <meta property="article:published_time" content="$date"/>""".stripMargin
+            )
+          )
+        }
+      }
+    )
   }
 
   def transformer: Resource[IO, TreeTransformer[IO]] =
@@ -119,6 +170,12 @@ object SiteTheme {
       // Newsletter pages embed HTML (the article cards); render it rather than escape it.
       .withRawContent
       .usingBlockRule(editionTitle)
+      .using(EditionDirectives)
+      .rendering {
+        case (fmt, date @ Text(text, options))
+            if options.styles("edition-date") && isoDate(text).isDefined =>
+          fmt.textElement("time", date, "datetime" -> isoDate(text).get)
+      }
       .parallel[IO]
       .withTheme(helium)
       .build

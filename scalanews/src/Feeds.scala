@@ -68,6 +68,17 @@ object Feeds {
       case contents => contents
     }
 
+  /** The entry's link as a full URL: some feeds give links relative to the
+    * blog, e.g. "/posts/scala-kotlin/".
+    */
+  private[scalanews] def absoluteLink(blog: Blog, link: String): String = {
+    // java.net.URI drops the "/" between a host with no path and a relative
+    // link, so resolve against the site root in that case.
+    val base =
+      if (blog.url.getPath.isEmpty) blog.url.resolve("/") else blog.url
+    scala.util.Try(base.resolve(link.trim).toString).getOrElse(link)
+  }
+
   /** The entry as an article, if it has a title, link and publication date in
     * range, isn't from a skipped blog, and is about Scala.
     */
@@ -78,7 +89,7 @@ object Feeds {
   ): Option[Article] =
     for {
       title <- entry.titleOpt
-      link <- entry.linkOpt
+      link <- entry.linkOpt.map(absoluteLink(blog, _))
       published <- entry.publishedOpt
       if range.contains(published) &&
         !blogsToSkipByUrl.exists(link.contains) &&

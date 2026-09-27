@@ -105,6 +105,34 @@ class FeedsSuite extends CatsEffectSuite {
     assert(Feeds.toArticle(blog, entry(title = "Rust tips"), range2021).isEmpty)
   }
 
+  test("absoluteLink - resolves links relative to the blog") {
+    val site = Blog(
+      "A Developer's Experience",
+      URI.create("https://blog.rhetoricalmusings.com"),
+      URI.create("https://blog.rhetoricalmusings.com/index.xml")
+    )
+    assertEquals(
+      Feeds.absoluteLink(site, "/posts/scala-kotlin/"),
+      "https://blog.rhetoricalmusings.com/posts/scala-kotlin/"
+    )
+    assertEquals(
+      Feeds.absoluteLink(site, "posts/scala-kotlin/"),
+      "https://blog.rhetoricalmusings.com/posts/scala-kotlin/"
+    )
+    assertEquals(
+      Feeds.absoluteLink(site, "https://example.com/post"),
+      "https://example.com/post"
+    )
+  }
+
+  test("toArticle - a relative link becomes a full URL") {
+    val article = Feeds.toArticle(blog, entry(link = "/posts/tips/"), range2021)
+    assertEquals(
+      article.flatMap(_.url).map(_.renderString),
+      Some(blog.url.resolve("/posts/tips/").toString)
+    )
+  }
+
   test("toArticle - entries outside the range or missing fields are skipped") {
     val outside = DateRange.parse("2022-01-01", "2022-01-02").toOption.get.start
     assert(Feeds.toArticle(blog, entry(published = outside), range2021).isEmpty)

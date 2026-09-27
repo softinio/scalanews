@@ -23,8 +23,6 @@ import java.net.URI
 
 final case class Blog(name: String, url: URI, rss: URI) derives ConfigReader
 final case class Configuration(bloggers: List[Blog]) derives ConfigReader
-final case class EventConfig(meetups: List[Event], conferences: List[Event])
-    derives ConfigReader
 
 /** An Anthropic API key. Its `toString` is redacted so it can't leak into logs.
   */

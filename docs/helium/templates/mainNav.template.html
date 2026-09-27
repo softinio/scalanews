@@ -30,7 +30,13 @@
 
   @:navigationTree {
     entries = [
-      { target = "/Resources", depth = 2 }
+      {
+        title = "Resources"
+        entries = [
+          { target = "/Resources", excludeRoot = true, depth = 2 }
+          { title = "Community", target = "https://www.scala-lang.org/community" }
+        ]
+      }
     ]
   }
 

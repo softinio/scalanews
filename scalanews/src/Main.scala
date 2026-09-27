@@ -22,12 +22,7 @@ import cats.implicits.*
 import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
-import com.softinio.scalanews.algebra.{
-  AiMode,
-  DateRange,
-  EventType,
-  GenerateMode
-}
+import com.softinio.scalanews.algebra.{AiMode, DateRange, GenerateMode}
 import com.softinio.scalanews.db.Database
 
 object Main
@@ -45,8 +40,6 @@ object Main
   private case class Create(overwrite: Boolean)
 
   private case class Blogger(directory: Boolean)
-
-  private case class Event(directory: Boolean)
 
   private case object SelfCheckCmd
 
@@ -114,14 +107,6 @@ object Main
         .flag("directory", "create a new blogger directory page", short = "d")
         .orFalse
         .map(Blogger.apply)
-    }
-
-  private val eventOpts: Opts[Event] =
-    Opts.subcommand("event", "Event tasks") {
-      Opts
-        .flag("directory", "create a new event directory page", short = "e")
-        .orFalse
-        .map(Event.apply)
     }
 
   /** `generate`: by default ingests into the database and summarises with
@@ -202,7 +187,7 @@ object Main
   }
 
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateOpts orElse ingestBlogsOpts orElse bloggerOpts orElse eventOpts orElse selfCheckOpts)
+    (publishOpts orElse createOpts orElse generateOpts orElse ingestBlogsOpts orElse bloggerOpts orElse selfCheckOpts)
       .map(command =>
         IO.defer(runCommand(command)).recoverWith(reportUserErrors)
       )
@@ -222,22 +207,6 @@ object Main
             config <- ConfigLoader.load()
             result <- BlogDirectory.createBloggerDirectory(config.bloggers)
           } yield result
-        } else IO(ExitCode.Success)
-      case Event(directory) =>
-        if (directory) {
-          for {
-            config <- ConfigLoader.loadEventsConfig()
-            _ <- Events.cleanEventDirectory()
-            _ <- Events.addTopHeader()
-            _ <- Events.addHeader(EventType.Meetup)
-            _ <- Events.createEventDirectory(config.meetups, EventType.Meetup)
-            _ <- Events.addHeader(EventType.Conference)
-            _ <- Events.createEventDirectory(
-              config.conferences,
-              EventType.Conference
-            )
-            _ <- Events.addFooter()
-          } yield ExitCode.Success
         } else IO(ExitCode.Success)
       case other =>
         IO.raiseError(new IllegalStateException(s"Unhandled command: $other"))

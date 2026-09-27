@@ -14,10 +14,6 @@ Add yourself with details of your rss path to our directory (see next section be
 
 Create a PR adding your blog to the `bloggers` array in our [config.json file](config.json)
 
-## Do you organize a scala meetup or conference? Want to add it to our upcoming meetup and events directory?
-
-Create a PR adding your meetup or conference to the `meetups` or `conferences` array in our [events.json file](events.json)
-
 ## Created By
 
 [Salar Rahmanian](https://www.softinio.com)

@@ -56,7 +56,7 @@ object SiteTheme {
       homeLink = TextLink.internal(Root / "index.md", "Scala News"),
       navLinks = Seq(
         TextLink.internal(Root / "Resources" / "Blog_Directory.md", "Bloggers"),
-        TextLink.internal(Root / "Resources" / "Event_Directory.md", "Events"),
+        TextLink.external("https://www.scala-lang.org/community", "Community"),
         IconLink.external(
           "https://github.com/softinio/scalanews",
           HeliumIcon.github

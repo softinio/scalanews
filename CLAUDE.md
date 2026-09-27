@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Scala News is a CLI tool that generates curated Scala newsletters by aggregating RSS feeds from Scala community bloggers and managing events. The application is built with Scala 3, Cats Effect, and uses functional programming patterns throughout.
+Scala News is a CLI tool that generates curated Scala newsletters by aggregating RSS feeds from Scala community bloggers. The application is built with Scala 3, Cats Effect, and uses functional programming patterns throughout.
 
 ## Build Tool
 
@@ -135,9 +135,6 @@ record `self-check` and a real `generate` run (with Claude summaries) with the t
 # Generate blogger directory page
 ./out/scalanews/nativeImagePath.dest/target/scalanews blogger --directory
 
-# Generate events directory page
-./out/scalanews/nativeImagePath.dest/target/scalanews event --directory
-
 # Alternative: Run with mill directly (JVM, slower startup)
 mill scalanews.run generate 2024-01-01 2024-01-07
 ```
@@ -169,7 +166,6 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 - `Stored.runMissing`: the part the relevance and summary steps share (acquire the service only if some article needs it, call it concurrently, record results one at a time)
 - `Rome`: RSS feed parsing using Rome Tools
 - `FileHandler`: Newsletter publishing and archiving
-- `Events`: Community event directory management
 - `ConfigLoader`: JSON configuration handling (also loads the Anthropic config)
 - `Database` / `ArticleRepository`: DuckDB persistence layer for articles
 - `AnthropicClient`: cats-effect wrapper around Anthropic's official Java SDK (structured outputs)
@@ -179,7 +175,6 @@ mill scalanews.run generate 2024-01-01 2024-01-07
 
 **Configuration**:
 - Blogger RSS feeds: `config.json`
-- Events/meetups: `events.json`
 - Newsletter template: `next/template.md`
 - `ANTHROPIC_API_KEY` environment variable: required by `generate` for Claude summaries (not needed with `--no-ai`/`--no-db`, or when every article already has a stored summary)
 - `TYPESAFE_API_KEY` environment variable: required by `generate` for jev relevance checks (not needed with `--no-ai`/`--no-db`, or when every article already has a stored verdict). The verdict4s client is built from the environment (`Verdict4sEnv`): `TYPESAFE_DEFAULT_MODEL` optionally picks the jev model (default `jev-latest`) and `TYPESAFE_BASE_URL` the API endpoint

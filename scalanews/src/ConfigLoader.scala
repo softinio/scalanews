@@ -21,7 +21,6 @@ import pureconfig.module.catseffect.syntax.*
 import cats.effect.IO
 import com.softinio.scalanews.algebra.{AnthropicConfig, ApiKey}
 import com.softinio.scalanews.algebra.Configuration
-import com.softinio.scalanews.algebra.EventConfig
 import com.softinio.scalanews.algebra.Config.given
 
 object ConfigLoader {
@@ -52,9 +51,4 @@ object ConfigLoader {
             .map(new UserError(_))
         )
       }
-
-  def loadEventsConfig(filePath: String = "events.json"): IO[EventConfig] = {
-    val configPath = sys.env.getOrElse("SCALA_NEWS_EVENTS_CONFIG", filePath)
-    ConfigSource.file(configPath).loadF[IO, EventConfig]()
-  }
 }

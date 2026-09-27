@@ -25,7 +25,7 @@ Just add your blog to our blog directory. All editions of Scala News are autogen
 
 ## What kind of links will be published?
 
-Any link related to Scala programming that helps you learn and stay in touch, link to release notes for new version of packages and links to upcoming Scala related events.
+Posts about Scala and its ecosystem from the bloggers in our directory that help you learn and stay in touch. Posts that only announce a new version of a library or tool are left out, but a post that digs into what a release changes is included.
 
 Its hard work writing a book, so I am happy to include links to Scala related books by their authors and any discount they want offer our readers.
 

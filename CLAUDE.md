@@ -215,7 +215,11 @@ mill scalanews.run generate 2024-01-01 2024-01-07
   Re-copy Helium's template when upgrading Laika
 - Generated at build time (`scripts/Editions.scala` reads each edition's date, title and article
   links from its Markdown; `scripts/SiteFiles.scala` writes the files): `feed.xml` (Atom feed of all
-  editions), `sitemap.xml` and `robots.txt`. The site URL (`https://www.scalanews.net/`) is in
+  editions), `sitemap.xml`, `robots.txt`, the current edition also at its permanent archive URL
+  (`Edition.permalink`, where `publish`/`edition` will move it; its `og:url`, also on the home page,
+  so each new edition gets a fresh link preview), and a share image per edition
+  (`img/editions/scala_news_<date>.png`, drawn by `scripts/ShareImages.scala` in Lato from
+  `SCALANEWS_FONTS`, set by the Nix dev shell). The site URL (`https://www.scalanews.net/`) is in
   `SiteFiles`
 - Sidebar: `docs/helium/templates/mainNav.template.html` overrides Helium's
   navigation, rendering each archive year as a `<details>` group (no

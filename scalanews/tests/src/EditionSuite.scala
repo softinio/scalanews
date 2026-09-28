@@ -108,4 +108,24 @@ class EditionSuite extends CatsEffectSuite {
       }
     }
   }
+
+  test("permalink - built from the CNAME next to the index") {
+    Files[IO].tempDirectory.use { dir =>
+      for {
+        none <- Edition.permalink(dir / "index.md", LocalDate.of(2026, 10, 31))
+        _ <- fs2.Stream
+          .emit("www.scalanews.net\n")
+          .through(Files[IO].writeUtf8(dir / "CNAME"))
+          .compile
+          .drain
+        url <- Edition.permalink(dir / "index.md", LocalDate.of(2026, 10, 31))
+      } yield {
+        assertEquals(none, None)
+        assertEquals(
+          url,
+          Some("https://www.scalanews.net/Archive/2026/scala_news_2026-10-31.html")
+        )
+      }
+    }
+  }
 }

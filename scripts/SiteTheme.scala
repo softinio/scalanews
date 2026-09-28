@@ -139,7 +139,10 @@ object SiteTheme {
   /** `@:scalanewsPageMeta`, used in `docs/helium/templates/head.template.html`:
     * each page's description, canonical URL, feed link, and Open Graph and
     * Twitter card tags for link previews. Edition pages are marked as
-    * articles, dated from their heading, and described by their articles.
+    * articles, dated from their heading, described by their articles, and
+    * shown with their own image. Their `og:url` is the edition's permanent
+    * URL, also on the home page, so platforms that cache previews by URL show
+    * a new preview for each new edition.
     */
   private def pageMetaDirectives(editions: Map[Path, Edition]) =
     new DirectiveRegistry {
@@ -151,6 +154,11 @@ object SiteTheme {
           TemplateDirectives.dsl.cursor.map { cursor =>
             val edition = editions.get(cursor.path)
             val url = SiteFiles.pageUrl(cursor.path)
+            val shareUrl =
+              edition.fold(url)(e => SiteFiles.pageUrl(e.permalink))
+            val image = edition.fold(SiteFiles.socialImageUrl)(e =>
+              SiteFiles.siteUrl + SiteFiles.imagePath(e).toString.stripPrefix("/")
+            )
             val title = cursor.target.title
               .map(_.extractText)
               .getOrElse(SiteFiles.siteTitle)
@@ -165,12 +173,12 @@ object SiteTheme {
               meta("property", "og:site_name", SiteFiles.siteTitle),
               meta("property", "og:title", title),
               meta("property", "og:description", description),
-              meta("property", "og:url", url),
+              meta("property", "og:url", shareUrl),
               meta("property", "og:type", if (edition.isDefined) "article" else "website"),
-              meta("property", "og:image", SiteFiles.socialImageUrl),
+              meta("property", "og:image", image),
               meta("property", "og:image:width", "1200"),
               meta("property", "og:image:height", "630"),
-              meta("property", "og:image:alt", SiteFiles.siteTitle),
+              meta("property", "og:image:alt", title),
               meta("name", "twitter:card", "summary_large_image")
             ) ++ edition.map(e =>
               meta("property", "article:published_time", e.date.toString)
@@ -189,7 +197,11 @@ object SiteTheme {
       // Newsletter pages embed HTML (the article cards); render it rather than escape it.
       .withRawContent
       .usingBlockRule(editionTitle)
-      .using(pageMetaDirectives(editions.map(e => e.path -> e).toMap))
+      .using(
+        pageMetaDirectives(
+          editions.flatMap(e => List(e.path -> e, e.permalink -> e)).toMap
+        )
+      )
       .rendering {
         case (fmt, date @ Text(text, options))
             if options.styles("edition-date") && isoDate(text).isDefined =>

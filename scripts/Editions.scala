@@ -44,7 +44,16 @@ final case class Edition(
     title: String,
     articles: List[(String, String)],
     fromBloggers: Boolean
-)
+) {
+
+  /** Where the edition is archived, e.g. `/Archive/2026/scala_news_2026-08-31.md`:
+    * its own path once archived, and for the current edition the path
+    * `publish` and `edition` will move it to. The site publishes the current
+    * edition there too, so it has a permanent URL to share from day one.
+    */
+  def permalink: Path =
+    Root / "Archive" / date.getYear.toString / s"scala_news_$date.md"
+}
 
 object Edition {
   private val headingPrefix = "# Scala News - "

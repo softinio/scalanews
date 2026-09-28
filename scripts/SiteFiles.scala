@@ -28,10 +28,13 @@ import java.io.File
   *   - `feed.xml`: an Atom feed of the editions, newest first, each listing its
   *     articles, so readers can follow new editions in a feed reader;
   *   - `sitemap.xml` (every page) and `robots.txt` (pointing to it), for search
-  *     engines.
+  *     engines;
+  *   - the current edition at its permanent URL (see [[Edition.permalink]]),
+  *     and a share image for each edition (see [[ShareImages]]).
   */
 object SiteFiles {
-  val siteUrl = "https://www.scalanews.net/"
+  val siteHost = "www.scalanews.net"
+  val siteUrl = s"https://$siteHost/"
   val siteTitle = "Scala News"
   val siteDescription =
     "A curated list of Scala related news from the community: articles from Scala bloggers."
@@ -51,17 +54,16 @@ object SiteFiles {
     val date = edition.date.format(Edition.headingDateFormat)
     edition.articles.map(_._1) match {
       case Nil => s"Scala News for $date: curated Scala news from the community."
-      case first :: rest =>
-        val n = rest.size + 1
-        val count =
-          if (edition.fromBloggers)
-            s"$n article${if (n == 1) "" else "s"} from Scala bloggers"
-          else s"$n links to Scala news, events and releases"
+      case first :: _ =>
         val firstTitle =
           if (first.length <= 70) first else first.take(69).trim + "…"
-        s"Scala News for $date: $count, including \"$firstTitle\"."
+        s"Scala News for $date: ${ShareImages.contents(edition)}, including \"$firstTitle\"."
     }
   }
+
+  /** Where an edition's share image is published. */
+  def imagePath(edition: Edition): Path =
+    Root / "img" / "editions" / s"scala_news_${edition.date}.png"
 
   /** Adds the generated files to the site's input. */
   def add(
@@ -69,8 +71,27 @@ object SiteFiles {
       editions: List[Edition],
       docsDir: String = "docs"
   ): IO[InputTreeBuilder[IO]] =
-    IO.blocking(pages(new File(docsDir))).map { pagePaths =>
-      tree
+    IO.blocking {
+      val docs = new File(docsDir)
+      // The current edition at its permanent URL, unless it's already there.
+      val current = editions
+        .find(_.path == Root / "index.md")
+        .filterNot(e => new File(docs, e.permalink.toString).exists)
+        .map(e =>
+          e.permalink -> java.nio.file.Files.readString(
+            new File(docs, "index.md").toPath
+          )
+        )
+      val images =
+        editions.map(e => imagePath(e) -> ShareImages.render(e, siteHost))
+      (pages(docs) ++ current.map(_._1), current, images)
+    }.map { (pagePaths, current, images) =>
+      val withCurrent =
+        current.fold(tree)((path, markdown) => tree.addString(markdown, path))
+      images
+        .foldLeft(withCurrent) { case (t, (path, png)) =>
+          t.addBinaryStream(fs2.Stream.emits(png), path)
+        }
         .addString(feed(editions), Root / "feed.xml")
         .addString(sitemap(pagePaths, editions), Root / "sitemap.xml")
         .addString(robots, Root / "robots.txt")
@@ -78,12 +99,11 @@ object SiteFiles {
 
   def feed(editions: List[Edition]): String = {
     def entry(edition: Edition): String = {
-      val url = pageUrl(edition.path)
+      val url = pageUrl(edition.permalink)
       val articles = edition.articles
         .map((title, link) => s"<li><a href=\"${escape(link)}\">${escape(title)}</a></li>")
         .mkString("<ul>", "", "</ul>")
-      // The id stays the same when the edition moves from the home page to
-      // the archive, so feed readers don't show it twice.
+      // Linked at its permanent URL, which it keeps when archived.
       s"""  <entry>
          |    <title>${escape(edition.title)}</title>
          |    <link rel="alternate" type="text/html" href="${escape(url)}"/>
@@ -114,7 +134,7 @@ object SiteFiles {
       pagePaths: List[Path],
       editions: List[Edition]
   ): String = {
-    val dates = editions.map(e => e.path -> e.date).toMap
+    val dates = editions.flatMap(e => List(e.path -> e.date, e.permalink -> e.date)).toMap
     val urls = pagePaths.sortBy(_.toString).map { path =>
       val lastmod =
         dates.get(path).fold("")(date => s"<lastmod>$date</lastmod>")

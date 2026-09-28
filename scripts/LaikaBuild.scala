@@ -5,6 +5,7 @@
 //> using file SiteTheme.scala
 //> using file Editions.scala
 //> using file SiteFiles.scala
+//> using file ShareImages.scala
 
 /*
  * Copyright 2024 Salar Rahmanian

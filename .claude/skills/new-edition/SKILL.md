@@ -54,7 +54,9 @@ edition.
 
 5. **Report** from the output: how many articles were ingested, which were
    judged not relevant (with their probabilities), which got no summary and
-   why, which feeds failed, and where the previous edition was archived. Call
+   why, which feeds failed, where the previous edition was archived, and the
+   link to share (the `Share it at …` line: the edition's permanent URL, which
+   gets a fresh link preview). Call
    out anything that looks wrong, e.g. a significant post (a major release)
    dropped as "just an announcement", or a page that isn't a blog post (an
    "about me" page) kept. Fixes are editorial: edit the edition's Markdown by

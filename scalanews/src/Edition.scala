@@ -20,6 +20,8 @@ import cats.effect.*
 import cats.syntax.all.*
 import fs2.io.file.{Files, Path}
 
+import java.time.LocalDate
+
 import com.softinio.scalanews.algebra.{AiMode, DateRange, GenerateMode}
 
 /** `edition`: the whole cycle for a new edition in one command. */
@@ -34,6 +36,28 @@ object Edition {
     * is left alone, and nothing is published when the range has no articles or
     * isn't newer than the current edition.
     */
+  /** The edition's permanent URL, where the site also publishes the current
+    * edition and where it's later archived: the site's domain is read from the
+    * CNAME file next to `index`.
+    */
+  private[scalanews] def permalink(
+      index: Path,
+      date: LocalDate
+  ): IO[Option[String]] = {
+    val cname = index.parent.fold(Path("CNAME"))(_ / "CNAME")
+    Files[IO]
+      .exists(cname)
+      .ifM(
+        Files[IO].readUtf8(cname).compile.string.map(_.trim),
+        IO.pure("")
+      )
+      .map(host =>
+        Option.when(host.nonEmpty)(
+          s"https://$host/Archive/${date.getYear}/scala_news_$date.html"
+        )
+      )
+  }
+
   def run(
       range: DateRange,
       dbPath: String,
@@ -85,6 +109,10 @@ object Edition {
               s"Published the $date edition to $index" +
                 archived
                   .fold("")(path => s"; archived the previous one to $path")
+            )
+            shareUrl <- permalink(index, date)
+            _ <- shareUrl.traverse_(url =>
+              Output.info(s"Share it at $url (its permanent URL)")
             )
           } yield ExitCode.Success
       }

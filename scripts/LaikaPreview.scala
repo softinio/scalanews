@@ -5,6 +5,7 @@
 //> using file SiteTheme.scala
 //> using file Editions.scala
 //> using file SiteFiles.scala
+//> using file ShareImages.scala
 //> using dep org.typelevel::laika-preview:1.3.2
 //> using dep org.http4s::http4s-ember-server:0.23.37
 //> using dep org.http4s::http4s-dsl:0.23.37

@@ -104,6 +104,9 @@
 
           JAVA_HOME = "${pkgs.graalvmPackages.graalvm-ce}";
           SCALA_NEWS_CONFIG = "config.json";
+          # Lato, the site's font, for the share images drawn at build time
+          # (scripts/ShareImages.scala).
+          SCALANEWS_FONTS = "${pkgs.lato}/share/fonts/lato";
 
           shellHook = ''
             echo "Scala News Development Environment"

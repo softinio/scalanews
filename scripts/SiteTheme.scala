@@ -218,7 +218,11 @@ object SiteTheme {
         else """ target="_blank" rel="noopener noreferrer""""
       s"""<a href="${SiteFiles.escape(href)}"$newTab>$name</a>"""
     }
-    s"""<p class="share-links"><span class="share-label">Share this edition:</span> ${links
+    // The edition's own URL, to copy (right-click, "Copy link") or open: on
+    // the home page the address bar only shows the site's.
+    val permanentLink =
+      s"""<a class="share-permalink" href="${SiteFiles.escape(url)}">Permanent link</a>"""
+    s"""<p class="share-links"><span class="share-label">Share this edition:</span> ${(links :+ permanentLink)
         .mkString(""" <span class="share-sep">·</span> """)}</p>"""
   }
 

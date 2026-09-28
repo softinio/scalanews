@@ -213,7 +213,8 @@ mill scalanews.run generate 2024-01-01 2024-01-07
   `docs/img/social-card.png`, 1200x630); edition pages are marked as articles with
   `article:published_time`. `SiteTheme` also renders an edition heading's date as `<time datetime>`, followed by "Share this edition" links
   (Bluesky, Mastodon via toot.kytta.dev, LinkedIn, X, Reddit, Hacker News, email; plain links to each
-  platform's compose page with the edition's title and permanent URL, no scripts).
+  platform's compose page with the edition's title and permanent URL, no scripts), and a "Permanent
+  link" to the edition's own URL.
   Re-copy Helium's template when upgrading Laika
 - Generated at build time (`scripts/Editions.scala` reads each edition's date, title and article
   links from its Markdown; `scripts/SiteFiles.scala` writes the files): `feed.xml` (Atom feed of all

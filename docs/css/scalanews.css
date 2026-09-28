@@ -221,3 +221,27 @@ h1 .edition-brand {
 h1 .edition-separator {
   display: none;
 }
+
+/* "Share this edition" links under an edition's heading (see
+   SiteTheme.shareLinks): small and quiet, so the heading stays the focus. */
+
+.share-links {
+  margin: -0.4em 0 1.5em;
+  color: var(--text-color);
+  font-size: 0.85em;
+  line-height: 1.8;
+}
+
+.share-links .share-label {
+  margin-right: 0.3em;
+  opacity: 0.8;
+}
+
+.share-links .share-sep {
+  margin: 0 0.15em;
+  opacity: 0.5;
+}
+
+.share-links a {
+  white-space: nowrap;
+}

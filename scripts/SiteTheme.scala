@@ -32,6 +32,8 @@ import laika.io.api.TreeTransformer
 import laika.io.syntax.*
 import laika.theme.config.Color
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -189,7 +191,39 @@ object SiteTheme {
       )
     }
 
-  def transformer(editions: List[Edition]): Resource[IO, TreeTransformer[IO]] =
+  /** "Share this edition" links under an edition's heading: each opens the
+    * platform's own compose or submit page with the edition's title and
+    * permanent URL filled in, so shares get that edition's link preview. Plain
+    * links: no scripts or trackers. Mastodon has no single share URL (every
+    * server differs), so it goes through toot.kytta.dev, which asks for the
+    * reader's server.
+    */
+  private def shareLinks(edition: Edition): String = {
+    def enc(value: String) =
+      URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20")
+    val url = SiteFiles.pageUrl(edition.permalink)
+    val title = edition.title
+    val text = enc(s"$title $url")
+    val links = List(
+      "Bluesky" -> s"https://bsky.app/intent/compose?text=$text",
+      "Mastodon" -> s"https://toot.kytta.dev/?text=$text",
+      "LinkedIn" -> s"https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}",
+      "X" -> s"https://x.com/intent/tweet?text=${enc(title)}&url=${enc(url)}",
+      "Reddit" -> s"https://www.reddit.com/submit?url=${enc(url)}&title=${enc(title)}",
+      "Hacker News" -> s"https://news.ycombinator.com/submitlink?u=${enc(url)}&t=${enc(title)}",
+      "Email" -> s"mailto:?subject=${enc(title)}&body=${enc(url)}"
+    ).map { (name, href) =>
+      val newTab =
+        if (href.startsWith("mailto:")) ""
+        else """ target="_blank" rel="noopener noreferrer""""
+      s"""<a href="${SiteFiles.escape(href)}"$newTab>$name</a>"""
+    }
+    s"""<p class="share-links"><span class="share-label">Share this edition:</span> ${links
+        .mkString(""" <span class="share-sep">·</span> """)}</p>"""
+  }
+
+  def transformer(editions: List[Edition]): Resource[IO, TreeTransformer[IO]] = {
+    val editionsByTitle = editions.map(e => e.title -> e).toMap
     Transformer
       .from(Markdown)
       .to(HTML)
@@ -206,8 +240,14 @@ object SiteTheme {
         case (fmt, date @ Text(text, options))
             if options.styles("edition-date") && isoDate(text).isDefined =>
           fmt.textElement("time", date, "datetime" -> isoDate(text).get)
+        // An edition's heading, followed by its share links.
+        case (fmt, title: Title)
+            if editionsByTitle.contains(title.extractText) =>
+          fmt.element("h1", title) + "\n" +
+            shareLinks(editionsByTitle(title.extractText))
       }
       .parallel[IO]
       .withTheme(helium)
       .build
+  }
 }

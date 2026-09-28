@@ -52,7 +52,11 @@ final case class Edition(
     * edition there too, so it has a permanent URL to share from day one.
     */
   def permalink: Path =
-    Root / "Archive" / date.getYear.toString / s"scala_news_$date.md"
+    if (path == Root / "index.md")
+      Root / "Archive" / date.getYear.toString / s"scala_news_$date.md"
+    // Where it is, even if its file name and heading disagree (e.g. 2023's
+    // scala_news_2023-02-17.md is headed February 16).
+    else path
 }
 
 object Edition {

@@ -11,6 +11,11 @@ A curated list of Scala related news from the community.
   <p class="article-summary">A primer on dependent types in Scala, explaining the problems they solve and covering path-dependent types, dependent method types, and dependent function types.</p>
 </div>
 <div class="article-card">
+  <h3><a href="https://www.scala-lang.org/blog/2026/08/10/sbt-remote-tcp-advisory.html">Fixing a remote execution vulnerability in sbt</a></h3>
+  <span class="article-author">Scala Lang</span>
+  <p class="article-summary">Details a remote code execution vulnerability (GHSA-m2pw-22cj-jq4v) in sbt when serverConnectionType is set to TCP, unpatched auth on LSP endpoints, fixed in sbt 1.12.15/2.0.6.</p>
+</div>
+<div class="article-card">
   <h3><a href="https://typelevel.org/blog/github-soss-fund-2026.html">GitHub Secure Open Source Fund</a></h3>
   <span class="article-author">Arman Bilge</span>
   <p class="article-summary">Typelevel graduated GitHub&#39;s Secure Open Source Fund, receiving a $10k grant and training that led to 2FA enforcement, private vulnerability reporting, and sbt-typelevel security enhancements.</p>

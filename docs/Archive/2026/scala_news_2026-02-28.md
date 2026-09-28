@@ -21,9 +21,19 @@ A curated list of Scala related news from the community.
   <p class="article-summary">First part of a series introducing parsing fundamentals and building a simple custom parser from scratch using Scala.</p>
 </div>
 <div class="article-card">
+  <h3><a href="https://www.scala-lang.org/news/3.8.2/">Scala 3.8.2 is now available!</a></h3>
+  <span class="article-author">Scala Lang</span>
+  <p class="article-summary">Scala 3.8.2 release notes: new warning for for-comprehensions with multiple vals affecting map behavior, REPL :dep support, Scala.js 1.20.2, and Scala CLI 1.12.2 upgrades.</p>
+</div>
+<div class="article-card">
   <h3><a href="https://softwaremill.com/seamless-k6-io-performance-testing-in-scala-projects-using-scala-js/">Seamless k6.io Performance Testing in Scala Projects Using Scala.js</a></h3>
   <span class="article-author">SoftwareMill</span>
   <p class="article-summary">SoftwareMill explores writing k6.io performance tests in Scala via Scala.js, enabling type safety, functional composition, and reuse of domain logic instead of using k6&#39;s default JavaScript scripting</p>
+</div>
+<div class="article-card">
+  <h3><a href="https://www.scala-lang.org/blog/state-of-tasty-reader.html">State of the TASTy reader and Scala 2.13 ↔ Scala 3 compatibility</a></h3>
+  <span class="article-author">Scala Lang</span>
+  <p class="article-summary">Explains that Scala 3.8 breaks Scala 2.13&#39;s TASTy reader compatibility; Scala 3.7 is last version Scala 2 can consume, detailing reader limitations and recommended publishing strategies.</p>
 </div>
 <div class="article-card">
   <h3><a href="https://rockthejvm.com/articles/the-effect-pattern">The Effect Pattern and Effect Systems in Scala</a></h3>

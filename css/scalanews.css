@@ -1,0 +1,247 @@
+/* Newsletter article cards and the "More articles" list.
+
+   Mobile first: the base rules are for phones (one column, compact spacing,
+   touch-friendly targets). The grid adds columns from its own width rather
+   than the viewport's, which also holds Helium's side navigation on wide
+   screens: one column on phones, two from ~33rem, three from ~50rem.
+
+   Colours use Helium's theme variables, so the cards follow the site's
+   palette and its dark mode. */
+
+.article-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.article-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  background: var(--bg-color);
+  border: 1px solid var(--component-border);
+  border-left: 4px solid var(--secondary-color);
+  border-radius: 6px;
+}
+
+/* Override Helium's heading metrics (40px line-height, block margins). */
+.article-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.article-card h3 a {
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+
+/* The whole card is a tap target for the title link. */
+.article-card h3 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.article-author {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-color);
+}
+
+.article-summary {
+  margin: 0.15rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-color);
+}
+
+.more-articles {
+  list-style: none;
+  margin: 0.5rem 0 1.5rem;
+  padding: 0;
+}
+
+.more-articles li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.6rem;
+  min-height: 44px;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--component-border);
+  overflow-wrap: anywhere;
+}
+
+.more-articles li:last-child {
+  border-bottom: none;
+}
+
+.more-articles a {
+  color: var(--secondary-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Hover effects only where there is a real pointer, so a tapped card
+   doesn't stay "lifted" on touch screens. */
+@media (hover: hover) {
+  .article-card {
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+
+  .article-card:hover {
+    box-shadow: 0 4px 14px var(--subtle-highlight);
+    transform: translateY(-2px);
+  }
+
+  .article-card:hover h3 a,
+  .more-articles a:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-card {
+    transition: none;
+  }
+
+  .article-card:hover {
+    transform: none;
+  }
+}
+
+@media (min-width: 576px) {
+  .article-cards {
+    gap: 1rem;
+  }
+
+  .article-card {
+    padding: 1rem 1.15rem;
+  }
+}
+
+/* Sidebar archive: one <details> group per year, rendered by
+   helium/templates/mainNav.template.html. Folding is the browser's own
+   <details> behaviour, so there is no JavaScript. Sizes and colours follow
+   Helium's sidebar rules for its section headers and entries. */
+
+#sidebar ul.nav-list.archive-nav {
+  padding-bottom: 0;
+}
+
+#sidebar details.archive-year {
+  margin: 0 0 0 25px;
+}
+
+#sidebar details.archive-year > summary {
+  display: block;
+  padding: 4px 15px 4px 0;
+  color: var(--secondary-color);
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  list-style: none;
+}
+
+#sidebar details.archive-year > summary::-webkit-details-marker {
+  display: none;
+}
+
+#sidebar details.archive-year > summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  transition: transform 0.15s;
+}
+
+#sidebar details.archive-year[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+#sidebar details.archive-year .archive-count {
+  margin-left: 0.3em;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+#sidebar details.archive-year ul.nav-list {
+  padding: 0 0 6px;
+  margin: 0 0 0 1em;
+}
+
+#sidebar details.archive-year .nav-list li.level1 {
+  margin-left: -15px;
+  font-size: 0.9em;
+}
+
+#sidebar .archive-empty {
+  margin: 0 0 6px 1em;
+  padding: 2px 0 4px;
+  color: var(--text-color);
+  font-size: 0.85em;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* Top bar: scala-lang.org's dark navy, in light and dark mode. Helium's
+   high-contrast top bar reads its colours from these variables. */
+
+header#top-bar {
+  --component-area-bg: #002b36;
+  --component-color: #a7d4de;
+  --component-hover: #ffffff;
+  --component-border: #002b36;
+}
+
+header#top-bar > a.text-link {
+  color: #ffffff;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+/* Edition headings: "Scala News" as a small label above the date (see
+   SiteTheme.editionTitle); the separator is kept for the page title only. */
+
+h1 .edition-brand {
+  display: block;
+  margin-bottom: 0.2em;
+  color: var(--primary-color);
+  font-size: 0.45em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 .edition-separator {
+  display: none;
+}
+
+/* "Share this edition" links under an edition's heading (see
+   SiteTheme.shareLinks): small and quiet, so the heading stays the focus. */
+
+.share-links {
+  margin: -0.4em 0 1.5em;
+  color: var(--text-color);
+  font-size: 0.85em;
+  line-height: 1.8;
+}
+
+.share-links .share-label {
+  margin-right: 0.3em;
+  opacity: 0.8;
+}
+
+.share-links .share-sep {
+  margin: 0 0.15em;
+  opacity: 0.5;
+}
+
+.share-links a {
+  white-space: nowrap;
+}

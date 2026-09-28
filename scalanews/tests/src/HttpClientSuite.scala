@@ -28,10 +28,10 @@ class HttpClientSuite extends CatsEffectSuite {
 
   implicit val runtime: IORuntime = cats.effect.unsafe.IORuntime.global
   test("Fetch Rss".tag(IntegrationTest)) {
-    val result = HttpClient.fetchRss("https://www.softinio.com/atom.xml")
+    val result = HttpClient.fetchRss("https://www.softinio.com/index.xml")
     val obtained = result.use { res =>
       val resultStr = fromInputStream(res).mkString
-      IO(resultStr.contains("lightening-talks-at-pybay-2018"))
+      IO(resultStr.contains("<rss") && resultStr.contains("<item>"))
     }
     assertIO(obtained, true)
   }

@@ -3,12 +3,12 @@
     {
       "name": "Salar Rahmanian",
       "url": "https://www.softinio.com",
-      "rss": "https://www.softinio.com/atom.xml"
+      "rss": "https://www.softinio.com/index.xml"
     },
     {
       "name": "Scala Lang",
       "url": "https://www.scala-lang.org/blog/",
-      "rss": "https://www.scala-lang.org/feed/blog.xml"
+      "rss": "https://www.scala-lang.org/feed/index.xml"
     },
     {
       "name": "Typelevel",
@@ -24,11 +24,6 @@
       "name": "Justin Heyes-Jones",
       "url": "http://justinhj.github.io/",
       "rss": "http://justinhj.github.io/feed.xml"
-    },
-    {
-      "name": "Chris Kipp",
-      "url": "https://www.chris-kipp.io/",
-      "rss": "https://www.chris-kipp.io/rss.xml"
     },
     {
       "name": "Anton Sviridov",
@@ -96,11 +91,6 @@
       "rss": "https://rossabaker.com/blog/index.xml"
     },
     {
-      "name": "Xebia",
-      "url": "https://xebia.com/blog/",
-      "rss": "https://xebia.com/blog/category/technology/scala/feed/"
-    },
-    {
       "name": "Chistian Hollinger",
       "url": "https://chollinger.com/blog/",
       "rss": "https://chollinger.com/blog/index.xml"
@@ -116,11 +106,6 @@
       "rss": "https://medium.com/feed/tag/scala"
     },
     {
-      "name": "VirtusLab",
-      "url": "https://virtuslab.com/blog/",
-      "rss": "https://virtuslab.com/feeds/blog/rss.xml"
-    },
-    {
       "name": "Jendrik Poloczek",
       "url": "https://www.madewithtea.com",
       "rss": "https://www.madewithtea.com/rss.xml"
@@ -129,11 +114,6 @@
       "name": "Pierre Ricadat",
       "url": "https://blog.pierre-ricadat.com/",
       "rss": "https://blog.pierre-ricadat.com/rss.xml"
-    },
-    {
-      "name": "Lachlan O'Dea",
-      "url": "https://lachlan.hashnode.dev",
-      "rss": "https://lachlan.hashnode.dev/rss.xml"
     },
     {
       "name": "SoftwareMill",
@@ -180,8 +160,5 @@
       "url": "https://theexceptioncatcher.com/",
       "rss": "https://theexceptioncatcher.com/feed"
     }
-  ],
-  "server": {
-    "port": 8080
-  }
+  ]
 }

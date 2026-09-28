@@ -1,17 +1,16 @@
-
-      
-# Blog Directory
+# Bloggers
 
 A Directory of bloggers producing Scala related content with links to their rss feed when available.
 
-| Blog        | URL           | RSS Feed  |
-| ------------- |:-------------:| -----:|
-| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/atom.xml) |
-| Scala Lang | <https://www.scala-lang.org/blog/> | [rss feed](https://www.scala-lang.org/feed/blog.xml) |
+Follow them all: <a href="bloggers.opml" download>download the OPML file</a> and import it into your feed reader.
+
+| Blog | URL | RSS Feed |
+| --- |:---:| ---:|
+| Salar Rahmanian | <https://www.softinio.com> | [rss feed](https://www.softinio.com/index.xml) |
+| Scala Lang | <https://www.scala-lang.org/blog/> | [rss feed](https://www.scala-lang.org/feed/index.xml) |
 | Typelevel | <https://typelevel.org/blog/> | [rss feed](https://typelevel.org/blog/feed.rss) |
 | Michael Pilquist | <https://mpilquist.github.io/> | [rss feed](https://mpilquist.github.io/index.xml) |
 | Justin Heyes-Jones | <http://justinhj.github.io/> | [rss feed](http://justinhj.github.io/feed.xml) |
-| Chris Kipp | <https://www.chris-kipp.io/> | [rss feed](https://www.chris-kipp.io/rss.xml) |
 | Anton Sviridov | <https://blog.indoorvivants.com> | [rss feed](https://blog.indoorvivants.com/rss.xml) |
 | James Ward | <https://jamesward.com> | [rss feed](https://jamesward.com/index.xml) |
 | Eugene Yokota | <https://eed3si9n.com/> | [rss feed](https://eed3si9n.com/index.xml) |
@@ -25,14 +24,11 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | Juliano Alves | <https://juliano-alves.com/> | [rss feed](https://juliano-alves.com/feed.xml) |
 | Inner Product | <https://inner-product.com/> | [rss feed](https://www.inner-product.com/feed/feed.xml) |
 | Ross Baker | <https://rossabaker.com/> | [rss feed](https://rossabaker.com/blog/index.xml) |
-| Xebia | <https://xebia.com/blog/> | [rss feed](https://xebia.com/blog/category/technology/scala/feed/) |
 | Chistian Hollinger | <https://chollinger.com/blog/> | [rss feed](https://chollinger.com/blog/index.xml) |
 | Anton Kovalevsky | <https://antonkw.github.io/> | [rss feed](https://antonkw.github.io/feed.xml) |
 | Medium | <https://medium.com/tag/scala> | [rss feed](https://medium.com/feed/tag/scala) |
-| VirtusLab | <https://virtuslab.com/blog/> | [rss feed](https://virtuslab.com/feeds/blog/rss.xml) |
 | Jendrik Poloczek | <https://www.madewithtea.com> | [rss feed](https://www.madewithtea.com/rss.xml) |
 | Pierre Ricadat | <https://blog.pierre-ricadat.com/> | [rss feed](https://blog.pierre-ricadat.com/rss.xml) |
-| Lachlan O'Dea | <https://lachlan.hashnode.dev> | [rss feed](https://lachlan.hashnode.dev/rss.xml) |
 | SoftwareMill | <https://softwaremill.com/blog/> | [rss feed](https://softwaremill.com/blog.rss) |
 | Ruslan Shevchenko | <https://github.com/rssh/notes> | [rss feed](https://rssh.github.io/notes/feed.xml) |
 | Neandertech | <https://neander.tech> | [rss feed](https://neander.tech/rss.xml) |
@@ -42,7 +38,7 @@ A Directory of bloggers producing Scala related content with links to their rss 
 | A Developer's Experience | <https://blog.rhetoricalmusings.com> | [rss feed](https://blog.rhetoricalmusings.com/index.xml) |
 | Erik van Oosten | <https://day-to-day-stuff.blogspot.com/> | [rss feed](https://day-to-day-stuff.blogspot.com/feeds/posts/default?q=label:scala&alt=rss) |
 | Steven Hicks: The Exception Catcher | <https://theexceptioncatcher.com/> | [rss feed](https://theexceptioncatcher.com/feed) |
-      
+
 ###### Got a Scala related blog? Add it to this Blog Directory!
 
 See [README](https://github.com/softinio/scalanews/blob/main/README.md) for details.

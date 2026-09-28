@@ -1,0 +1,1698 @@
+{
+  "reflection": [
+    {
+      "type": {
+        "proxy": [
+          "sun.misc.SignalHandler"
+        ]
+      }
+    },
+    {
+      "type": "com.rometools.rome.feed.CopyFrom",
+      "methods": [
+        {
+          "name": "getInterface",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.module.DCModuleImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getContributors",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCoverages",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCreators",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDates",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDescriptions",
+          "parameterTypes": []
+        },
+        {
+          "name": "getFormats",
+          "parameterTypes": []
+        },
+        {
+          "name": "getIdentifiers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getLanguages",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPublishers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRelations",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRightsList",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSources",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSubjects",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTitles",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTypes",
+          "parameterTypes": []
+        },
+        {
+          "name": "setContributors",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setCoverages",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setCreators",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDates",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setDescriptions",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setFormats",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setIdentifiers",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setLanguages",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setPublishers",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setRelations",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setRightsList",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSources",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setSubjects",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setTitles",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setTypes",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.SyndCategory",
+      "methods": [
+        {
+          "name": "getLabel",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTaxonomyUri",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForAtom03",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForAtom10",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS090",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS091Netscape",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS091Userland",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS092",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS093",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS094",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS10",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.feed.synd.impl.ConverterForRSS20",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.Atom03Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.Atom10Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.DCModuleParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS090Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS091NetscapeParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS091UserlandParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS092Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS093Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS094Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS10Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS20Parser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.RSS20wNSParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.rometools.rome.io.impl.SyModuleParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBArray",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.duckdb.DuckDBVector",
+            "int",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBDate",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getDaysSinceEpoch",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBDriver"
+    },
+    {
+      "type": "org.duckdb.DuckDBHugeInt",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "lower"
+        },
+        {
+          "name": "upper"
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBResultSetMetaData",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int",
+            "int",
+            "java.lang.String[]",
+            "java.lang.String[]",
+            "java.lang.String[]",
+            "java.lang.String",
+            "java.lang.String[]",
+            "java.lang.String[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBStruct",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String[]",
+            "org.duckdb.DuckDBVector[]",
+            "int",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBTime",
+      "jniAccessible": true
+    },
+    {
+      "type": "org.duckdb.DuckDBTimestamp",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getMicrosEpoch",
+          "parameterTypes": []
+        },
+        {
+          "name": "valueOf",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBTimestampTZ",
+      "jniAccessible": true
+    },
+    {
+      "type": "org.duckdb.DuckDBVector",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "constlen_data"
+        },
+        {
+          "name": "varlen_data"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "int",
+            "boolean[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.DuckDBVector[]"
+    },
+    {
+      "type": "org.duckdb.ProfilerPrintFormat",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "GRAPHVIZ"
+        },
+        {
+          "name": "HTML"
+        },
+        {
+          "name": "JSON"
+        },
+        {
+          "name": "NO_OUTPUT"
+        },
+        {
+          "name": "QUERY_TREE"
+        },
+        {
+          "name": "QUERY_TREE_OPTIMIZER"
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.QueryProgress",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "double",
+            "long",
+            "long"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.duckdb.user.DuckDBMap",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getSQLTypeName",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "byte[]",
+      "jniAccessible": true
+    },
+    {
+      "type": "java.lang.Boolean",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "booleanValue",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBoolean",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Byte",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "byteValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Double",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "doubleValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Float",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "floatValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Integer",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "intValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Long",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "longValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Object",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "toString",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Short",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "TYPE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "shortValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.String",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getBytes",
+          "parameterTypes": [
+            "java.nio.charset.Charset"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Throwable",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getMessage",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.math.BigDecimal",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "longValue",
+          "parameterTypes": []
+        },
+        {
+          "name": "precision",
+          "parameterTypes": []
+        },
+        {
+          "name": "scale",
+          "parameterTypes": []
+        },
+        {
+          "name": "scaleByPowerOfTen",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "toPlainString",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.nio.ByteBuffer",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "order",
+          "parameterTypes": [
+            "java.nio.ByteOrder"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.nio.ByteOrder",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "LITTLE_ENDIAN"
+        }
+      ]
+    },
+    {
+      "type": "java.nio.CharBuffer",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "toString",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.nio.charset.Charset",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "decode",
+          "parameterTypes": [
+            "java.nio.ByteBuffer"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.nio.charset.StandardCharsets",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "UTF_8"
+        }
+      ]
+    },
+    {
+      "type": "java.sql.Array",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getArray",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBaseTypeName",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.sql.SQLException",
+      "jniAccessible": true
+    },
+    {
+      "type": "java.sql.SQLTimeoutException",
+      "jniAccessible": true
+    },
+    {
+      "type": "java.sql.Struct",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getAttributes",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSQLTypeName",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.Arrays",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "asList",
+          "parameterTypes": [
+            "java.lang.Object[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.util.Iterator",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "hasNext",
+          "parameterTypes": []
+        },
+        {
+          "name": "next",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.List",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "iterator",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.Map",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "entrySet",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.Map$Entry",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.Set",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "iterator",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.util.UUID",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getLeastSignificantBits",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMostSignificantBits",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.net.www.protocol.http.Handler",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.net.www.protocol.https.Handler",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.Enum"
+    },
+    {
+      "type": "com.anthropic.core.JsonArray",
+      "methods": [
+        {
+          "name": "values",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.JsonArray$Companion"
+    },
+    {
+      "type": "com.anthropic.core.JsonBoolean",
+      "methods": [
+        {
+          "name": "value",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.JsonBoolean$Companion"
+    },
+    {
+      "type": "com.anthropic.core.JsonField"
+    },
+    {
+      "type": "com.anthropic.core.JsonField$Deserializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.JsonField$IsMissing",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.JsonField$Visitor"
+    },
+    {
+      "type": "com.anthropic.core.JsonMissing$Serializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.JsonObject",
+      "methods": [
+        {
+          "name": "values",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.JsonObject$Companion"
+    },
+    {
+      "type": "com.anthropic.core.JsonString",
+      "methods": [
+        {
+          "name": "value",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.JsonString$Companion"
+    },
+    {
+      "type": "com.anthropic.core.JsonValue"
+    },
+    {
+      "type": "com.anthropic.core.JsonValue$Deserializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.JsonValue$Visitor"
+    },
+    {
+      "type": "com.anthropic.core.KnownValue",
+      "fields": [
+        {
+          "name": "value"
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.core.KnownValue$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.CacheControlEphemeral"
+    },
+    {
+      "type": "com.anthropic.models.messages.CacheCreation",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.CacheCreation$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.CacheCreation$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.Container"
+    },
+    {
+      "type": "com.anthropic.models.messages.ContentBlock"
+    },
+    {
+      "type": "com.anthropic.models.messages.ContentBlock$Deserializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.JsonOutputFormat",
+      "methods": [
+        {
+          "name": "_additionalProperties",
+          "parameterTypes": []
+        },
+        {
+          "name": "_schema",
+          "parameterTypes": []
+        },
+        {
+          "name": "_type",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.JsonOutputFormat$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.JsonOutputFormat$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.JsonOutputFormat$Schema",
+      "fields": [
+        {
+          "name": "additionalProperties"
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.JsonOutputFormat$Schema$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.JsonOutputFormat$Schema$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.Message",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonValue",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonValue",
+            "com.anthropic.core.JsonField"
+          ]
+        },
+        {
+          "name": "putAdditionalProperty",
+          "parameterTypes": [
+            "java.lang.String",
+            "com.anthropic.core.JsonValue"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonValue",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonValue",
+            "com.anthropic.core.JsonField",
+            "int",
+            "kotlin.jvm.internal.DefaultConstructorMarker"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.Message$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.Message$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageCreateParams"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageCreateParams$Body",
+      "methods": [
+        {
+          "name": "_additionalProperties",
+          "parameterTypes": []
+        },
+        {
+          "name": "_cacheControl",
+          "parameterTypes": []
+        },
+        {
+          "name": "_container",
+          "parameterTypes": []
+        },
+        {
+          "name": "_inferenceGeo",
+          "parameterTypes": []
+        },
+        {
+          "name": "_maxTokens",
+          "parameterTypes": []
+        },
+        {
+          "name": "_messages",
+          "parameterTypes": []
+        },
+        {
+          "name": "_metadata",
+          "parameterTypes": []
+        },
+        {
+          "name": "_model",
+          "parameterTypes": []
+        },
+        {
+          "name": "_outputConfig",
+          "parameterTypes": []
+        },
+        {
+          "name": "_serviceTier",
+          "parameterTypes": []
+        },
+        {
+          "name": "_stopSequences",
+          "parameterTypes": []
+        },
+        {
+          "name": "_system",
+          "parameterTypes": []
+        },
+        {
+          "name": "_temperature",
+          "parameterTypes": []
+        },
+        {
+          "name": "_thinking",
+          "parameterTypes": []
+        },
+        {
+          "name": "_toolChoice",
+          "parameterTypes": []
+        },
+        {
+          "name": "_tools",
+          "parameterTypes": []
+        },
+        {
+          "name": "_topK",
+          "parameterTypes": []
+        },
+        {
+          "name": "_topP",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageCreateParams$Body$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageCreateParams$Body$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageCreateParams$ServiceTier"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageCreateParams$System"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageCreateParams$System$Serializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageCreateParamsContainer"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam",
+      "methods": [
+        {
+          "name": "_additionalProperties",
+          "parameterTypes": []
+        },
+        {
+          "name": "_content",
+          "parameterTypes": []
+        },
+        {
+          "name": "_role",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam$Content"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam$Content$Serializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam$Role",
+      "methods": [
+        {
+          "name": "_value",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam$Role$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam$Role$Known"
+    },
+    {
+      "type": "com.anthropic.models.messages.MessageParam$Role$Value"
+    },
+    {
+      "type": "com.anthropic.models.messages.Metadata"
+    },
+    {
+      "type": "com.anthropic.models.messages.Model",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField"
+          ]
+        },
+        {
+          "name": "_value",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.Model$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.Model$Known"
+    },
+    {
+      "type": "com.anthropic.models.messages.Model$Value"
+    },
+    {
+      "type": "com.anthropic.models.messages.OutputConfig",
+      "methods": [
+        {
+          "name": "_additionalProperties",
+          "parameterTypes": []
+        },
+        {
+          "name": "_effort",
+          "parameterTypes": []
+        },
+        {
+          "name": "_format",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.OutputConfig$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.OutputConfig$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.OutputConfig$Effort"
+    },
+    {
+      "type": "com.anthropic.models.messages.OutputTokensDetails",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.OutputTokensDetails$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.OutputTokensDetails$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.RefusalStopDetails"
+    },
+    {
+      "type": "com.anthropic.models.messages.ServerToolUsage"
+    },
+    {
+      "type": "com.anthropic.models.messages.StopReason",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.StopReason$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.StopReason$Known"
+    },
+    {
+      "type": "com.anthropic.models.messages.StopReason$Value"
+    },
+    {
+      "type": "com.anthropic.models.messages.TextBlock",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonValue",
+            "int",
+            "kotlin.jvm.internal.DefaultConstructorMarker"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.TextBlock$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.TextBlock$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.TextBlockParam"
+    },
+    {
+      "type": "com.anthropic.models.messages.TextCitation"
+    },
+    {
+      "type": "com.anthropic.models.messages.ThinkingConfigParam"
+    },
+    {
+      "type": "com.anthropic.models.messages.ToolChoice"
+    },
+    {
+      "type": "com.anthropic.models.messages.ToolUnion"
+    },
+    {
+      "type": "com.anthropic.models.messages.Usage",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "com.anthropic.core.JsonField",
+            "int",
+            "kotlin.jvm.internal.DefaultConstructorMarker"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.Usage$Builder"
+    },
+    {
+      "type": "com.anthropic.models.messages.Usage$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.Usage$ServiceTier",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "com.anthropic.core.JsonField"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.anthropic.models.messages.Usage$ServiceTier$Companion"
+    },
+    {
+      "type": "com.anthropic.models.messages.Usage$ServiceTier$Known"
+    },
+    {
+      "type": "com.anthropic.models.messages.Usage$ServiceTier$Value"
+    },
+    {
+      "type": "com.fasterxml.jackson.core.type.TypeReference"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.deser.BeanDeserializerModifier[]"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.deser.Deserializers[]"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.deser.KeyDeserializers[]"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.deser.ValueInstantiators[]"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.ser.BeanSerializerModifier[]"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.ser.Serializers[]"
+    },
+    {
+      "type": "kotlin.Any"
+    },
+    {
+      "type": "kotlin.Boolean"
+    },
+    {
+      "type": "kotlin.Double"
+    },
+    {
+      "type": "kotlin.Function1"
+    },
+    {
+      "type": "kotlin.Int"
+    },
+    {
+      "type": "kotlin.Long"
+    },
+    {
+      "type": "kotlin.Metadata",
+      "methods": [
+        {
+          "name": "bv",
+          "parameterTypes": []
+        },
+        {
+          "name": "d1",
+          "parameterTypes": []
+        },
+        {
+          "name": "d2",
+          "parameterTypes": []
+        },
+        {
+          "name": "k",
+          "parameterTypes": []
+        },
+        {
+          "name": "mv",
+          "parameterTypes": []
+        },
+        {
+          "name": "pn",
+          "parameterTypes": []
+        },
+        {
+          "name": "xi",
+          "parameterTypes": []
+        },
+        {
+          "name": "xs",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "kotlin.Nothing"
+    },
+    {
+      "type": "kotlin.Number"
+    },
+    {
+      "type": "kotlin.SafePublicationLazyImpl"
+    },
+    {
+      "type": "kotlin.String"
+    },
+    {
+      "type": "kotlin.Unit"
+    },
+    {
+      "type": "kotlin.collections.List"
+    },
+    {
+      "type": "kotlin.collections.Map"
+    },
+    {
+      "type": "kotlin.collections.MutableMap"
+    },
+    {
+      "type": "kotlin.jvm.internal.DefaultConstructorMarker"
+    },
+    {
+      "type": "kotlin.reflect.jvm.internal.ReflectionFactoryImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "kotlin.reflect.jvm.internal.impl.load.java.ErasedOverridabilityCondition"
+    },
+    {
+      "type": "kotlin.reflect.jvm.internal.impl.load.java.FieldOverridabilityCondition"
+    },
+    {
+      "type": "kotlin.reflect.jvm.internal.impl.load.java.JavaIncompatibilityRulesOverridabilityCondition"
+    },
+    {
+      "type": "kotlin.reflect.jvm.internal.impl.resolve.scopes.DescriptorKindFilter",
+      "fields": [
+        {
+          "name": "ALL"
+        },
+        {
+          "name": "CALLABLES"
+        },
+        {
+          "name": "CLASSIFIERS"
+        },
+        {
+          "name": "Companion"
+        },
+        {
+          "name": "FUNCTIONS"
+        },
+        {
+          "name": "NON_SINGLETON_CLASSIFIERS"
+        },
+        {
+          "name": "PACKAGES"
+        },
+        {
+          "name": "SINGLETON_CLASSIFIERS"
+        },
+        {
+          "name": "TYPE_ALIASES"
+        },
+        {
+          "name": "VALUES"
+        },
+        {
+          "name": "VARIABLES"
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "glob": "com/rometools/rome/rome.properties"
+    },
+    {
+      "glob": "rome.properties"
+    },
+    {
+      "glob": "libduckdb_java.so_osx_universal"
+    },
+    {
+      "glob": "META-INF/services/kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition"
+    },
+    {
+      "glob": "META-INF/services/kotlin.reflect.jvm.internal.impl.util.ModuleVisibilityHelper"
+    },
+    {
+      "glob": "kotlin/collections/collections.kotlin_builtins"
+    },
+    {
+      "glob": "kotlin/kotlin.kotlin_builtins"
+    }
+  ]
+}

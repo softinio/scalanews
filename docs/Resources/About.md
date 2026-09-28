@@ -25,11 +25,11 @@ Just add your blog to our blog directory. All editions of Scala News are autogen
 
 ## What kind of links will be published?
 
-Any link related to Scala programming that helps you learn and stay in touch, link to release notes for new version of packages and links to upcoming Scala related events.
+Posts about Scala and its ecosystem from the bloggers in our directory that help you learn and stay in touch. Posts that only announce a new version of a library or tool are left out, but a post that digs into what a release changes is included.
 
 Its hard work writing a book, so I am happy to include links to Scala related books by their authors and any discount they want offer our readers.
 
-I won't be including any links that are directly or indirectly promoting a company and/or a service. This includes but is not limited to paid training and workshops.
+We don't accept sales or recruitment oriented posts: posts that mainly promote a company, a paid product or service (including paid training and workshops), or advertise jobs and hiring are left out. Blogs that mainly publish such posts won't be added to the Bloggers directory. Posts by people who work for a company are welcome when they share knowledge, experience or opinion.
 
 ## Code of Conduct
 

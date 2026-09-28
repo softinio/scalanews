@@ -7,16 +7,14 @@ For more information have a look at our [about us](docs/Resources/About.md)
 
 ## How to contribute Links
 
-Add yourself with details of your rss path to our directory (see next section below) of bloggers and your articles will automatically be included in our next edition of Scala News.
+Add yourself with details of your rss path to our directory (see next section below) of bloggers and your Scala articles will automatically be considered for the next edition of Scala News. Posts that aren't about Scala, or that only announce a new release, are left out.
 
 
-## Do you have a Scala related Blog? Want to add it in our [Blog Directory](docs/Resources/Blog_Directory.md)?
+## Do you have a Scala related Blog? Want to add it to our [Bloggers](docs/Resources/Blog_Directory.md) directory?
 
 Create a PR adding your blog to the `bloggers` array in our [config.json file](config.json)
 
-## Do you organize a scala meetup or conference? Want to add it to our upcoming meetup and events directory?
-
-Create a PR adding your meetup or conference to the `meetups` or `conferences` array in our [events.json file](events.json)
+Blogs that mainly publish sales or recruitment oriented posts won't be added, and such posts are left out of the newsletter. See [what kind of links will be published](docs/Resources/About.md#what-kind-of-links-will-be-published) for details.
 
 ## Created By
 

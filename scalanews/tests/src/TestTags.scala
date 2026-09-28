@@ -20,5 +20,4 @@ import munit.Tag
 
 object TestTags {
   val IntegrationTest = Tag("IntegrationTest")
-  val ServiceTest = Tag("ServiceTest")
 }

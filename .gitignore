@@ -34,13 +34,20 @@ tags
 .bloop/
 metals.sbt
 .vscode
+.mcp.json
 
 # npm
 node_modules/
 
-# binary
-scalanews
+# binary (only the root-level compiled binary, not the source directory)
+/scalanews
+!scalanews/
 
 # Nix
 result
 result-*
+
+# DuckDB database files, and the write-ahead log next to one while it's open
+# (anywhere: --dbpath can put them outside data/)
+*.duckdb
+*.duckdb.wal

@@ -16,46 +16,52 @@
 
 package com.softinio.scalanews
 
-import java.text.SimpleDateFormat
-
 import cats.effect.*
 import cats.implicits.*
 
 import com.monovore.decline.*
 import com.monovore.decline.effect.*
 
-import com.softinio.scalanews.algebra.{EventType, ServerConfig}
+import com.softinio.scalanews.algebra.{AiMode, DateRange, GenerateMode}
+import com.softinio.scalanews.db.Database
 
 object Main
     extends CommandIOApp(
       name = "scalanews",
       header = "scalanews cli",
-      version = "0.1"
+      version = "0.2"
     ) {
 
   private case class Publish(
       publishDate: Option[String],
-      archiveDate: String,
+      archiveDate: Option[String],
       archiveFolder: Option[String]
   )
   private case class Create(overwrite: Boolean)
 
-  private case class Blogger(directory: Boolean)
-
-  private case class Event(directory: Boolean)
-
-  private case class GenerateNextBlog(
-      startDate: String,
-      endDate: String
+  private case class Blogger(
+      directory: Boolean,
+      check: Boolean,
+      base: Option[String]
   )
 
-  private case class ServerCmd(port: Int)
+  private case object SelfCheckCmd
 
-  private val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
+  private[scalanews] case class Generate(range: DateRange, mode: GenerateMode)
 
-  private val archiveDateOps: Opts[String] =
+  private case class IngestBlogs(range: DateRange, dbPath: String)
+
+  private[scalanews] case class NewEdition(
+      range: DateRange,
+      dbPath: String,
+      refresh: Boolean
+  )
+
+  // Optional: publish reads the current edition's date from its heading.
+  private val archiveDateOps: Opts[Option[String]] =
     Opts
       .argument[String](metavar = "archiveDate")
+      .orNone
 
   private val startDateOps: Opts[String] =
     Opts
@@ -65,11 +71,22 @@ object Main
     Opts
       .argument[String](metavar = "endDate")
 
+  /** The start and end dates, validated when the command line is parsed. */
+  private val dateRangeOps: Opts[DateRange] =
+    (startDateOps, endDateOps).tupled.mapValidated((start, end) =>
+      DateRange.parse(start, end).toValidatedNel
+    )
+
+  private val dbPathOps: Opts[String] =
+    Opts
+      .option[String]("dbpath", "Database file path", short = "d")
+      .withDefault(Database.defaultPath)
+
   private val publishDateOps: Opts[Option[String]] =
     Opts
       .option[String](
         "publishdate",
-        "Publish date for current newsletter to",
+        "Date for the new edition's heading (yyyyMMdd, default today)",
         short = "p"
       )
       .orNone
@@ -78,7 +95,7 @@ object Main
     Opts
       .option[String](
         "folder",
-        "Folder name to archive current newsletter to",
+        "Folder under docs/Archive to archive the current newsletter to (default: its year)",
         short = "f"
       )
       .orNone
@@ -98,72 +115,160 @@ object Main
 
   private val bloggerOpts: Opts[Blogger] =
     Opts.subcommand("blogger", "Blogger directory tasks") {
-      Opts
-        .flag("directory", "create a new blogger directory page", short = "d")
-        .orFalse
-        .map(Blogger.apply)
+      (
+        Opts
+          .flag("directory", "create a new blogger directory page", short = "d")
+          .orFalse,
+        Opts
+          .flag(
+            "check",
+            "validate config.json's bloggers and fetch their feeds (exits with an error on problems)",
+            short = "c"
+          )
+          .orFalse,
+        Opts
+          .option[String](
+            "base",
+            "with --check, a config.json to compare with: only new or changed bloggers' feeds are fetched"
+          )
+          .orNone
+      ).tupled.mapValidated {
+        case (_, false, Some(_)) =>
+          "--base only applies with --check".invalidNel
+        case (directory, check, base) =>
+          Blogger(directory, check, base).validNel
+      }
     }
 
-  private val eventOpts: Opts[Event] =
-    Opts.subcommand("event", "Event tasks") {
-      Opts
-        .flag("directory", "create a new event directory page", short = "e")
-        .orFalse
-        .map(Event.apply)
+  /** `generate`: by default ingests into the database and summarises with
+    * Claude; `--no-ai` keeps the database without jev or Claude, `--no-db`
+    * reads the feeds directly. Flag combinations that make no sense are
+    * rejected rather than ignored.
+    */
+  private[scalanews] val generateOpts: Opts[Generate] =
+    Opts.subcommand(
+      "generate",
+      "Generate the next newsletter (database and Claude summaries by default)"
+    ) {
+      (
+        dateRangeOps,
+        Opts
+          .flag(
+            "no-db",
+            "Read the feeds directly instead of via the database (plain summaries)"
+          )
+          .orFalse,
+        Opts
+          .flag(
+            "no-ai",
+            "No jev relevance check or Claude summaries (keyword filter, plain summaries)"
+          )
+          .orFalse,
+        Opts
+          .flag(
+            "refresh-ai",
+            "Ask jev and Claude again even for articles with stored results",
+            short = "r"
+          )
+          .orFalse,
+        Opts
+          .option[String]("dbpath", "Database file path", short = "d")
+          .orNone
+      ).tupled.mapValidated {
+        case (_, true, _, true, _) =>
+          "--refresh-ai needs the database; it can't be used with --no-db".invalidNel
+        case (_, true, _, _, Some(_)) =>
+          "--dbpath can't be used with --no-db".invalidNel
+        case (_, false, true, true, _) =>
+          "--refresh-ai only applies with AI; it can't be used with --no-ai".invalidNel
+        case (range, noDb, noAi, refresh, dbPath) =>
+          val mode =
+            if (noDb) GenerateMode.Direct
+            else
+              GenerateMode.Database(
+                dbPath.getOrElse(Database.defaultPath),
+                if (noAi) AiMode.Disabled else AiMode.Enabled(refresh)
+              )
+          Generate(range, mode).validNel
+      }
     }
 
-  private val generateNextBlogOpts: Opts[GenerateNextBlog] =
-    Opts.subcommand("generate", "Generate next blog") {
-      (startDateOps, endDateOps).mapN(GenerateNextBlog.apply)
+  /** `edition`: generate with the database, jev and Claude, archive the current
+    * edition and publish the new one, in one go.
+    */
+  private[scalanews] val editionOpts: Opts[NewEdition] =
+    Opts.subcommand(
+      "edition",
+      "Generate the next edition (database, jev and Claude), archive the current one and publish the new one, dated the end date"
+    ) {
+      (
+        dateRangeOps,
+        dbPathOps,
+        Opts
+          .flag(
+            "refresh-ai",
+            "Ask jev and Claude again even for articles with stored results",
+            short = "r"
+          )
+          .orFalse
+      ).mapN(NewEdition.apply)
     }
 
-  private val serverOpts: Opts[ServerCmd] =
-    Opts.subcommand("server", "Start HTTP server") {
-      Opts
-        .option[Int]("port", "Port to bind server to", short = "p")
-        .withDefault(8080)
-        .map(ServerCmd.apply)
+  private val ingestBlogsOpts: Opts[IngestBlogs] =
+    Opts.subcommand("ingest", "Ingest blogs into DB") {
+      (dateRangeOps, dbPathOps).mapN(IngestBlogs.apply)
     }
+
+  private val selfCheckOpts: Opts[SelfCheckCmd.type] =
+    Opts.subcommand(
+      "self-check",
+      "Check Claude request/reply JSON handling offline"
+    )(Opts.unit.as(SelfCheckCmd))
+
+  /** Expected, user-fixable failures end the run with one `error:` line and
+    * exit code 1; anything else is unexpected and keeps its stack trace. (Bad
+    * dates are rejected earlier, when the command line is parsed.)
+    */
+  private[scalanews] val reportUserErrors
+      : PartialFunction[Throwable, IO[ExitCode]] = {
+    case e: UserError => Output.error(e.getMessage).as(ExitCode.Error)
+    case e: pureconfig.error.ConfigReaderException[?] =>
+      Output
+        .error(s"invalid configuration:\n${e.failures.prettyPrint()}")
+        .as(ExitCode.Error)
+  }
 
   override def main: Opts[IO[ExitCode]] =
-    (publishOpts orElse createOpts orElse generateNextBlogOpts orElse bloggerOpts orElse eventOpts orElse serverOpts)
-      .map {
-        case Publish(publishDate, archiveDate, archiveFolder) =>
-          FileHandler.publish(publishDate, archiveDate, archiveFolder)
-        case Create(overwrite) => FileHandler.create(overwrite)
-        case GenerateNextBlog(startDate, endDate) =>
-          Bloggers.generateNextBlog(
-            dateFormatter.parse(startDate),
-            dateFormatter.parse(endDate)
-          )
-        case Blogger(directory) =>
-          if (directory) {
-            for {
-              config <- ConfigLoader.load()
-              result <- Bloggers.createBloggerDirectory(config.bloggers)
-            } yield result
-          } else IO(ExitCode.Success)
-        case Event(directory) =>
-          if (directory) {
-            for {
-              config <- ConfigLoader.loadEventsConfig()
-              _ <- Events.cleanEventDirectory()
-              _ <- Events.addTopHeader()
-              _ <- Events.addHeader(EventType.Meetup)
-              _ <- Events.createEventDirectory(config.meetups, EventType.Meetup)
-              _ <- Events.addHeader(EventType.Conference)
-              _ <- Events.createEventDirectory(
-                config.conferences,
-                EventType.Conference
-              )
-              _ <- Events.addFooter()
-            } yield ExitCode.Success
-          } else IO(ExitCode.Success)
-        case ServerCmd(port) =>
-          for {
-            config <- ConfigLoader.load()
-            serverConfig = config.server.getOrElse(ServerConfig(port))
-            result <- Server.run(serverConfig)
-          } yield result
-      }
+    (publishOpts orElse createOpts orElse generateOpts orElse editionOpts orElse ingestBlogsOpts orElse bloggerOpts orElse selfCheckOpts)
+      .map(command =>
+        IO.defer(runCommand(command)).recoverWith(reportUserErrors)
+      )
+
+  private def runCommand(command: Product): IO[ExitCode] =
+    command match {
+      case SelfCheckCmd                                     => SelfCheck.run
+      case Publish(publishDate, archiveDate, archiveFolder) =>
+        FileHandler.publish(publishDate, archiveDate, archiveFolder)
+      case Create(overwrite)     => FileHandler.create(overwrite)
+      case Generate(range, mode) => Newsletter.generate(range, mode)
+      case NewEdition(range, dbPath, refresh) =>
+        Edition.run(range, dbPath, refresh)
+      case IngestBlogs(range, dbPath) =>
+        Newsletter.ingestBlogsToDB(range, dbPath)
+      case Blogger(directory, check, base) =>
+        // With both flags, the page is only written when the check passes.
+        for {
+          config <- ConfigLoader.load()
+          baseBloggers <- base.traverse(ConfigLoader.load(_).map(_.bloggers))
+          checked <-
+            if (check) BloggerCheck.check(config.bloggers, baseBloggers)
+            else IO.pure(ExitCode.Success)
+          result <-
+            if (directory && checked == ExitCode.Success)
+              BlogDirectory.createBloggerDirectory(config.bloggers)
+            else IO.pure(checked)
+        } yield result
+      case other =>
+        IO.raiseError(new IllegalStateException(s"Unhandled command: $other"))
+    }
 }

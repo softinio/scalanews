@@ -140,16 +140,17 @@ object Feeds {
 
   private[scalanews] def fetchArticles(
       range: DateRange,
-      configFilePath: String = "config.json"
+      configFilePath: Option[String] = None
   ): IO[FetchedArticles] =
-    ConfigLoader.load(configFilePath).flatMap { conf =>
-      conf.bloggers
-        .traverse(blog => fetchBlog(blog, range).map(blog -> _))
-        .map { results =>
-          FetchedArticles(
-            results.flatMap(_._2.getOrElse(Nil)),
-            results.collect { case (blog, Left(_)) => blog.name }
-          )
-        }
+    configFilePath.fold(ConfigLoader.load())(ConfigLoader.load).flatMap {
+      conf =>
+        conf.bloggers
+          .traverse(blog => fetchBlog(blog, range).map(blog -> _))
+          .map { results =>
+            FetchedArticles(
+              results.flatMap(_._2.getOrElse(Nil)),
+              results.collect { case (blog, Left(_)) => blog.name }
+            )
+          }
     }
 }

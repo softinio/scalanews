@@ -10,6 +10,7 @@
       <outline type="rss" text="Typelevel" title="Typelevel" xmlUrl="https://typelevel.org/blog/feed.rss" htmlUrl="https://typelevel.org/blog/"/>
       <outline type="rss" text="Michael Pilquist" title="Michael Pilquist" xmlUrl="https://mpilquist.github.io/index.xml" htmlUrl="https://mpilquist.github.io/"/>
       <outline type="rss" text="Justin Heyes-Jones" title="Justin Heyes-Jones" xmlUrl="http://justinhj.github.io/feed.xml" htmlUrl="http://justinhj.github.io/"/>
+      <outline type="rss" text="Chris Kipp" title="Chris Kipp" xmlUrl="https://www.chris-kipp.io/rss.xml" htmlUrl="https://www.chris-kipp.io/"/>
       <outline type="rss" text="Anton Sviridov" title="Anton Sviridov" xmlUrl="https://blog.indoorvivants.com/rss.xml" htmlUrl="https://blog.indoorvivants.com"/>
       <outline type="rss" text="James Ward" title="James Ward" xmlUrl="https://jamesward.com/index.xml" htmlUrl="https://jamesward.com"/>
       <outline type="rss" text="Eugene Yokota" title="Eugene Yokota" xmlUrl="https://eed3si9n.com/index.xml" htmlUrl="https://eed3si9n.com/"/>

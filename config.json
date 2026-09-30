@@ -26,6 +26,11 @@
       "rss": "http://justinhj.github.io/feed.xml"
     },
     {
+      "name": "Chris Kipp",
+      "url": "https://www.chris-kipp.io/",
+      "rss": "https://www.chris-kipp.io/rss.xml"
+    },
+    {
       "name": "Anton Sviridov",
       "url": "https://blog.indoorvivants.com",
       "rss": "https://blog.indoorvivants.com/rss.xml"

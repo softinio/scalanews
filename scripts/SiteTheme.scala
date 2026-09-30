@@ -204,14 +204,15 @@ object SiteTheme {
     val url = SiteFiles.pageUrl(edition.permalink)
     val title = edition.title
     val text = enc(s"$title $url")
+    // In alphabetical order.
     val links = List(
       "Bluesky" -> s"https://bsky.app/intent/compose?text=$text",
-      "Mastodon" -> s"https://toot.kytta.dev/?text=$text",
-      "LinkedIn" -> s"https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}",
-      "X" -> s"https://x.com/intent/tweet?text=${enc(title)}&url=${enc(url)}",
-      "Reddit" -> s"https://www.reddit.com/submit?url=${enc(url)}&title=${enc(title)}",
+      "Email" -> s"mailto:?subject=${enc(title)}&body=${enc(url)}",
       "Hacker News" -> s"https://news.ycombinator.com/submitlink?u=${enc(url)}&t=${enc(title)}",
-      "Email" -> s"mailto:?subject=${enc(title)}&body=${enc(url)}"
+      "LinkedIn" -> s"https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}",
+      "Mastodon" -> s"https://toot.kytta.dev/?text=$text",
+      "Reddit" -> s"https://www.reddit.com/submit?url=${enc(url)}&title=${enc(title)}",
+      "X" -> s"https://x.com/intent/tweet?text=${enc(title)}&url=${enc(url)}"
     ).map { (name, href) =>
       val newTab =
         if (href.startsWith("mailto:")) ""

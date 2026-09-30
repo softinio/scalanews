@@ -58,7 +58,7 @@ class FeedsSuite extends CatsEffectSuite {
   ) {
     val testConfigPath = getClass.getResource("/test-config.json").getPath
     Feeds
-      .fetchArticles(range2021, testConfigPath)
+      .fetchArticles(range2021, Some(testConfigPath))
       .map { fetched =>
         assert(fetched.articles.nonEmpty)
         assertEquals(fetched.failedFeeds, Nil)

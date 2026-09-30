@@ -11,6 +11,7 @@ Follow them all: <a href="bloggers.opml" download>download the OPML file</a> and
 | Typelevel | <https://typelevel.org/blog/> | [rss feed](https://typelevel.org/blog/feed.rss) |
 | Michael Pilquist | <https://mpilquist.github.io/> | [rss feed](https://mpilquist.github.io/index.xml) |
 | Justin Heyes-Jones | <http://justinhj.github.io/> | [rss feed](http://justinhj.github.io/feed.xml) |
+| Chris Kipp | <https://www.chris-kipp.io/> | [rss feed](https://www.chris-kipp.io/rss.xml) |
 | Anton Sviridov | <https://blog.indoorvivants.com> | [rss feed](https://blog.indoorvivants.com/rss.xml) |
 | James Ward | <https://jamesward.com> | [rss feed](https://jamesward.com/index.xml) |
 | Eugene Yokota | <https://eed3si9n.com/> | [rss feed](https://eed3si9n.com/index.xml) |

@@ -85,6 +85,8 @@ object SiteTheme {
     // Newsletter pages are short and flat; the sidebar is enough.
     .site.pageNavigation(enabled = false)
     .site.internalCSS(Root / "css" / "scalanews.css")
+    // GoatCounter analytics; the script loads count.js itself (see the file).
+    .site.internalJS(Root / "js" / "goatcounter.js")
     .site.footer(
       TemplateString(
         """<br/>

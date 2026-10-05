@@ -24,13 +24,25 @@ import com.softinio.scalanews.algebra.Configuration
 import com.softinio.scalanews.algebra.Config.given
 
 object ConfigLoader {
-  def load(filePath: String = "config.json"): IO[Configuration] = {
-    val configPath = sys.props.getOrElse(
-      "SCALA_NEWS_CONFIG",
-      sys.env.getOrElse("SCALA_NEWS_CONFIG", filePath)
-    )
-    ConfigSource.file(configPath).loadF[IO, Configuration]()
-  }
+
+  /** Loads the config named by `SCALA_NEWS_CONFIG` (a system property or
+    * environment variable), or `config.json` without one. The override is read
+    * when the IO runs, so the native image can't capture it at build time.
+    */
+  def load(): IO[Configuration] =
+    IO(
+      sys.props
+        .get("SCALA_NEWS_CONFIG")
+        .orElse(sys.env.get("SCALA_NEWS_CONFIG"))
+        .getOrElse("config.json")
+    ).flatMap(load)
+
+  /** Loads the config at `filePath`. `SCALA_NEWS_CONFIG` doesn't apply: a path
+    * given explicitly (such as `blogger --check --base`) is always the one
+    * read.
+    */
+  def load(filePath: String): IO[Configuration] =
+    ConfigSource.file(filePath).loadF[IO, Configuration]()
 
   def loadAnthropicConfig(): IO[AnthropicConfig] =
     // Read the environment when the IO runs, not when it's built, so a value

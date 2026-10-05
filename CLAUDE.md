@@ -212,7 +212,7 @@ mill scalanews.run generate 2024-01-01 2024-01-07
   description, canonical URL, feed link, and Open Graph / Twitter card tags (image
   `docs/img/social-card.png`, 1200x630); edition pages are marked as articles with
   `article:published_time`. `SiteTheme` also renders an edition heading's date as `<time datetime>`, followed by "Share this edition" links
-  (Bluesky, Mastodon via toot.kytta.dev, LinkedIn, X, Reddit, Hacker News, email; plain links to each
+  (in alphabetical order: Bluesky, email, Hacker News, LinkedIn, Mastodon via toot.kytta.dev, Reddit, X; plain links to each
   platform's compose page with the edition's title and permanent URL, no scripts), and a "Permanent
   link" to the edition's own URL.
   Re-copy Helium's template when upgrading Laika

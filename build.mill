@@ -20,7 +20,7 @@ object versions {
   val rome = "2.1.0"
   val scala3 = "3.9.0"
   val slf4j = "2.0.20"
-  val verdict4s = "0.1.0"
+  val verdict4s = "0.2.0"
 }
 
 /** Fails if the `versions` vals or any dependency list in this file isn't in

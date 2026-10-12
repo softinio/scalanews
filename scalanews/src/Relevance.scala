@@ -21,11 +21,13 @@ import cats.effect.syntax.all.*
 import cats.syntax.all.*
 import com.softinio.verdict4s.{
   Ask,
+  JevClient,
   Verdict4sClient,
   Verdict4sEnv,
   Verdict4sError
 }
 import com.softinio.verdict4s.algebra.{ApiFailure, Probability, Question}
+import com.softinio.verdict4s.jev.JevVendor
 import io.circe.Encoder
 
 import com.softinio.duck4s.DuckDBConnection
@@ -117,7 +119,7 @@ object Relevance {
           aboutScala.value,
           announcement.value,
           promotional.value,
-          client.config.model.name
+          client.config.model.getOrElse(client.vendor.defaultModel).name
         )
       )
 
@@ -138,19 +140,20 @@ object Relevance {
   /** Adds a pointer to `--no-ai` when verdict4s reports the API key missing. */
   private[scalanews] val missingTypesafeKeyHint
       : PartialFunction[Throwable, Throwable] = {
-    case e: Verdict4sError.Validation if e.field == "TYPESAFE_API_KEY" =>
+    case e: Verdict4sError.Validation if e.field == JevVendor.ApiKeyEnv =>
       new UserError(
         "TYPESAFE_API_KEY is not set: set it for jev relevance checks, or use --no-ai",
         e
       )
   }
 
-  /** One verdict4s client for the run, configured from the environment:
+  /** One jev client for the run, configured from the environment:
     * TYPESAFE_API_KEY, and optionally TYPESAFE_DEFAULT_MODEL (jev-latest by
-    * default) and TYPESAFE_BASE_URL.
+    * default) and TYPESAFE_BASE_URL. Always jev, whatever VERDICT4S_VENDOR
+    * says: the questions and thresholds are calibrated on jev's answers.
     */
-  private[scalanews] def verdictClient: Resource[IO, Verdict4sClient[IO]] =
-    Verdict4sEnv.default[IO].adaptError(missingTypesafeKeyHint)
+  private[scalanews] def verdictClient: Resource[IO, JevClient[IO]] =
+    Verdict4sEnv.jev[IO].adaptError(missingTypesafeKeyHint)
 
   /** The rows jev judges relevant, reusing stored answers unless `refresh` and
     * storing new ones. The checker is only acquired (and TYPESAFE_API_KEY only

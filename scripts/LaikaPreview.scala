@@ -7,8 +7,11 @@
 //> using file SiteFiles.scala
 //> using file ShareImages.scala
 //> using dep org.typelevel::laika-preview:1.3.2
-//> using dep org.http4s::http4s-ember-server:0.23.37
-//> using dep org.http4s::http4s-dsl:0.23.37
+//> using dep org.http4s::http4s-ember-server:0.23.38
+//> using dep org.http4s::http4s-dsl:0.23.38
+// laika-preview logs through SLF4J; the no-op provider discards those logs
+// without SLF4J's "no binder found" warnings.
+//> using dep org.slf4j:slf4j-nop:2.0.20
 
 /*
  * Copyright 2024 Salar Rahmanian

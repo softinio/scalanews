@@ -38,6 +38,7 @@
       <outline type="rss" text="A Developer&apos;s Experience" title="A Developer&apos;s Experience" xmlUrl="https://blog.rhetoricalmusings.com/index.xml" htmlUrl="https://blog.rhetoricalmusings.com"/>
       <outline type="rss" text="Erik van Oosten" title="Erik van Oosten" xmlUrl="https://day-to-day-stuff.blogspot.com/feeds/posts/default?q=label:scala&amp;alt=rss" htmlUrl="https://day-to-day-stuff.blogspot.com/"/>
       <outline type="rss" text="Steven Hicks: The Exception Catcher" title="Steven Hicks: The Exception Catcher" xmlUrl="https://theexceptioncatcher.com/feed" htmlUrl="https://theexceptioncatcher.com/"/>
+      <outline type="rss" text="Alexis Hernandez" title="Alexis Hernandez" xmlUrl="https://alexitc.com/rss.xml" htmlUrl="https://alexitc.com"/>
     </outline>
   </body>
 </opml>

@@ -164,6 +164,11 @@
       "name": "Steven Hicks: The Exception Catcher",
       "url": "https://theexceptioncatcher.com/",
       "rss": "https://theexceptioncatcher.com/feed"
+    },
+    {
+      "name": "Alexis Hernandez",
+      "url": "https://alexitc.com",
+      "rss": "https://alexitc.com/rss.xml"
     }
   ]
 }

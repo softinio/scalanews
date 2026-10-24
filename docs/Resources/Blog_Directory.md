@@ -39,6 +39,7 @@ Follow them all: <a href="bloggers.opml" download>download the OPML file</a> and
 | A Developer's Experience | <https://blog.rhetoricalmusings.com> | [rss feed](https://blog.rhetoricalmusings.com/index.xml) |
 | Erik van Oosten | <https://day-to-day-stuff.blogspot.com/> | [rss feed](https://day-to-day-stuff.blogspot.com/feeds/posts/default?q=label:scala&alt=rss) |
 | Steven Hicks: The Exception Catcher | <https://theexceptioncatcher.com/> | [rss feed](https://theexceptioncatcher.com/feed) |
+| Alexis Hernandez | <https://alexitc.com> | [rss feed](https://alexitc.com/rss.xml) |
 
 ###### Got a Scala related blog? Add it to this Blog Directory!
 

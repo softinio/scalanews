@@ -1474,6 +1474,13 @@
             "int",
             "kotlin.jvm.internal.DefaultConstructorMarker"
           ]
+        },
+        {
+          "name": "putAdditionalProperty",
+          "parameterTypes": [
+            "java.lang.String",
+            "com.anthropic.core.JsonValue"
+          ]
         }
       ]
     },

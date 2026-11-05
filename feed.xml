@@ -5,9 +5,18 @@
   <link rel="self" type="application/atom+xml" href="https://www.scalanews.net/feed.xml"/>
   <link rel="alternate" type="text/html" href="https://www.scalanews.net/"/>
   <id>https://www.scalanews.net/</id>
-  <updated>2026-08-31T00:00:00Z</updated>
+  <updated>2026-10-31T00:00:00Z</updated>
   <author><name>Salar Rahmanian and contributors</name></author>
   <icon>https://www.scalanews.net/img/favicon-32x32.png</icon>
+  <entry>
+    <title>Scala News - October 31, 2026</title>
+    <link rel="alternate" type="text/html" href="https://www.scalanews.net/Archive/2026/scala_news_2026-10-31.html"/>
+    <id>tag:scalanews.net,2026-10-31:edition</id>
+    <published>2026-10-31T00:00:00Z</published>
+    <updated>2026-10-31T00:00:00Z</updated>
+    <summary>Scala News for October 31, 2026: 15 articles from Scala bloggers, including &quot;Scala Days 2026 talk recordings&quot;.</summary>
+    <content type="html">&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://youtube.com/playlist?list=PLSwkkO70hN24&quot;&gt;Scala Days 2026 talk recordings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://watch.softinio.com/w/p/1y91HpAp7Nd3WcuAKXpGLz&quot;&gt;Scala Summit 2026 talk recordings&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://blog.rhetoricalmusings.com/posts/capture-checking/&quot;&gt;Capture Checking Notes&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.softinio.com/post/checking-relevance-with-verdict4s/&quot;&gt;Checking Relevance With Verdict4s&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://yadukrishnan.live/fast-approximate-analytics-in-scala-with-apache-datasketches&quot;&gt;Fast Approximate Analytics in Scala with Apache DataSketches&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://rockthejvm.com/articles/introducing-eezo&quot;&gt;Introducing Eezo: Next-gen Scala Web Framework&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.scala-lang.org/blog/2026/09/16/sbt-plugin-updates.html&quot;&gt;Reforesting the sbt plugin ecosystem and sbt 2.1.0 beta&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.scala-lang.org/news/3.10/&quot;&gt;Scala 3.10 released!&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.scala-lang.org/news/3.9/&quot;&gt;Scala 3.9 LTS released!&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://typelevel.org/blog/scala-days-2026.html&quot;&gt;Typelevel Talks at Scala Days 2026&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.scala-lang.org/blog/scala2-maintenance.html&quot;&gt;VirtusLab assumes responsibility for Scala 2 maintenance&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://medium.com/@nebakei.tkb713/book-review-get-programming-with-scala-a-good-starting-point-for-java-developers-656b8534e47e?source=rss------scala-5&quot;&gt;Book Review: Get Programming with Scala — A Good Starting Point for Java Developers&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://blog.rhetoricalmusings.com/posts/cc-talk/&quot;&gt;Just Capture Checking in 15 mins&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://eed3si9n.com/rfc-5-test-scheduling/&quot;&gt;RFC-5: test scheduling&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://medium.com/@nebakei.tkb713/running-testcontainers-with-docker-outside-of-docker-bef4b10bde5a?source=rss------scala-5&quot;&gt;Running Testcontainers with Docker-outside-of-Docker&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</content>
+  </entry>
   <entry>
     <title>Scala News - August 31, 2026</title>
     <link rel="alternate" type="text/html" href="https://www.scalanews.net/Archive/2026/scala_news_2026-08-31.html"/>
